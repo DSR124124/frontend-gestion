@@ -1,0 +1,255 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '800px' }"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="modoEdicion ? 'Editar Lanzamiento' : 'Crear Nuevo Lanzamiento'"
+  (onHide)="hideDialog()"
+>
+  <form [formGroup]="lanzamientoForm" (ngSubmit)="guardar()">
+    <div class="form-grid">
+      <!-- Aplicación -->
+      <div class="field">
+        <label for="idAplicacion" class="required">
+          Aplicación <span class="required-asterisk">*</span>
+        </label>
+        <p-dropdown
+          id="idAplicacion"
+          formControlName="idAplicacion"
+          [options]="aplicaciones"
+          optionLabel="nombreAplicacion"
+          optionValue="idAplicacion"
+          placeholder="Seleccione una aplicación"
+          [showClear]="false"
+          [filter]="true"
+          filterBy="nombreAplicacion,codigoProducto"
+          styleClass="w-full"
+          [class.ng-invalid]="isFieldInvalid('idAplicacion')"
+        ></p-dropdown>
+        <small
+          *ngIf="isFieldInvalid('idAplicacion')"
+          class="p-error"
+        >
+          <span *ngIf="f['idAplicacion'].errors?.['required']">La aplicación es requerida</span>
+        </small>
+      </div>
+
+      <!-- Versión -->
+      <div class="field">
+        <label for="version" class="required">
+          Versión <span class="required-asterisk">*</span>
+        </label>
+        <input
+          id="version"
+          type="text"
+          pInputText
+          formControlName="version"
+          [class.ng-invalid]="isFieldInvalid('version')"
+          placeholder="Ej: 2.5.1, 3.0.0-beta.1"
+          maxlength="50"
+        />
+        <small
+          *ngIf="isFieldInvalid('version')"
+          class="p-error"
+        >
+          <span *ngIf="f['version'].errors?.['required']">La versión es requerida</span>
+          <span *ngIf="f['version'].errors?.['maxlength']">La versión no puede exceder 50 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Estado -->
+      <div class="field">
+        <label for="estado" class="required">
+          Estado <span class="required-asterisk">*</span>
+        </label>
+        <p-dropdown
+          id="estado"
+          formControlName="estado"
+          [options]="estados"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Seleccione un estado"
+          styleClass="w-full"
+          [class.ng-invalid]="isFieldInvalid('estado')"
+        ></p-dropdown>
+        <small
+          *ngIf="isFieldInvalid('estado')"
+          class="p-error"
+        >
+          <span *ngIf="f['estado'].errors?.['required']">El estado es requerido</span>
+        </small>
+      </div>
+
+      <!-- Fecha de Lanzamiento -->
+      <div class="field">
+        <label for="fechaLanzamiento">
+          Fecha de Lanzamiento
+        </label>
+        <input
+          id="fechaLanzamiento"
+          type="datetime-local"
+          pInputText
+          formControlName="fechaLanzamiento"
+          styleClass="w-full"
+          placeholder="Seleccione fecha y hora"
+        />
+      </div>
+
+      <!-- Notas de Versión -->
+      <div class="field">
+        <label for="notasVersion" class="required">
+          Notas de Versión <span class="required-asterisk">*</span>
+        </label>
+        <textarea
+          id="notasVersion"
+          pInputTextarea
+          formControlName="notasVersion"
+          [class.ng-invalid]="isFieldInvalid('notasVersion')"
+          placeholder="Release notes, changelog, mejoras, correcciones..."
+          [rows]="4"
+        ></textarea>
+        <small
+          *ngIf="isFieldInvalid('notasVersion')"
+          class="p-error"
+        >
+          <span *ngIf="f['notasVersion'].errors?.['required']">Las notas de versión son requeridas</span>
+        </small>
+      </div>
+
+      <!-- URL de Descarga -->
+      <div class="field">
+        <label for="urlDescarga">
+          URL de Descarga
+        </label>
+        <input
+          id="urlDescarga"
+          type="url"
+          pInputText
+          formControlName="urlDescarga"
+          [class.ng-invalid]="isFieldInvalid('urlDescarga')"
+          placeholder="https://ejemplo.com/descarga/version.zip"
+          maxlength="500"
+        />
+        <small
+          *ngIf="isFieldInvalid('urlDescarga')"
+          class="p-error"
+        >
+          <span *ngIf="f['urlDescarga'].errors?.['maxlength']">La URL no puede exceder 500 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Tamaño de Archivo -->
+      <div class="field">
+        <label for="tamanoArchivo">
+          Tamaño de Archivo (bytes)
+        </label>
+        <p-inputNumber
+          id="tamanoArchivo"
+          formControlName="tamanoArchivo"
+          [showButtons]="true"
+          [min]="0"
+          [useGrouping]="true"
+          placeholder="Ej: 1048576"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <!-- Checksum SHA256 -->
+      <div class="field">
+        <label for="checksumSha256">
+          Checksum SHA256
+        </label>
+        <input
+          id="checksumSha256"
+          type="text"
+          pInputText
+          formControlName="checksumSha256"
+          [class.ng-invalid]="isFieldInvalid('checksumSha256')"
+          placeholder="Hash SHA256 para verificación"
+          maxlength="64"
+        />
+        <small
+          *ngIf="isFieldInvalid('checksumSha256')"
+          class="p-error"
+        >
+          <span *ngIf="f['checksumSha256'].errors?.['maxlength']">El checksum no puede exceder 64 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Publicado Por -->
+      <div class="field">
+        <label for="publicadoPor">
+          Publicado Por
+        </label>
+        <p-dropdown
+          id="publicadoPor"
+          formControlName="publicadoPor"
+          [options]="usuarios"
+          optionLabel="nombreCompleto"
+          optionValue="idUsuario"
+          placeholder="Seleccione un usuario"
+          [showClear]="true"
+          [filter]="true"
+          filterBy="nombreCompleto,username,email"
+          styleClass="w-full"
+        >
+          <ng-template let-usuario pTemplate="item">
+            <div class="flex align-items-center">
+              <div>
+                <div>{{ usuario.nombreCompleto || usuario.username }}</div>
+                <small class="text-secondary">{{ usuario.email }}</small>
+              </div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+
+      <!-- Es Crítico -->
+      <div class="field">
+        <label for="esCritico">Actualización Crítica</label>
+        <p-checkbox
+          id="esCritico"
+          formControlName="esCritico"
+          binary="true"
+          inputId="esCritico-checkbox"
+        ></p-checkbox>
+        <label for="esCritico-checkbox" class="ml-2">Marcar como actualización crítica de seguridad</label>
+      </div>
+
+      <!-- Requiere Reinicio -->
+      <div class="field">
+        <label for="requiereReinicio">Requiere Reinicio</label>
+        <p-checkbox
+          id="requiereReinicio"
+          formControlName="requiereReinicio"
+          binary="true"
+          inputId="requiereReinicio-checkbox"
+        ></p-checkbox>
+        <label for="requiereReinicio-checkbox" class="ml-2">La aplicación requiere reinicio después de la actualización</label>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+        icon="pi pi-check"
+        (click)="guardar()"
+        [disabled]="lanzamientoForm.invalid"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+

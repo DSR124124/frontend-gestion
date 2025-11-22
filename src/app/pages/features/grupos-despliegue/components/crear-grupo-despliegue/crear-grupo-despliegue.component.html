@@ -1,0 +1,134 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="modoEdicion ? 'Editar Grupo de Despliegue' : 'Crear Nuevo Grupo de Despliegue'"
+  (onHide)="hideDialog()"
+>
+  <form [formGroup]="grupoDespliegueForm" (ngSubmit)="guardar()">
+    <div class="form-grid">
+      <!-- Nombre del Grupo -->
+      <div class="field">
+        <label for="nombreGrupo" class="required">
+          Nombre del Grupo <span class="required-asterisk">*</span>
+        </label>
+        <input
+          id="nombreGrupo"
+          type="text"
+          pInputText
+          formControlName="nombreGrupo"
+          [class.ng-invalid]="isFieldInvalid('nombreGrupo')"
+          placeholder="Ej: Beta, Producción, Canary"
+          maxlength="100"
+        />
+        <small
+          *ngIf="isFieldInvalid('nombreGrupo')"
+          class="p-error"
+        >
+          <span *ngIf="f['nombreGrupo'].errors?.['required']">El nombre del grupo es requerido</span>
+          <span *ngIf="f['nombreGrupo'].errors?.['maxlength']">El nombre no puede exceder 100 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Orden de Prioridad -->
+      <div class="field">
+        <label for="ordenPrioridad">
+          Orden de Prioridad
+        </label>
+        <p-inputNumber
+          id="ordenPrioridad"
+          formControlName="ordenPrioridad"
+          [showButtons]="true"
+          [min]="1"
+          [useGrouping]="false"
+          placeholder="Ej: 1, 2, 3..."
+          styleClass="w-full"
+        ></p-inputNumber>
+        <small class="text-secondary">Menor número = mayor prioridad (se despliega primero)</small>
+      </div>
+
+      <!-- Descripción -->
+      <div class="field">
+        <label for="descripcion">
+          Descripción
+        </label>
+        <textarea
+          id="descripcion"
+          pInputTextarea
+          formControlName="descripcion"
+          [class.ng-invalid]="isFieldInvalid('descripcion')"
+          placeholder="Descripción del grupo de despliegue..."
+          [rows]="3"
+          maxlength="500"
+        ></textarea>
+        <small
+          *ngIf="isFieldInvalid('descripcion')"
+          class="p-error"
+        >
+          <span *ngIf="f['descripcion'].errors?.['maxlength']">La descripción no puede exceder 500 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Porcentaje de Usuarios -->
+      <div class="field">
+        <label for="porcentajeUsuarios">
+          Porcentaje de Usuarios (%)
+        </label>
+        <p-inputNumber
+          id="porcentajeUsuarios"
+          formControlName="porcentajeUsuarios"
+          [showButtons]="true"
+          [min]="0"
+          [max]="100"
+          [useGrouping]="false"
+          placeholder="0-100"
+          styleClass="w-full"
+          [class.ng-invalid]="isFieldInvalid('porcentajeUsuarios')"
+        ></p-inputNumber>
+        <small
+          *ngIf="isFieldInvalid('porcentajeUsuarios')"
+          class="p-error"
+        >
+          <span *ngIf="f['porcentajeUsuarios'].errors?.['min']">El porcentaje debe ser mayor o igual a 0</span>
+          <span *ngIf="f['porcentajeUsuarios'].errors?.['max']">El porcentaje debe ser menor o igual a 100</span>
+        </small>
+      </div>
+
+      <!-- Activo -->
+      <div class="field">
+        <label for="activo">Estado</label>
+        <p-checkbox
+          id="activo"
+          formControlName="activo"
+          binary="true"
+          inputId="activo-checkbox"
+        ></p-checkbox>
+        <label for="activo-checkbox" class="ml-2">Grupo activo</label>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+        icon="pi pi-check"
+        (click)="guardar()"
+        [disabled]="grupoDespliegueForm.invalid"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+

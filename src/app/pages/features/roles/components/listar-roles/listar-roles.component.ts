@@ -99,12 +99,43 @@ export class ListarRolesComponent implements OnInit, OnDestroy {
     if (!fecha) return '-';
     try {
       const date = new Date(fecha);
+      const ahora = new Date();
+      const diffMs = ahora.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) {
+        return 'Hace un momento';
+      } else if (diffMins < 60) {
+        return `Hace ${diffMins} min`;
+      } else if (diffHours < 24) {
+        return `Hace ${diffHours} h`;
+      } else if (diffDays < 7) {
+        return `Hace ${diffDays} días`;
+      } else {
+        return date.toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+      }
+    } catch {
+      return fecha;
+    }
+  }
+
+  formatearFechaCompleta(fecha: string | null): string {
+    if (!fecha) return '-';
+    try {
+      const date = new Date(fecha);
       return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        second: '2-digit'
       });
     } catch {
       return fecha;

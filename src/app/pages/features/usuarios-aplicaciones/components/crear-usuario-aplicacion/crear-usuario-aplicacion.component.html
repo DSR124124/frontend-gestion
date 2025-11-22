@@ -1,0 +1,178 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="modoEdicion ? 'Editar Relación Usuario-Aplicación' : 'Crear Nueva Relación Usuario-Aplicación'"
+  (onHide)="hideDialog()"
+>
+  <form [formGroup]="usuarioAplicacionForm" (ngSubmit)="guardar()">
+    <div class="form-grid">
+      <!-- Usuario -->
+      <div class="field">
+        <label for="idUsuario" class="required">
+          Usuario <span class="required-asterisk">*</span>
+        </label>
+        <p-dropdown
+          id="idUsuario"
+          formControlName="idUsuario"
+          [options]="usuarios"
+          optionLabel="nombreCompleto"
+          optionValue="idUsuario"
+          placeholder="Seleccione un usuario"
+          [showClear]="false"
+          [filter]="true"
+          filterBy="nombreCompleto,username,email"
+          styleClass="w-full"
+          [class.ng-invalid]="isFieldInvalid('idUsuario')"
+        >
+          <ng-template let-usuario pTemplate="item">
+            <div class="flex align-items-center">
+              <div>
+                <div>{{ usuario.nombreCompleto || usuario.username }}</div>
+                <small class="text-secondary">{{ usuario.email }}</small>
+              </div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+        <small
+          *ngIf="isFieldInvalid('idUsuario')"
+          class="p-error"
+        >
+          <span *ngIf="f['idUsuario'].errors?.['required']">El usuario es requerido</span>
+        </small>
+      </div>
+
+      <!-- Aplicación -->
+      <div class="field">
+        <label for="idAplicacion" class="required">
+          Aplicación <span class="required-asterisk">*</span>
+        </label>
+        <p-dropdown
+          id="idAplicacion"
+          formControlName="idAplicacion"
+          [options]="aplicaciones"
+          optionLabel="nombreAplicacion"
+          optionValue="idAplicacion"
+          placeholder="Seleccione una aplicación"
+          [showClear]="false"
+          [filter]="true"
+          filterBy="nombreAplicacion,codigoProducto"
+          styleClass="w-full"
+          [class.ng-invalid]="isFieldInvalid('idAplicacion')"
+        ></p-dropdown>
+        <small
+          *ngIf="isFieldInvalid('idAplicacion')"
+          class="p-error"
+        >
+          <span *ngIf="f['idAplicacion'].errors?.['required']">La aplicación es requerida</span>
+        </small>
+      </div>
+
+      <!-- Fecha Último Acceso -->
+      <div class="field">
+        <label for="fechaUltimoAcceso">
+          Fecha Último Acceso
+        </label>
+        <input
+          id="fechaUltimoAcceso"
+          type="datetime-local"
+          pInputText
+          formControlName="fechaUltimoAcceso"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Fecha Expiración Licencia -->
+      <div class="field">
+        <label for="fechaExpiracionLicencia">
+          Fecha Expiración Licencia
+        </label>
+        <input
+          id="fechaExpiracionLicencia"
+          type="datetime-local"
+          pInputText
+          formControlName="fechaExpiracionLicencia"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Registrado Por -->
+      <div class="field">
+        <label for="registradoPor">
+          Registrado Por
+        </label>
+        <p-dropdown
+          id="registradoPor"
+          formControlName="registradoPor"
+          [options]="usuarios"
+          optionLabel="nombreCompleto"
+          optionValue="idUsuario"
+          placeholder="Seleccione un usuario"
+          [showClear]="true"
+          [filter]="true"
+          filterBy="nombreCompleto,username,email"
+          styleClass="w-full"
+        >
+          <ng-template let-usuario pTemplate="item">
+            <div class="flex align-items-center">
+              <div>
+                <div>{{ usuario.nombreCompleto || usuario.username }}</div>
+                <small class="text-secondary">{{ usuario.email }}</small>
+              </div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+
+      <!-- Licencia Activa -->
+      <div class="field">
+        <label for="licenciaActiva">Licencia Activa</label>
+        <p-checkbox
+          id="licenciaActiva"
+          formControlName="licenciaActiva"
+          binary="true"
+          inputId="licenciaActiva-checkbox"
+        ></p-checkbox>
+        <label for="licenciaActiva-checkbox" class="ml-2">Licencia activa</label>
+      </div>
+
+      <!-- Notas -->
+      <div class="field">
+        <label for="notas">
+          Notas
+        </label>
+        <textarea
+          id="notas"
+          pInputTextarea
+          formControlName="notas"
+          placeholder="Notas adicionales sobre esta relación..."
+          [rows]="3"
+        ></textarea>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+        icon="pi pi-check"
+        (click)="guardar()"
+        [disabled]="usuarioAplicacionForm.invalid"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+

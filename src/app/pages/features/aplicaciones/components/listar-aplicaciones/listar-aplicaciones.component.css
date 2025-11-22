@@ -51,6 +51,18 @@
   font-size: var(--font-size-medium);
 }
 
+.fecha-modificacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-gray-medium);
+  font-size: var(--font-size-small);
+}
+
+.fecha-modificacion i {
+  font-size: 0.875rem;
+}
+
 /* Ajustes para la tabla */
 .tabla-datos {
   margin-top: 1rem;

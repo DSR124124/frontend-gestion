@@ -60,11 +60,12 @@
         <tr>
           <th style="width: 5%">ID</th>
           <th style="width: 15%">Nombre</th>
-          <th style="width: 25%">Descripción</th>
-          <th style="width: 20%">Permisos</th>
+          <th style="width: 20%">Descripción</th>
+          <th style="width: 18%">Permisos</th>
           <th style="width: 8%">Estado</th>
           <th style="width: 12%">Fecha Creación</th>
-          <th style="width: 15%">Acciones</th>
+          <th style="width: 12%">Última Modificación</th>
+          <th style="width: 10%">Acciones</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rol>
@@ -86,6 +87,12 @@
             ></p-tag>
           </td>
           <td>{{ formatearFecha(rol.fechaCreacion) }}</td>
+          <td>
+            <span class="fecha-modificacion" [title]="formatearFechaCompleta(rol.fechaModificacion)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(rol.fechaModificacion) }}
+            </span>
+          </td>
           <td>
             <div class="acciones-cell">
               <button
@@ -112,7 +119,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7" class="text-center p-4">
+          <td colspan="8" class="text-center p-4">
             <div class="empty-message">
               <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
               <p>No se encontraron roles</p>

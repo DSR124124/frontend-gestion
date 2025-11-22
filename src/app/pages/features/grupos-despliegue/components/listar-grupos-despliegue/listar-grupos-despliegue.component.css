@@ -1,5 +1,10 @@
-.roles-container {
+.grupos-despliegue-container {
   animation: fadeInUp 0.3s ease;
+}
+
+/* Espaciado para botones en toolbar */
+.p-toolbar-group-end button + button {
+  margin-left: 0.5rem;
 }
 
 /* Estilos para la barra de búsqueda */
@@ -22,8 +27,8 @@
   width: 100%;
 }
 
-/* Estilos para badges de permisos */
-.badge-permisos {
+/* Estilos para badges de orden */
+.badge-orden {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   background: linear-gradient(135deg, var(--color-light-blue), var(--color-blue-light));
@@ -31,10 +36,7 @@
   border-radius: 12px;
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-medium);
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 /* Mensaje vacío */
@@ -47,18 +49,6 @@
 .empty-message p {
   margin-top: 1rem;
   font-size: var(--font-size-medium);
-}
-
-.fecha-modificacion {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: var(--color-gray-medium);
-  font-size: var(--font-size-small);
-}
-
-.fecha-modificacion i {
-  font-size: 0.875rem;
 }
 
 /* Ajustes para la tabla */
@@ -80,7 +70,7 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .roles-container {
+  .grupos-despliegue-container {
     padding: 1rem;
   }
 

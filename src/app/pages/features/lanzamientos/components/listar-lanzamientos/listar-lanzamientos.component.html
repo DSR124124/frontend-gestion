@@ -1,4 +1,4 @@
-<div class="aplicaciones-container">
+<div class="lanzamientos-container">
   <p-toolbar class="custom-toolbar mb-3">
     <div class="p-toolbar-group-start">
       <span class="p-input-icon-left">
@@ -6,9 +6,9 @@
         <input
           type="text"
           pInputText
-          placeholder="Buscar por nombre, descripción, código o responsable..."
+          placeholder="Buscar por versión, aplicación, estado, notas o publicador..."
           [(ngModel)]="terminoBusqueda"
-          (input)="filtrarAplicaciones()"
+          (input)="filtrarLanzamientos()"
           class="p-inputtext-lg"
         />
       </span>
@@ -27,7 +27,7 @@
         pButton
         type="button"
         icon="pi pi-plus"
-        label="Nueva Aplicación"
+        label="Nuevo Lanzamiento"
         class="p-button-primary"
         (click)="abrirDialogoCrear()"
       ></button>
@@ -37,7 +37,7 @@
         icon="pi pi-refresh"
         label="Actualizar"
         class="p-button-info ml-2"
-        (click)="cargarAplicaciones()"
+        (click)="cargarLanzamientos()"
         [disabled]="loading"
       ></button>
     </div>
@@ -45,56 +45,62 @@
 
   <div class="card tabla-datos">
     <p-table
-      [value]="aplicacionesFiltradas"
+      [value]="lanzamientosFiltrados"
       [loading]="loading"
       [paginator]="true"
       [rows]="10"
       [rowsPerPageOptions]="[10, 25, 50]"
       [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} aplicaciones"
-      [globalFilterFields]="['nombreAplicacion', 'descripcion', 'codigoProducto', 'responsableNombre']"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} lanzamientos"
+      [globalFilterFields]="['version', 'nombreAplicacion', 'estado', 'notasVersion', 'publicadoPorNombre']"
       styleClass="p-datatable-striped"
       [tableStyle]="{ 'min-width': '50rem' }"
     >
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 5%">ID</th>
-          <th style="width: 12%">Nombre</th>
-          <th style="width: 18%">Descripción</th>
-          <th style="width: 8%">Código</th>
-          <th style="width: 10%">Responsable</th>
+          <th style="width: 12%">Aplicación</th>
+          <th style="width: 10%">Versión</th>
           <th style="width: 8%">Estado</th>
-          <th style="width: 11%">Fecha Creación</th>
-          <th style="width: 11%">Última Modificación</th>
-          <th style="width: 17%">Acciones</th>
+          <th style="width: 12%">Fecha Lanzamiento</th>
+          <th style="width: 12%">Fecha Publicación</th>
+          <th style="width: 15%">Notas</th>
+          <th style="width: 8%">Tamaño</th>
+          <th style="width: 8%">Crítico</th>
+          <th style="width: 10%">Acciones</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-aplicacion>
+      <ng-template pTemplate="body" let-lanzamiento>
         <tr>
-          <td>{{ aplicacion.idAplicacion }}</td>
+          <td>{{ lanzamiento.idLanzamiento }}</td>
           <td>
-            <strong>{{ aplicacion.nombreAplicacion }}</strong>
+            <strong>{{ lanzamiento.nombreAplicacion || '-' }}</strong>
           </td>
-          <td>{{ aplicacion.descripcion || '-' }}</td>
           <td>
-            <span class="badge-codigo" *ngIf="aplicacion.codigoProducto">
-              {{ aplicacion.codigoProducto }}
-            </span>
-            <span *ngIf="!aplicacion.codigoProducto">-</span>
+            <span class="badge-version">{{ lanzamiento.version }}</span>
           </td>
-          <td>{{ aplicacion.responsableNombre || '-' }}</td>
           <td>
             <p-tag
-              [value]="getEstadoLabel(aplicacion.activo)"
-              [severity]="getSeverity(aplicacion.activo)"
+              [value]="getEstadoLabel(lanzamiento.estado)"
+              [severity]="getSeverityEstado(lanzamiento.estado)"
             ></p-tag>
           </td>
-          <td>{{ formatearFecha(aplicacion.fechaCreacion) }}</td>
+          <td>{{ formatearFecha(lanzamiento.fechaLanzamiento) }}</td>
+          <td>{{ formatearFecha(lanzamiento.fechaPublicacion) }}</td>
           <td>
-            <span class="fecha-modificacion" [title]="formatearFechaCompleta(aplicacion.fechaModificacion)">
-              <i class="pi pi-clock"></i>
-              {{ formatearFecha(aplicacion.fechaModificacion) }}
+            <span class="notas-version" [pTooltip]="lanzamiento.notasVersion" tooltipPosition="top">
+              {{ (lanzamiento.notasVersion || '-').substring(0, 50) }}{{ (lanzamiento.notasVersion?.length || 0) > 50 ? '...' : '' }}
             </span>
+          </td>
+          <td>{{ formatearTamano(lanzamiento.tamanoArchivo) }}</td>
+          <td>
+            <i 
+              *ngIf="lanzamiento.esCritico" 
+              class="pi pi-exclamation-triangle text-danger"
+              pTooltip="Actualización crítica"
+              tooltipPosition="top"
+            ></i>
+            <span *ngIf="!lanzamiento.esCritico">-</span>
           </td>
           <td>
             <div class="acciones-cell">
@@ -103,18 +109,18 @@
                 type="button"
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm p-button-success"
-                pTooltip="Editar aplicación"
+                pTooltip="Editar lanzamiento"
                 tooltipPosition="top"
-                (click)="editarAplicacion(aplicacion)"
+                (click)="editarLanzamiento(lanzamiento)"
               ></button>
               <button
                 pButton
                 type="button"
                 icon="pi pi-trash"
                 class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                pTooltip="Eliminar aplicación"
+                pTooltip="Eliminar lanzamiento"
                 tooltipPosition="top"
-                (click)="confirmarEliminar(aplicacion)"
+                (click)="confirmarEliminar(lanzamiento)"
               ></button>
             </div>
           </td>
@@ -122,10 +128,10 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="9" class="text-center p-4">
+          <td colspan="10" class="text-center p-4">
             <div class="empty-message">
               <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-              <p>No se encontraron aplicaciones</p>
+              <p>No se encontraron lanzamientos</p>
             </div>
           </td>
         </tr>
@@ -133,12 +139,12 @@
     </p-table>
   </div>
 
-  <!-- Componente de crear/editar aplicación -->
-  <app-crear-aplicacion
-    #crearAplicacionComponent
-    (aplicacionCreada)="onAplicacionCreada()"
-    (aplicacionActualizada)="onAplicacionActualizada()"
-  ></app-crear-aplicacion>
+  <!-- Componente de crear/editar lanzamiento -->
+  <app-crear-lanzamiento
+    #crearLanzamientoComponent
+    (lanzamientoCreado)="onLanzamientoCreado()"
+    (lanzamientoActualizado)="onLanzamientoActualizado()"
+  ></app-crear-lanzamiento>
 
   <!-- Confirmación de eliminación -->
   <p-confirmDialog></p-confirmDialog>

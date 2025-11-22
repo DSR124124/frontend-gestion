@@ -1,5 +1,10 @@
-.roles-container {
+.lanzamientos-disponibles-container {
   animation: fadeInUp 0.3s ease;
+}
+
+/* Espaciado para botones en toolbar */
+.p-toolbar-group-end button + button {
+  margin-left: 0.5rem;
 }
 
 /* Estilos para la barra de búsqueda */
@@ -22,8 +27,33 @@
   width: 100%;
 }
 
-/* Estilos para badges de permisos */
-.badge-permisos {
+/* Estilos para filtros */
+.filtros-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  align-items: end;
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filtro-item label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-navy-dark);
+  font-size: var(--font-size-small);
+}
+
+.filtro-item ::ng-deep .p-dropdown {
+  width: 100%;
+}
+
+/* Estilos para badges de versión */
+.badge-version {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   background: linear-gradient(135deg, var(--color-light-blue), var(--color-blue-light));
@@ -31,10 +61,21 @@
   border-radius: 12px;
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-medium);
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* Estilos para enlaces de descarga */
+.link-descarga {
+  color: var(--color-blue-light);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.link-descarga:hover {
+  text-decoration: underline;
 }
 
 /* Mensaje vacío */
@@ -49,38 +90,24 @@
   font-size: var(--font-size-medium);
 }
 
-.fecha-modificacion {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: var(--color-gray-medium);
-  font-size: var(--font-size-small);
-}
-
-.fecha-modificacion i {
-  font-size: 0.875rem;
-}
-
 /* Ajustes para la tabla */
 .tabla-datos {
   margin-top: 1rem;
 }
 
-/* Estilos para la columna de acciones */
-.acciones-cell {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  align-items: center;
+.text-secondary {
+  color: var(--color-gray-medium);
+  font-size: var(--font-size-small);
 }
 
-.acciones-cell button {
-  margin: 0;
+.text-danger {
+  color: #e74c3c;
+  font-size: 1.2rem;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .roles-container {
+  .lanzamientos-disponibles-container {
     padding: 1rem;
   }
 
@@ -100,6 +127,10 @@
 
   .p-toolbar-group-end {
     justify-content: flex-start;
+  }
+
+  .filtros-container {
+    grid-template-columns: 1fr;
   }
 }
 

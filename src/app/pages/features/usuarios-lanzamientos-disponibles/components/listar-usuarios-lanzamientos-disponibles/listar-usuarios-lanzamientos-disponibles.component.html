@@ -1,0 +1,191 @@
+<div class="lanzamientos-disponibles-container">
+  <p-toolbar class="custom-toolbar mb-3">
+    <div class="p-toolbar-group-start">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="Buscar por usuario, aplicación, versión o grupo..."
+          [(ngModel)]="terminoBusqueda"
+          (input)="filtrarLanzamientosDisponibles()"
+          class="p-inputtext-lg"
+        />
+      </span>
+      <button
+        *ngIf="terminoBusqueda"
+        pButton
+        type="button"
+        icon="pi pi-times"
+        label="Limpiar"
+        class="p-button-text p-button-sm ml-2"
+        (click)="limpiarBusqueda()"
+      ></button>
+    </div>
+    <div class="p-toolbar-group-end">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-refresh"
+        label="Actualizar"
+        class="p-button-info"
+        (click)="cargarLanzamientosDisponibles()"
+        [disabled]="loading"
+      ></button>
+    </div>
+  </p-toolbar>
+
+  <!-- Filtros -->
+  <div class="card mb-3">
+    <div class="filtros-container">
+      <div class="filtro-item">
+        <label for="filtroUsuario">Filtrar por Usuario:</label>
+        <p-dropdown
+          id="filtroUsuario"
+          [(ngModel)]="filtroUsuario"
+          [options]="usuarios"
+          optionLabel="nombreCompleto"
+          optionValue="idUsuario"
+          placeholder="Todos los usuarios"
+          [showClear]="true"
+          [filter]="true"
+          filterBy="nombreCompleto,username,email"
+          styleClass="w-full"
+          (onChange)="cargarLanzamientosDisponibles()"
+        ></p-dropdown>
+      </div>
+      <div class="filtro-item">
+        <label for="filtroAplicacion">Filtrar por Aplicación:</label>
+        <p-dropdown
+          id="filtroAplicacion"
+          [(ngModel)]="filtroAplicacion"
+          [options]="aplicaciones"
+          optionLabel="nombreAplicacion"
+          optionValue="idAplicacion"
+          placeholder="Todas las aplicaciones"
+          [showClear]="true"
+          [filter]="true"
+          filterBy="nombreAplicacion"
+          styleClass="w-full"
+          (onChange)="cargarLanzamientosDisponibles()"
+        ></p-dropdown>
+      </div>
+      <div class="filtro-item">
+        <label for="filtroGrupo">Filtrar por Grupo:</label>
+        <p-dropdown
+          id="filtroGrupo"
+          [(ngModel)]="filtroGrupo"
+          [options]="gruposDespliegue"
+          optionLabel="nombreGrupo"
+          optionValue="idGrupo"
+          placeholder="Todos los grupos"
+          [showClear]="true"
+          [filter]="true"
+          filterBy="nombreGrupo"
+          styleClass="w-full"
+          (onChange)="cargarLanzamientosDisponibles()"
+        ></p-dropdown>
+      </div>
+      <div class="filtro-item">
+        <button
+          pButton
+          type="button"
+          icon="pi pi-filter-slash"
+          label="Limpiar Filtros"
+          class="p-button-outlined"
+          (click)="limpiarFiltros()"
+        ></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card tabla-datos">
+    <p-table
+      [value]="lanzamientosDisponiblesFiltrados"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} lanzamientos disponibles"
+      [globalFilterFields]="['username', 'email', 'nombreAplicacion', 'version', 'nombreGrupo']"
+      styleClass="p-datatable-striped"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 10%">Usuario</th>
+          <th style="width: 12%">Aplicación</th>
+          <th style="width: 10%">Versión</th>
+          <th style="width: 8%">Estado</th>
+          <th style="width: 10%">Grupo</th>
+          <th style="width: 12%">Fecha Disponibilidad</th>
+          <th style="width: 12%">Fecha Fin</th>
+          <th style="width: 8%">Tamaño</th>
+          <th style="width: 8%">Crítico</th>
+          <th style="width: 10%">URL Descarga</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>
+            <div>
+              <strong>{{ item.username || '-' }}</strong>
+              <br>
+              <small class="text-secondary">{{ item.email || '-' }}</small>
+            </div>
+          </td>
+          <td>
+            <strong>{{ item.nombreAplicacion || '-' }}</strong>
+          </td>
+          <td>
+            <span class="badge-version">{{ item.version || '-' }}</span>
+          </td>
+          <td>
+            <p-tag
+              [value]="getEstadoLabel(item.estado)"
+              [severity]="getSeverityEstado(item.estado)"
+            ></p-tag>
+          </td>
+          <td>{{ item.nombreGrupo || '-' }}</td>
+          <td>{{ formatearFecha(item.fechaDisponibilidad) }}</td>
+          <td>{{ formatearFecha(item.fechaFinDisponibilidad) }}</td>
+          <td>{{ formatearTamano(item.tamanoArchivo) }}</td>
+          <td>
+            <i 
+              *ngIf="item.esCritico" 
+              class="pi pi-exclamation-triangle text-danger"
+              pTooltip="Actualización crítica"
+              tooltipPosition="top"
+            ></i>
+            <span *ngIf="!item.esCritico">-</span>
+          </td>
+          <td>
+            <a 
+              *ngIf="item.urlDescarga" 
+              [href]="item.urlDescarga" 
+              target="_blank"
+              class="link-descarga"
+              pTooltip="Abrir en nueva pestaña"
+              tooltipPosition="top"
+            >
+              <i class="pi pi-external-link"></i> Descargar
+            </a>
+            <span *ngIf="!item.urlDescarga">-</span>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10" class="text-center p-4">
+            <div class="empty-message">
+              <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+              <p>No se encontraron lanzamientos disponibles</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+

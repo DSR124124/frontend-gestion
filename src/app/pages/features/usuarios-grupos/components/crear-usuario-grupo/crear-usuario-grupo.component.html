@@ -1,0 +1,161 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="modoEdicion ? 'Editar Asignación Usuario-Grupo' : 'Crear Nueva Asignación Usuario-Grupo'"
+  (onHide)="hideDialog()"
+>
+  <form [formGroup]="usuarioGrupoForm" (ngSubmit)="guardar()">
+    <div class="form-grid">
+      <!-- Usuario -->
+      <div class="field">
+        <label for="idUsuario" class="required">
+          Usuario <span class="required-asterisk">*</span>
+        </label>
+        <p-dropdown
+          id="idUsuario"
+          formControlName="idUsuario"
+          [options]="usuarios"
+          optionLabel="nombreCompleto"
+          optionValue="idUsuario"
+          placeholder="Seleccione un usuario"
+          [showClear]="false"
+          [filter]="true"
+          filterBy="nombreCompleto,username,email"
+          styleClass="w-full"
+          [class.ng-invalid]="isFieldInvalid('idUsuario')"
+        >
+          <ng-template let-usuario pTemplate="item">
+            <div class="flex align-items-center">
+              <div>
+                <div>{{ usuario.nombreCompleto || usuario.username }}</div>
+                <small class="text-secondary">{{ usuario.email }}</small>
+              </div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+        <small
+          *ngIf="isFieldInvalid('idUsuario')"
+          class="p-error"
+        >
+          <span *ngIf="f['idUsuario'].errors?.['required']">El usuario es requerido</span>
+        </small>
+      </div>
+
+      <!-- Grupo de Despliegue -->
+      <div class="field">
+        <label for="idGrupo" class="required">
+          Grupo de Despliegue <span class="required-asterisk">*</span>
+        </label>
+        <p-dropdown
+          id="idGrupo"
+          formControlName="idGrupo"
+          [options]="gruposDespliegue"
+          optionLabel="nombreGrupo"
+          optionValue="idGrupo"
+          placeholder="Seleccione un grupo"
+          [showClear]="false"
+          [filter]="true"
+          filterBy="nombreGrupo,descripcion"
+          styleClass="w-full"
+          [class.ng-invalid]="isFieldInvalid('idGrupo')"
+        >
+          <ng-template let-grupo pTemplate="item">
+            <div class="flex align-items-center">
+              <div>
+                <div>{{ grupo.nombreGrupo }}</div>
+                <small class="text-secondary" *ngIf="grupo.ordenPrioridad">
+                  Orden: {{ grupo.ordenPrioridad }}
+                </small>
+              </div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+        <small
+          *ngIf="isFieldInvalid('idGrupo')"
+          class="p-error"
+        >
+          <span *ngIf="f['idGrupo'].errors?.['required']">El grupo es requerido</span>
+        </small>
+      </div>
+
+      <!-- Asignado Por -->
+      <div class="field">
+        <label for="asignadoPor">
+          Asignado Por
+        </label>
+        <p-dropdown
+          id="asignadoPor"
+          formControlName="asignadoPor"
+          [options]="usuarios"
+          optionLabel="nombreCompleto"
+          optionValue="idUsuario"
+          placeholder="Seleccione un usuario"
+          [showClear]="true"
+          [filter]="true"
+          filterBy="nombreCompleto,username,email"
+          styleClass="w-full"
+        >
+          <ng-template let-usuario pTemplate="item">
+            <div class="flex align-items-center">
+              <div>
+                <div>{{ usuario.nombreCompleto || usuario.username }}</div>
+                <small class="text-secondary">{{ usuario.email }}</small>
+              </div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+
+      <!-- Activo -->
+      <div class="field">
+        <label for="activo">Estado</label>
+        <p-checkbox
+          id="activo"
+          formControlName="activo"
+          binary="true"
+          inputId="activo-checkbox"
+        ></p-checkbox>
+        <label for="activo-checkbox" class="ml-2">Asignación activa</label>
+      </div>
+
+      <!-- Notas -->
+      <div class="field">
+        <label for="notas">
+          Notas
+        </label>
+        <textarea
+          id="notas"
+          pInputTextarea
+          formControlName="notas"
+          placeholder="Notas adicionales sobre esta asignación..."
+          [rows]="3"
+        ></textarea>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+        icon="pi pi-check"
+        (click)="guardar()"
+        [disabled]="usuarioGrupoForm.invalid"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+

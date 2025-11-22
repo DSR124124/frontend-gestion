@@ -1,4 +1,4 @@
-<div class="aplicaciones-container">
+<div class="usuarios-grupos-container">
   <p-toolbar class="custom-toolbar mb-3">
     <div class="p-toolbar-group-start">
       <span class="p-input-icon-left">
@@ -6,9 +6,9 @@
         <input
           type="text"
           pInputText
-          placeholder="Buscar por nombre, descripción, código o responsable..."
+          placeholder="Buscar por usuario, grupo o notas..."
           [(ngModel)]="terminoBusqueda"
-          (input)="filtrarAplicaciones()"
+          (input)="filtrarUsuariosGrupos()"
           class="p-inputtext-lg"
         />
       </span>
@@ -27,7 +27,7 @@
         pButton
         type="button"
         icon="pi pi-plus"
-        label="Nueva Aplicación"
+        label="Nueva Asignación"
         class="p-button-primary"
         (click)="abrirDialogoCrear()"
       ></button>
@@ -37,7 +37,7 @@
         icon="pi pi-refresh"
         label="Actualizar"
         class="p-button-info ml-2"
-        (click)="cargarAplicaciones()"
+        (click)="cargarUsuariosGrupos()"
         [disabled]="loading"
       ></button>
     </div>
@@ -45,57 +45,56 @@
 
   <div class="card tabla-datos">
     <p-table
-      [value]="aplicacionesFiltradas"
+      [value]="usuariosGruposFiltrados"
       [loading]="loading"
       [paginator]="true"
       [rows]="10"
       [rowsPerPageOptions]="[10, 25, 50]"
       [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} aplicaciones"
-      [globalFilterFields]="['nombreAplicacion', 'descripcion', 'codigoProducto', 'responsableNombre']"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} asignaciones"
+      [globalFilterFields]="['usuarioNombre', 'usuarioEmail', 'grupoNombre', 'notas']"
       styleClass="p-datatable-striped"
       [tableStyle]="{ 'min-width': '50rem' }"
     >
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 5%">ID</th>
-          <th style="width: 12%">Nombre</th>
-          <th style="width: 18%">Descripción</th>
-          <th style="width: 8%">Código</th>
-          <th style="width: 10%">Responsable</th>
-          <th style="width: 8%">Estado</th>
-          <th style="width: 11%">Fecha Creación</th>
-          <th style="width: 11%">Última Modificación</th>
+          <th style="width: 18%">Usuario</th>
+          <th style="width: 18%">Grupo</th>
+          <th style="width: 8%">Orden</th>
+          <th style="width: 10%">Estado</th>
+          <th style="width: 12%">Fecha Asignación</th>
+          <th style="width: 12%">Asignado Por</th>
           <th style="width: 17%">Acciones</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-aplicacion>
+      <ng-template pTemplate="body" let-asignacion>
         <tr>
-          <td>{{ aplicacion.idAplicacion }}</td>
+          <td>{{ asignacion.idUsuarioGrupo }}</td>
           <td>
-            <strong>{{ aplicacion.nombreAplicacion }}</strong>
+            <div>
+              <strong>{{ asignacion.usuarioNombre || '-' }}</strong>
+              <br>
+              <small class="text-secondary">{{ asignacion.usuarioEmail || '-' }}</small>
+            </div>
           </td>
-          <td>{{ aplicacion.descripcion || '-' }}</td>
           <td>
-            <span class="badge-codigo" *ngIf="aplicacion.codigoProducto">
-              {{ aplicacion.codigoProducto }}
+            <strong>{{ asignacion.grupoNombre || '-' }}</strong>
+          </td>
+          <td>
+            <span class="badge-orden" *ngIf="asignacion.ordenPrioridad">
+              {{ asignacion.ordenPrioridad }}
             </span>
-            <span *ngIf="!aplicacion.codigoProducto">-</span>
+            <span *ngIf="!asignacion.ordenPrioridad">-</span>
           </td>
-          <td>{{ aplicacion.responsableNombre || '-' }}</td>
           <td>
             <p-tag
-              [value]="getEstadoLabel(aplicacion.activo)"
-              [severity]="getSeverity(aplicacion.activo)"
+              [value]="getEstadoLabel(asignacion.activo)"
+              [severity]="getSeverity(asignacion.activo)"
             ></p-tag>
           </td>
-          <td>{{ formatearFecha(aplicacion.fechaCreacion) }}</td>
-          <td>
-            <span class="fecha-modificacion" [title]="formatearFechaCompleta(aplicacion.fechaModificacion)">
-              <i class="pi pi-clock"></i>
-              {{ formatearFecha(aplicacion.fechaModificacion) }}
-            </span>
-          </td>
+          <td>{{ formatearFecha(asignacion.fechaAsignacion) }}</td>
+          <td>{{ asignacion.asignadoPorNombre || '-' }}</td>
           <td>
             <div class="acciones-cell">
               <button
@@ -103,18 +102,18 @@
                 type="button"
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm p-button-success"
-                pTooltip="Editar aplicación"
+                pTooltip="Editar asignación"
                 tooltipPosition="top"
-                (click)="editarAplicacion(aplicacion)"
+                (click)="editarUsuarioGrupo(asignacion)"
               ></button>
               <button
                 pButton
                 type="button"
                 icon="pi pi-trash"
                 class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                pTooltip="Eliminar aplicación"
+                pTooltip="Eliminar asignación"
                 tooltipPosition="top"
-                (click)="confirmarEliminar(aplicacion)"
+                (click)="confirmarEliminar(asignacion)"
               ></button>
             </div>
           </td>
@@ -122,10 +121,10 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="9" class="text-center p-4">
+          <td colspan="8" class="text-center p-4">
             <div class="empty-message">
               <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-              <p>No se encontraron aplicaciones</p>
+              <p>No se encontraron asignaciones usuario-grupo</p>
             </div>
           </td>
         </tr>
@@ -133,12 +132,12 @@
     </p-table>
   </div>
 
-  <!-- Componente de crear/editar aplicación -->
-  <app-crear-aplicacion
-    #crearAplicacionComponent
-    (aplicacionCreada)="onAplicacionCreada()"
-    (aplicacionActualizada)="onAplicacionActualizada()"
-  ></app-crear-aplicacion>
+  <!-- Componente de crear/editar asignación -->
+  <app-crear-usuario-grupo
+    #crearUsuarioGrupoComponent
+    (usuarioGrupoCreado)="onUsuarioGrupoCreado()"
+    (usuarioGrupoActualizado)="onUsuarioGrupoActualizado()"
+  ></app-crear-usuario-grupo>
 
   <!-- Confirmación de eliminación -->
   <p-confirmDialog></p-confirmDialog>

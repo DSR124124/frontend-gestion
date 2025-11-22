@@ -19,6 +19,21 @@ export class SidebarService {
   private initializeDefaultItems(): void {
     const defaultItems: SidebarItem[] = [
       {
+        id: 'dashboard',
+        label: 'Inicio',
+        icon: 'pi pi-home',
+        items: [
+          {
+            id: 'dashboard-main',
+            label: 'Dashboard',
+            icon: 'pi pi-chart-line',
+            routerLink: ['/dashboard'],
+            visible: true,
+          },
+        ],
+        visible: true,
+      },
+      {
         id: 'users',
         label: 'Usuarios',
         icon: 'pi pi-users',
@@ -58,6 +73,96 @@ export class SidebarService {
             label: 'Listar Aplicaciones',
             icon: 'pi pi-list',
             routerLink: ['/aplicaciones'],
+            visible: true,
+          },
+        ],
+        visible: true,
+      },
+      {
+        id: 'lanzamientos',
+        label: 'Lanzamientos',
+        icon: 'pi pi-download',
+        items: [
+          {
+            id: 'lanzamientos-list',
+            label: 'Listar Lanzamientos',
+            icon: 'pi pi-list',
+            routerLink: ['/lanzamientos'],
+            visible: true,
+          },
+        ],
+        visible: true,
+      },
+      {
+        id: 'grupos-despliegue',
+        label: 'Grupos de Despliegue',
+        icon: 'pi pi-sitemap',
+        items: [
+          {
+            id: 'grupos-despliegue-list',
+            label: 'Listar Grupos',
+            icon: 'pi pi-list',
+            routerLink: ['/grupos-despliegue'],
+            visible: true,
+          },
+        ],
+        visible: true,
+      },
+      {
+        id: 'usuarios-aplicaciones',
+        label: 'Usuarios-Aplicaciones',
+        icon: 'pi pi-link',
+        items: [
+          {
+            id: 'usuarios-aplicaciones-list',
+            label: 'Listar Relaciones',
+            icon: 'pi pi-list',
+            routerLink: ['/usuarios-aplicaciones'],
+            visible: true,
+          },
+        ],
+        visible: true,
+      },
+      {
+        id: 'usuarios-grupos',
+        label: 'Usuarios-Grupos',
+        icon: 'pi pi-users',
+        items: [
+          {
+            id: 'usuarios-grupos-list',
+            label: 'Listar Asignaciones',
+            icon: 'pi pi-list',
+            routerLink: ['/usuarios-grupos'],
+            visible: true,
+          },
+        ],
+        visible: true,
+      },
+      {
+        id: 'lanzamientos-grupos',
+        label: 'Lanzamientos-Grupos',
+        icon: 'pi pi-share-alt',
+        items: [
+          {
+            id: 'lanzamientos-grupos-list',
+            label: 'Listar Asignaciones',
+            icon: 'pi pi-list',
+            routerLink: ['/lanzamientos-grupos'],
+            visible: true,
+          },
+        ],
+        visible: true,
+      },
+      {
+        id: 'lanzamientos-disponibles',
+        label: 'Lanzamientos Disponibles',
+        icon: 'pi pi-check-circle',
+        items: [
+          {
+            id: 'lanzamientos-disponibles-list',
+            label: 'Ver Disponibles',
+            icon: 'pi pi-list',
+            routerLink: ['/lanzamientos-disponibles'],
             visible: true,
           },
         ],

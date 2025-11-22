@@ -1,41 +1,45 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AplicacionService } from '../../services/aplicacion.service';
+import { UsuarioGrupoService } from '../../services/usuario-grupo.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
+import { GrupoDespliegueService } from '../../../grupos-despliegue/services/grupo-despliegue.service';
 import { MessageService } from 'primeng/api';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
-import { Aplicacion, AplicacionDTO } from '../../interfaces/aplicacion.interface';
+import { UsuarioGrupo, UsuarioGrupoDTO } from '../../interfaces/usuario-grupo.interface';
 import { Usuario } from '../../../usuarios/interfaces/usuario.interface';
+import { GrupoDespliegue } from '../../../grupos-despliegue/interfaces/grupo-despliegue.interface';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-crear-aplicacion',
+  selector: 'app-crear-usuario-grupo',
   standalone: true,
   imports: [
     ...PrimeNGModules,
     ReactiveFormsModule
   ],
-  templateUrl: './crear-aplicacion.component.html',
-  styleUrl: './crear-aplicacion.component.css',
+  templateUrl: './crear-usuario-grupo.component.html',
+  styleUrl: './crear-usuario-grupo.component.css',
   providers: [MessageService]
 })
-export class CrearAplicacionComponent implements OnInit, OnDestroy {
-  @Output() aplicacionCreada = new EventEmitter<void>();
-  @Output() aplicacionActualizada = new EventEmitter<void>();
+export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
+  @Output() usuarioGrupoCreado = new EventEmitter<void>();
+  @Output() usuarioGrupoActualizado = new EventEmitter<void>();
 
-  aplicacionForm!: FormGroup;
+  usuarioGrupoForm!: FormGroup;
   usuarios: Usuario[] = [];
+  gruposDespliegue: GrupoDespliegue[] = [];
   visible: boolean = false;
   submitted: boolean = false;
   modoEdicion: boolean = false;
-  aplicacionId: number | null = null;
+  usuarioGrupoId: number | null = null;
   private subscriptions: Subscription[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private aplicacionService: AplicacionService,
+    private usuarioGrupoService: UsuarioGrupoService,
     private usuarioService: UsuarioService,
+    private grupoDespliegueService: GrupoDespliegueService,
     private messageService: MessageService,
     private loadingService: LoadingService
   ) {
@@ -44,6 +48,7 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarUsuarios();
+    this.cargarGruposDespliegue();
   }
 
   ngOnDestroy(): void {
@@ -51,14 +56,12 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
   }
 
   initForm(): void {
-    this.aplicacionForm = this.fb.group({
-      nombreAplicacion: ['', [Validators.required, Validators.maxLength(255)]],
-      descripcion: ['', [Validators.maxLength(500)]],
-      codigoProducto: ['', [Validators.maxLength(50)]],
-      iconoUrl: ['', [Validators.maxLength(500)]],
-      repositorioUrl: ['', [Validators.maxLength(500)]],
-      responsableId: [null],
-      activo: [true]
+    this.usuarioGrupoForm = this.fb.group({
+      idUsuario: [null, [Validators.required]],
+      idGrupo: [null, [Validators.required]],
+      asignadoPor: [null],
+      activo: [true],
+      notas: ['']
     });
   }
 
@@ -82,26 +85,42 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
-  showDialog(aplicacion?: Aplicacion): void {
-    this.modoEdicion = !!aplicacion;
-    this.aplicacionId = aplicacion?.idAplicacion || null;
+  cargarGruposDespliegue(): void {
+    this.loadingService.show();
+    const sub = this.grupoDespliegueService.listar().subscribe({
+      next: (grupos) => {
+        this.gruposDespliegue = grupos.filter(grupo => grupo.activo);
+        this.loadingService.hide();
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error?.message || 'Error al cargar los grupos de despliegue',
+          life: 5000
+        });
+      }
+    });
+    this.subscriptions.push(sub);
+  }
+
+  showDialog(usuarioGrupo?: UsuarioGrupo): void {
+    this.modoEdicion = !!usuarioGrupo;
+    this.usuarioGrupoId = usuarioGrupo?.idUsuarioGrupo || null;
     this.visible = true;
     this.submitted = false;
 
-    if (aplicacion) {
-      // Cargar datos de la aplicación para editar
-      this.aplicacionForm.patchValue({
-        nombreAplicacion: aplicacion.nombreAplicacion,
-        descripcion: aplicacion.descripcion || '',
-        codigoProducto: aplicacion.codigoProducto || '',
-        iconoUrl: aplicacion.iconoUrl || '',
-        repositorioUrl: aplicacion.repositorioUrl || '',
-        responsableId: aplicacion.responsableId || null,
-        activo: aplicacion.activo
+    if (usuarioGrupo) {
+      this.usuarioGrupoForm.patchValue({
+        idUsuario: usuarioGrupo.idUsuario,
+        idGrupo: usuarioGrupo.idGrupo,
+        asignadoPor: usuarioGrupo.asignadoPor || null,
+        activo: usuarioGrupo.activo,
+        notas: usuarioGrupo.notas || ''
       });
     } else {
-      // Resetear formulario para crear
-      this.aplicacionForm.reset({
+      this.usuarioGrupoForm.reset({
         activo: true
       });
     }
@@ -111,8 +130,8 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
     this.visible = false;
     this.submitted = false;
     this.modoEdicion = false;
-    this.aplicacionId = null;
-    this.aplicacionForm.reset({
+    this.usuarioGrupoId = null;
+    this.usuarioGrupoForm.reset({
       activo: true
     });
   }
@@ -120,7 +139,7 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
   guardar(): void {
     this.submitted = true;
 
-    if (this.aplicacionForm.invalid) {
+    if (this.usuarioGrupoForm.invalid) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Validación',
@@ -130,35 +149,32 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const aplicacionDTO: AplicacionDTO = {
-      nombreAplicacion: this.aplicacionForm.value.nombreAplicacion,
-      descripcion: this.aplicacionForm.value.descripcion || undefined,
-      codigoProducto: this.aplicacionForm.value.codigoProducto || undefined,
-      iconoUrl: this.aplicacionForm.value.iconoUrl || undefined,
-      repositorioUrl: this.aplicacionForm.value.repositorioUrl || undefined,
-      responsableId: this.aplicacionForm.value.responsableId || undefined,
-      activo: this.aplicacionForm.value.activo ?? true
+    const usuarioGrupoDTO: UsuarioGrupoDTO = {
+      idUsuario: this.usuarioGrupoForm.value.idUsuario,
+      idGrupo: this.usuarioGrupoForm.value.idGrupo,
+      asignadoPor: this.usuarioGrupoForm.value.asignadoPor || undefined,
+      activo: this.usuarioGrupoForm.value.activo ?? true,
+      notas: this.usuarioGrupoForm.value.notas || undefined
     };
 
     this.loadingService.show();
 
-    if (this.modoEdicion && this.aplicacionId) {
-      // Actualizar aplicación existente
-      const sub = this.aplicacionService.actualizar(this.aplicacionId, aplicacionDTO).subscribe({
+    if (this.modoEdicion && this.usuarioGrupoId) {
+      const sub = this.usuarioGrupoService.actualizar(this.usuarioGrupoId, usuarioGrupoDTO).subscribe({
         next: () => {
           this.loadingService.hide();
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
-            detail: 'Aplicación actualizada correctamente',
+            detail: 'Asignación usuario-grupo actualizada correctamente',
             life: 5000
           });
           this.hideDialog();
-          this.aplicacionActualizada.emit();
+          this.usuarioGrupoActualizado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
-          const errorMessage = error?.message || error?.error?.message || 'Error al actualizar la aplicación';
+          const errorMessage = error?.message || error?.error?.message || 'Error al actualizar la asignación usuario-grupo';
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -169,22 +185,21 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
       });
       this.subscriptions.push(sub);
     } else {
-      // Crear nueva aplicación
-      const sub = this.aplicacionService.crear(aplicacionDTO).subscribe({
+      const sub = this.usuarioGrupoService.crear(usuarioGrupoDTO).subscribe({
         next: () => {
           this.loadingService.hide();
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
-            detail: 'Aplicación creada correctamente',
+            detail: 'Asignación usuario-grupo creada correctamente',
             life: 5000
           });
           this.hideDialog();
-          this.aplicacionCreada.emit();
+          this.usuarioGrupoCreado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
-          const errorMessage = error?.message || error?.error?.message || 'Error al crear la aplicación';
+          const errorMessage = error?.message || error?.error?.message || 'Error al crear la asignación usuario-grupo';
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -198,11 +213,11 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
   }
 
   get f() {
-    return this.aplicacionForm.controls;
+    return this.usuarioGrupoForm.controls;
   }
 
   isFieldInvalid(fieldName: string): boolean {
-    const field = this.aplicacionForm.get(fieldName);
+    const field = this.usuarioGrupoForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
   }
 }
