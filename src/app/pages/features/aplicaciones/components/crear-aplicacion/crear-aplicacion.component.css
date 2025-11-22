@@ -1,0 +1,85 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-navy-dark);
+  font-size: var(--font-size-medium);
+}
+
+.field label.required {
+  font-weight: var(--font-weight-semibold);
+}
+
+.required-asterisk {
+  color: #e74c3c;
+  margin-left: 2px;
+}
+
+.field input,
+.field textarea,
+.field ::ng-deep .p-dropdown {
+  width: 100%;
+}
+
+.field small.p-error {
+  color: #e74c3c;
+  font-size: var(--font-size-small);
+  margin-top: 0.25rem;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1rem;
+}
+
+.text-secondary {
+  color: var(--color-gray-medium);
+  font-size: var(--font-size-small);
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .field:has(#descripcion),
+  .field:has(#iconoUrl),
+  .field:has(#repositorioUrl) {
+    grid-column: span 2;
+  }
+}
+
+/* Estilos para el diálogo */
+::ng-deep .p-dialog .p-dialog-header {
+  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-blue-light));
+  color: white;
+  border-radius: 6px 6px 0 0;
+}
+
+::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
+  color: white;
+  font-weight: var(--font-weight-semibold);
+}
+
+::ng-deep .p-dialog .p-dialog-header .p-dialog-header-icon {
+  color: white;
+}
+
+::ng-deep .p-dialog .p-dialog-content {
+  padding: 1.5rem;
+}
+

@@ -1,0 +1,186 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '700px' }"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="modoEdicion ? 'Editar Aplicación' : 'Crear Nueva Aplicación'"
+  (onHide)="hideDialog()"
+>
+  <form [formGroup]="aplicacionForm" (ngSubmit)="guardar()">
+    <div class="form-grid">
+      <!-- Nombre de la Aplicación -->
+      <div class="field">
+        <label for="nombreAplicacion" class="required">
+          Nombre de la Aplicación <span class="required-asterisk">*</span>
+        </label>
+        <input
+          id="nombreAplicacion"
+          type="text"
+          pInputText
+          formControlName="nombreAplicacion"
+          [class.ng-invalid]="isFieldInvalid('nombreAplicacion')"
+          placeholder="Ej: Sistema de Gestión, CRM, etc."
+          maxlength="255"
+        />
+        <small
+          *ngIf="isFieldInvalid('nombreAplicacion')"
+          class="p-error"
+        >
+          <span *ngIf="f['nombreAplicacion'].errors?.['required']">El nombre de la aplicación es requerido</span>
+          <span *ngIf="f['nombreAplicacion'].errors?.['maxlength']">El nombre no puede exceder 255 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Código de Producto -->
+      <div class="field">
+        <label for="codigoProducto">
+          Código de Producto
+        </label>
+        <input
+          id="codigoProducto"
+          type="text"
+          pInputText
+          formControlName="codigoProducto"
+          [class.ng-invalid]="isFieldInvalid('codigoProducto')"
+          placeholder="Ej: APP-001, SKU-123"
+          maxlength="50"
+        />
+        <small
+          *ngIf="isFieldInvalid('codigoProducto')"
+          class="p-error"
+        >
+          <span *ngIf="f['codigoProducto'].errors?.['maxlength']">El código no puede exceder 50 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Descripción -->
+      <div class="field">
+        <label for="descripcion">
+          Descripción
+        </label>
+        <textarea
+          id="descripcion"
+          pInputTextarea
+          formControlName="descripcion"
+          [class.ng-invalid]="isFieldInvalid('descripcion')"
+          placeholder="Descripción de la aplicación..."
+          [rows]="3"
+          maxlength="500"
+        ></textarea>
+        <small
+          *ngIf="isFieldInvalid('descripcion')"
+          class="p-error"
+        >
+          <span *ngIf="f['descripcion'].errors?.['maxlength']">La descripción no puede exceder 500 caracteres</span>
+        </small>
+      </div>
+
+      <!-- URL del Icono -->
+      <div class="field">
+        <label for="iconoUrl">
+          URL del Icono
+        </label>
+        <input
+          id="iconoUrl"
+          type="url"
+          pInputText
+          formControlName="iconoUrl"
+          [class.ng-invalid]="isFieldInvalid('iconoUrl')"
+          placeholder="https://ejemplo.com/icono.png"
+          maxlength="500"
+        />
+        <small
+          *ngIf="isFieldInvalid('iconoUrl')"
+          class="p-error"
+        >
+          <span *ngIf="f['iconoUrl'].errors?.['maxlength']">La URL no puede exceder 500 caracteres</span>
+        </small>
+      </div>
+
+      <!-- URL del Repositorio -->
+      <div class="field">
+        <label for="repositorioUrl">
+          URL del Repositorio
+        </label>
+        <input
+          id="repositorioUrl"
+          type="url"
+          pInputText
+          formControlName="repositorioUrl"
+          [class.ng-invalid]="isFieldInvalid('repositorioUrl')"
+          placeholder="https://github.com/usuario/repositorio"
+          maxlength="500"
+        />
+        <small
+          *ngIf="isFieldInvalid('repositorioUrl')"
+          class="p-error"
+        >
+          <span *ngIf="f['repositorioUrl'].errors?.['maxlength']">La URL no puede exceder 500 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Responsable -->
+      <div class="field">
+        <label for="responsableId">
+          Responsable
+        </label>
+        <p-dropdown
+          id="responsableId"
+          formControlName="responsableId"
+          [options]="usuarios"
+          optionLabel="nombreCompleto"
+          optionValue="idUsuario"
+          placeholder="Seleccione un responsable"
+          [showClear]="true"
+          [filter]="true"
+          filterBy="nombreCompleto,username,email"
+          styleClass="w-full"
+        >
+          <ng-template let-usuario pTemplate="item">
+            <div class="flex align-items-center">
+              <div>
+                <div>{{ usuario.nombreCompleto || usuario.username }}</div>
+                <small class="text-secondary">{{ usuario.email }}</small>
+              </div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+
+      <!-- Activo -->
+      <div class="field">
+        <label for="activo">Estado</label>
+        <p-checkbox
+          id="activo"
+          formControlName="activo"
+          binary="true"
+          inputId="activo-checkbox"
+        ></p-checkbox>
+        <label for="activo-checkbox" class="ml-2">Aplicación activa</label>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+        icon="pi pi-check"
+        (click)="guardar()"
+        [disabled]="aplicacionForm.invalid"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+

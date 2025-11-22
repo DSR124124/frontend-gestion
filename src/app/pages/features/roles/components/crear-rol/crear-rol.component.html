@@ -1,0 +1,110 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '600px' }"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="modoEdicion ? 'Editar Rol' : 'Crear Nuevo Rol'"
+  (onHide)="hideDialog()"
+>
+  <form [formGroup]="rolForm" (ngSubmit)="guardar()">
+    <div class="form-grid">
+      <!-- Nombre del Rol -->
+      <div class="field">
+        <label for="nombreRol" class="required">
+          Nombre del Rol <span class="required-asterisk">*</span>
+        </label>
+        <input
+          id="nombreRol"
+          type="text"
+          pInputText
+          formControlName="nombreRol"
+          [class.ng-invalid]="isFieldInvalid('nombreRol')"
+          placeholder="Ej: Administrador, Usuario, etc."
+          maxlength="50"
+        />
+        <small
+          *ngIf="isFieldInvalid('nombreRol')"
+          class="p-error"
+        >
+          <span *ngIf="f['nombreRol'].errors?.['required']">El nombre del rol es requerido</span>
+          <span *ngIf="f['nombreRol'].errors?.['maxlength']">El nombre no puede exceder 50 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Descripción -->
+      <div class="field">
+        <label for="descripcion">
+          Descripción
+        </label>
+        <textarea
+          id="descripcion"
+          pInputTextarea
+          formControlName="descripcion"
+          [class.ng-invalid]="isFieldInvalid('descripcion')"
+          placeholder="Descripción del rol..."
+          [rows]="3"
+          maxlength="500"
+        ></textarea>
+        <small
+          *ngIf="isFieldInvalid('descripcion')"
+          class="p-error"
+        >
+          <span *ngIf="f['descripcion'].errors?.['maxlength']">La descripción no puede exceder 500 caracteres</span>
+        </small>
+      </div>
+
+      <!-- Permisos (JSON) -->
+      <div class="field">
+        <label for="permisos">
+          Permisos (JSON)
+        </label>
+        <textarea
+          id="permisos"
+          pInputTextarea
+          formControlName="permisos"
+          [placeholder]="permisosPlaceholder"
+          [rows]="4"
+          styleClass="font-mono"
+        ></textarea>
+        <small class="help-text">
+          Ingrese los permisos en formato JSON. Ejemplo: {{ permisosEjemplo }}
+        </small>
+      </div>
+
+      <!-- Activo -->
+      <div class="field">
+        <label for="activo">Estado</label>
+        <p-checkbox
+          id="activo"
+          formControlName="activo"
+          binary="true"
+          inputId="activo-checkbox"
+        ></p-checkbox>
+        <label for="activo-checkbox" class="ml-2">Rol activo</label>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+        icon="pi pi-check"
+        (click)="guardar()"
+        [disabled]="rolForm.invalid"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+

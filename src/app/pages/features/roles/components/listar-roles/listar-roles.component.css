@@ -1,0 +1,93 @@
+.roles-container {
+  animation: fadeInUp 0.3s ease;
+}
+
+/* Estilos para la barra de búsqueda */
+.p-input-icon-left {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.p-input-icon-left i {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray-medium);
+}
+
+.p-input-icon-left input {
+  padding-left: 2.5rem;
+  width: 100%;
+}
+
+/* Estilos para badges de permisos */
+.badge-permisos {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, var(--color-light-blue), var(--color-blue-light));
+  color: var(--color-navy-dark);
+  border-radius: 12px;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mensaje vacío */
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-gray-medium);
+}
+
+.empty-message p {
+  margin-top: 1rem;
+  font-size: var(--font-size-medium);
+}
+
+/* Ajustes para la tabla */
+.tabla-datos {
+  margin-top: 1rem;
+}
+
+/* Estilos para la columna de acciones */
+.acciones-cell {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.acciones-cell button {
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .roles-container {
+    padding: 1rem;
+  }
+
+  .p-input-icon-left {
+    max-width: 100%;
+  }
+
+  .custom-toolbar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .p-toolbar-group-start,
+  .p-toolbar-group-end {
+    width: 100%;
+  }
+
+  .p-toolbar-group-end {
+    justify-content: flex-start;
+  }
+}
+

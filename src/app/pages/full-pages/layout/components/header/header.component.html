@@ -1,0 +1,27 @@
+<header class="header">
+  <div class="header-left">
+    <button 
+      class="header-menu-btn" 
+      (click)="onToggleSidebar()"
+      [attr.aria-label]="'Toggle sidebar'">
+      <i class="pi pi-bars"></i>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h1 class="header-title">Sistema de Gestión</h1>
+  </div>
+
+  <div class="header-right">
+    <p-menu #userMenu [model]="userMenuItems" [popup]="true"></p-menu>
+    <button 
+      pButton 
+      type="button" 
+      icon="pi pi-user" 
+      class="p-button-text p-button-rounded header-user-btn"
+      (click)="userMenu.toggle($event)"
+      [attr.aria-label]="'Menú de usuario'">
+    </button>
+  </div>
+</header>
+

@@ -1,0 +1,136 @@
+<div class="roles-container">
+  <p-toolbar class="custom-toolbar mb-3">
+    <div class="p-toolbar-group-start">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="Buscar por nombre o descripción..."
+          [(ngModel)]="terminoBusqueda"
+          (input)="filtrarRoles()"
+          class="p-inputtext-lg"
+        />
+      </span>
+      <button
+        *ngIf="terminoBusqueda"
+        pButton
+        type="button"
+        icon="pi pi-times"
+        label="Limpiar"
+        class="p-button-text p-button-sm ml-2"
+        (click)="limpiarBusqueda()"
+      ></button>
+    </div>
+    <div class="p-toolbar-group-end">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        label="Nuevo Rol"
+        class="p-button-primary"
+        (click)="abrirDialogoCrear()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-refresh"
+        label="Actualizar"
+        class="p-button-info ml-2"
+        (click)="cargarRoles()"
+        [disabled]="loading"
+      ></button>
+    </div>
+  </p-toolbar>
+
+  <div class="card tabla-datos">
+    <p-table
+      [value]="rolesFiltrados"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} roles"
+      [globalFilterFields]="['nombreRol', 'descripcion']"
+      styleClass="p-datatable-striped"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 5%">ID</th>
+          <th style="width: 15%">Nombre</th>
+          <th style="width: 25%">Descripción</th>
+          <th style="width: 20%">Permisos</th>
+          <th style="width: 8%">Estado</th>
+          <th style="width: 12%">Fecha Creación</th>
+          <th style="width: 15%">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rol>
+        <tr>
+          <td>{{ rol.idRol }}</td>
+          <td>
+            <strong>{{ rol.nombreRol }}</strong>
+          </td>
+          <td>{{ rol.descripcion || '-' }}</td>
+          <td>
+            <span class="badge-permisos" [title]="formatearPermisos(rol.permisos)">
+              {{ formatearPermisos(rol.permisos) }}
+            </span>
+          </td>
+          <td>
+            <p-tag
+              [value]="getEstadoLabel(rol.activo)"
+              [severity]="getSeverity(rol.activo)"
+            ></p-tag>
+          </td>
+          <td>{{ formatearFecha(rol.fechaCreacion) }}</td>
+          <td>
+            <div class="acciones-cell">
+              <button
+                pButton
+                type="button"
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text p-button-sm p-button-success"
+                pTooltip="Editar rol"
+                tooltipPosition="top"
+                (click)="editarRol(rol)"
+              ></button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                pTooltip="Eliminar rol"
+                tooltipPosition="top"
+                (click)="confirmarEliminar(rol)"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center p-4">
+            <div class="empty-message">
+              <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+              <p>No se encontraron roles</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Componente de crear/editar rol -->
+  <app-crear-rol
+    #crearRolComponent
+    (rolCreado)="onRolCreado()"
+    (rolActualizado)="onRolActualizado()"
+  ></app-crear-rol>
+
+  <!-- Confirmación de eliminación -->
+  <p-confirmDialog></p-confirmDialog>
+</div>
+
