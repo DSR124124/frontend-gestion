@@ -125,16 +125,18 @@
           </td>
           <td>{{ item.nombreGrupo || '-' }}</td>
           <td>
-            <span class="fecha-modificacion" [title]="formatearFechaCompleta(item.fechaDisponibilidad)">
+            <span *ngIf="item.fechaDisponibilidad" class="fecha-modificacion" [title]="formatearFechaCompleta(item.fechaDisponibilidad)">
               <i class="pi pi-clock"></i>
               {{ formatearFecha(item.fechaDisponibilidad) }}
             </span>
+            <span *ngIf="!item.fechaDisponibilidad">-</span>
           </td>
           <td>
-            <span class="fecha-modificacion" [title]="formatearFechaCompleta(item.fechaFinDisponibilidad)">
+            <span *ngIf="item.fechaFinDisponibilidad" class="fecha-modificacion" [title]="formatearFechaCompleta(item.fechaFinDisponibilidad)">
               <i class="pi pi-clock"></i>
               {{ formatearFecha(item.fechaFinDisponibilidad) }}
             </span>
+            <span *ngIf="!item.fechaFinDisponibilidad">-</span>
           </td>
           <td>{{ formatearTamano(item.tamanoArchivo) }}</td>
           <td>

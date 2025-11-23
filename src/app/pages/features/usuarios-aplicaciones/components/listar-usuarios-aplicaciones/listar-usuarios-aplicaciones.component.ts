@@ -101,19 +101,20 @@ export class ListarUsuariosAplicacionesComponent implements OnInit, OnDestroy {
     try {
       const date = new Date(fecha);
       const ahora = new Date();
-      const diffMs = ahora.getTime() - date.getTime();
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMs / 3600000);
-      const diffDays = Math.floor(diffMs / 86400000);
+      const diffMs = date.getTime() - ahora.getTime();
+      const diffMins = Math.floor(Math.abs(diffMs) / 60000);
+      const diffHours = Math.floor(Math.abs(diffMs) / 3600000);
+      const diffDays = Math.floor(Math.abs(diffMs) / 86400000);
+      const esFuturo = diffMs > 0;
 
-      if (diffMins < 1) {
-        return 'Hace un momento';
+      if (Math.abs(diffMs) < 60000) { // Menos de 1 minuto
+        return 'Ahora';
       } else if (diffMins < 60) {
-        return `Hace ${diffMins} min`;
+        return esFuturo ? `Dentro de ${diffMins} min` : `Hace ${diffMins} min`;
       } else if (diffHours < 24) {
-        return `Hace ${diffHours} h`;
+        return esFuturo ? `Dentro de ${diffHours} h` : `Hace ${diffHours} h`;
       } else if (diffDays < 7) {
-        return `Hace ${diffDays} días`;
+        return esFuturo ? `Dentro de ${diffDays} días` : `Hace ${diffDays} días`;
       } else {
         return date.toLocaleDateString('es-ES', {
           year: 'numeric',

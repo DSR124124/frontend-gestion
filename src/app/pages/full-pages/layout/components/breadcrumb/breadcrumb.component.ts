@@ -51,43 +51,54 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
     const breadcrumbs: MenuItem[] = [];
     const currentUrl = this.router.url;
     
-    // Remover la barra inicial y dividir en segmentos
-    const urlSegments = currentUrl.split('/').filter(segment => segment !== '');
-
-    // Si no hay segmentos, solo mostrar "Inicio"
-    if (urlSegments.length === 0) {
-      this.items = [];
-      return;
-    }
-
-    // Construir breadcrumb acumulando segmentos
-    let accumulatedPath = '';
-    urlSegments.forEach((segment, index) => {
-      accumulatedPath += '/' + segment;
-      const label = this.formatLabel(segment);
-      
-      breadcrumbs.push({
-        label: label,
-        routerLink: accumulatedPath
-      });
-    });
-
-    // Agregar nivel adicional basado en la ruta actual y el componente
-    // Mapeo de rutas a sus acciones/páginas específicas
-    const routeActions: { [key: string]: string } = {
-      '/usuarios': 'Lista de Usuarios',
-      '/roles': 'Lista de Roles',
-      '/usuarios/crear': 'Crear Usuario',
-      '/usuarios/editar': 'Editar Usuario',
-      '/roles/crear': 'Crear Rol',
-      '/roles/editar': 'Editar Rol'
+    // Mapeo completo de rutas a breadcrumbs basado en el sidebar
+    // Formato: [labelPadre, labelHijo, rutaPadre]
+    const routeBreadcrumbs: { [key: string]: { parent: string; child: string; parentRoute: string } } = {
+      '/dashboard': { parent: 'Inicio', child: 'Dashboard', parentRoute: '/dashboard' },
+      '/lanzamientos-disponibles': { parent: 'Inicio', child: 'Ver Disponibles', parentRoute: '/dashboard' },
+      '/roles': { parent: 'Roles', child: 'Listar Roles', parentRoute: '/roles' },
+      '/usuarios': { parent: 'Usuarios', child: 'Listar Usuarios', parentRoute: '/usuarios' },
+      '/grupos-despliegue': { parent: 'Grupos', child: 'Listar Grupos', parentRoute: '/grupos-despliegue' },
+      '/usuarios-grupos': { parent: 'Grupos', child: 'Usuarios por Grupo', parentRoute: '/grupos-despliegue' },
+      '/aplicaciones': { parent: 'Aplicaciones', child: 'Listar Aplicaciones', parentRoute: '/aplicaciones' },
+      '/usuarios-aplicaciones': { parent: 'Aplicaciones', child: 'Usuario por Aplicación', parentRoute: '/aplicaciones' },
+      '/lanzamientos': { parent: 'Lanzamientos', child: 'Listar Lanzamientos', parentRoute: '/lanzamientos' },
+      '/lanzamientos-grupos': { parent: 'Lanzamientos', child: 'Listar Asignaciones', parentRoute: '/lanzamientos' }
     };
 
-    // Si hay una acción definida para esta ruta, agregarla como último nivel
-    if (routeActions[currentUrl]) {
+    // Si hay un mapeo específico para esta ruta, usarlo
+    if (routeBreadcrumbs[currentUrl]) {
+      const routeInfo = routeBreadcrumbs[currentUrl];
+      
+      // Agregar el nivel padre
       breadcrumbs.push({
-        label: routeActions[currentUrl],
+        label: routeInfo.parent,
+        routerLink: routeInfo.parentRoute
+      });
+      
+      // Agregar el nivel hijo (página actual)
+      breadcrumbs.push({
+        label: routeInfo.child,
         routerLink: currentUrl
+      });
+    } else {
+      // Fallback: construir breadcrumb desde los segmentos de URL
+      const urlSegments = currentUrl.split('/').filter(segment => segment !== '');
+
+      if (urlSegments.length === 0) {
+        this.items = [];
+        return;
+      }
+
+      let accumulatedPath = '';
+      urlSegments.forEach((segment, index) => {
+        accumulatedPath += '/' + segment;
+        const label = this.formatLabel(segment);
+        
+        breadcrumbs.push({
+          label: label,
+          routerLink: accumulatedPath
+        });
       });
     }
 

@@ -1,27 +1,19 @@
 .dashboard-container {
-  animation: fadeInUp 0.3s ease;
-  padding: 1rem;
-}
-
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  padding: 0;
 }
 
 .dashboard-title {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: var(--font-weight-bold);
   color: var(--color-navy-dark);
   margin: 0;
 }
 
 .dashboard-title i {
-  font-size: 2rem;
+  font-size: 1.75rem;
   color: var(--color-blue-light);
 }
 
@@ -113,6 +105,19 @@
   font-weight: var(--font-weight-semibold);
 }
 
+/* Fecha de modificación */
+.fecha-modificacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-gray-medium);
+  font-size: var(--font-size-small);
+}
+
+.fecha-modificacion i {
+  font-size: 0.875rem;
+}
+
 .table-title {
   font-size: 1.5rem;
   font-weight: var(--font-weight-semibold);
@@ -140,16 +145,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .dashboard-container {
-    padding: 0.5rem;
-  }
-
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
   .dashboard-title {
     font-size: 1.5rem;
   }

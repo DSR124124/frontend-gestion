@@ -1,19 +1,21 @@
 <div class="dashboard-container">
-  <div class="dashboard-header mb-4">
-    <h1 class="dashboard-title">
-      <i class="pi pi-chart-line"></i>
-      Dashboard - Estadísticas de Lanzamientos
-    </h1>
-    <button
-      pButton
-      type="button"
-      icon="pi pi-refresh"
-      label="Actualizar"
-      class="p-button-info"
-      (click)="cargarDatos()"
-      [disabled]="loading"
-    ></button>
-  </div>
+  <p-toolbar class="custom-toolbar">
+    <ng-template #start>
+      <h1 class="dashboard-title">
+        <i class="pi pi-chart-line"></i>
+        Dashboard - Estadísticas de Lanzamientos
+      </h1>
+    </ng-template>
+
+    <ng-template #end>
+      <div class="d-flex gap-2">
+        <p-button icon="pi pi-refresh" label="Actualizar" styleClass="p-button-info" (onClick)="cargarDatos()"
+          [disabled]="loading"></p-button>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <p-divider></p-divider>
 
   <!-- Tarjetas de resumen -->
   <div class="cards-grid mb-4">
@@ -94,7 +96,7 @@
   </div>
 
   <!-- Tabla de estadísticas -->
-  <div class="card mt-4">
+  <div class="mt-4">
     <h3 class="table-title">Estadísticas Detalladas de Lanzamientos</h3>
     <p-table
       [value]="estadisticas"
@@ -104,8 +106,7 @@
       [rowsPerPageOptions]="[10, 25, 50]"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} lanzamientos"
-      styleClass="p-datatable-striped"
-      [tableStyle]="{ 'min-width': '50rem' }"
+      styleClass="tabla-datos"
     >
       <ng-template pTemplate="header">
         <tr>
@@ -124,7 +125,7 @@
             <strong>{{ estadistica.nombreAplicacion || '-' }}</strong>
           </td>
           <td>
-            <span class="badge-version">{{ estadistica.version || '-' }}</span>
+            <p-tag [value]="estadistica.version || '-'" class="tag-secondary"></p-tag>
           </td>
           <td>
             <p-tag
@@ -132,12 +133,18 @@
               [severity]="getSeverityEstado(estadistica.estado)"
             ></p-tag>
           </td>
-          <td>{{ formatearFecha(estadistica.fechaLanzamiento) }}</td>
           <td>
-            <span class="badge-number">{{ estadistica.usuariosConAcceso || 0 }}</span>
+            <span *ngIf="estadistica.fechaLanzamiento" class="fecha-modificacion" [title]="formatearFechaCompleta(estadistica.fechaLanzamiento)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(estadistica.fechaLanzamiento) }}
+            </span>
+            <span *ngIf="!estadistica.fechaLanzamiento">-</span>
           </td>
           <td>
-            <span class="badge-number">{{ estadistica.gruposAsignados || 0 }}</span>
+            <p-tag [value]="(estadistica.usuariosConAcceso || 0).toString()" class="tag-secondary"></p-tag>
+          </td>
+          <td>
+            <p-tag [value]="(estadistica.gruposAsignados || 0).toString()" class="tag-secondary"></p-tag>
           </td>
           <td>
             <i 
@@ -150,17 +157,16 @@
           </td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7" class="text-center p-4">
-            <div class="empty-message">
-              <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-              <p>No se encontraron estadísticas</p>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center p-4">
+          <div class="empty-message">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+            <p>No se encontraron estadísticas</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
 

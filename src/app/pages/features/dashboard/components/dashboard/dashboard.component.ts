@@ -3,6 +3,7 @@ import { EstadisticaLanzamiento } from '../../interfaces/estadistica-lanzamiento
 import { EstadisticaLanzamientoService } from '../../services/estadistica-lanzamiento.service';
 import { AplicacionService } from '../../../aplicaciones/services/aplicacion.service';
 import { LanzamientoService } from '../../../lanzamientos/services/lanzamiento.service';
+import { Lanzamiento } from '../../../lanzamientos/interfaces/lanzamiento.interface';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
 import { MessageService } from 'primeng/api';
 import { LoadingService } from '../../../../../shared/services/loading.service';
@@ -83,9 +84,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadingService.show();
 
     try {
-      // Cargar estadísticas
-      const estadisticas = await firstValueFrom(this.estadisticaLanzamientoService.listarTodas());
-      this.estadisticas = estadisticas;
+      // Cargar estadísticas y lanzamientos en paralelo
+      const [estadisticas, lanzamientos] = await Promise.all([
+        firstValueFrom(this.estadisticaLanzamientoService.listarTodas()),
+        firstValueFrom(this.lanzamientoService.listar())
+      ]);
+
+      // Crear un mapa de lanzamientos por idLanzamiento para enriquecer las estadísticas
+      const lanzamientosMap = new Map<number, Lanzamiento>();
+      lanzamientos.forEach(lanzamiento => {
+        lanzamientosMap.set(lanzamiento.idLanzamiento, lanzamiento);
+      });
+
+      // Enriquecer estadísticas con fecha de lanzamiento
+      this.estadisticas = estadisticas.map(estadistica => {
+        const lanzamiento = lanzamientosMap.get(estadistica.idLanzamiento);
+        if (lanzamiento && !estadistica.fechaLanzamiento) {
+          estadistica.fechaLanzamiento = lanzamiento.fechaLanzamiento || lanzamiento.fechaPublicacion || null;
+        }
+        return estadistica;
+      });
+
+      this.totalLanzamientos = lanzamientos.length;
       this.calcularPromedioGrupos();
       this.crearGraficos();
 
@@ -93,10 +113,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const aplicaciones = await firstValueFrom(this.aplicacionService.listar());
       this.aplicaciones = aplicaciones.filter(a => a.activo);
       this.totalAplicaciones = this.aplicaciones.length;
-
-      // Cargar lanzamientos
-      const lanzamientos = await firstValueFrom(this.lanzamientoService.listar());
-      this.totalLanzamientos = lanzamientos.length;
 
       // Cargar usuarios
       const usuarios = await firstValueFrom(this.usuarioService.listar());
@@ -420,10 +436,49 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!fecha) return '-';
     try {
       const date = new Date(fecha);
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) {
+        return fecha;
+      }
+      const ahora = new Date();
+      const diffMs = date.getTime() - ahora.getTime();
+      const diffMins = Math.floor(Math.abs(diffMs) / 60000);
+      const diffHours = Math.floor(Math.abs(diffMs) / 3600000);
+      const diffDays = Math.floor(Math.abs(diffMs) / 86400000);
+      const esFuturo = diffMs > 0;
+
+      if (Math.abs(diffMs) < 60000) { // Menos de 1 minuto
+        return 'Ahora';
+      } else if (diffMins < 60) {
+        return esFuturo ? `Dentro de ${diffMins} min` : `Hace ${diffMins} min`;
+      } else if (diffHours < 24) {
+        return esFuturo ? `Dentro de ${diffHours} h` : `Hace ${diffHours} h`;
+      } else if (diffDays < 7) {
+        return esFuturo ? `Dentro de ${diffDays} días` : `Hace ${diffDays} días`;
+      } else {
+        return date.toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+      }
+    } catch (error) {
+      console.error('Error al formatear fecha:', fecha, error);
+      return fecha || '-';
+    }
+  }
+
+  formatearFechaCompleta(fecha: string | null): string {
+    if (!fecha) return '-';
+    try {
+      const date = new Date(fecha);
       return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit'
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
       });
     } catch {
       return fecha;

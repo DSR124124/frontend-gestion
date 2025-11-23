@@ -1,7 +1,7 @@
 .layout-container {
   display: flex;
   width: 100%;
-  min-height: 100%;
+  height: 100vh;
   background-color: var(--layout-main-bg);
   position: relative;
   overflow-x: hidden;
@@ -13,8 +13,9 @@
   flex-direction: column;
   margin-left: 280px;
   transition: margin-left 0.3s ease;
-  min-height: 100%;
+  height: 100vh;
   width: calc(100% - 280px);
+  overflow: hidden;
 }
 
 .main-content.sidebar-mini {
@@ -32,7 +33,8 @@
   padding: 1rem;
   background-color: var(--layout-main-bg);
   overflow-y: auto;
-  min-height: calc(100vh - 140px);
+  overflow-x: hidden;
+  min-height: 0;
 }
 
 /* Responsive */
