@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Aplicacion } from '../../interfaces/aplicacion.interface';
 import { AplicacionService } from '../../services/aplicacion.service';
+import { LanzamientoService } from '../../../lanzamientos/services/lanzamiento.service';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { CrearAplicacionComponent } from '../crear-aplicacion/crear-aplicacion.component';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-listar-aplicaciones',
@@ -23,15 +25,18 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
   aplicacionesFiltradas: Aplicacion[] = [];
   loading: boolean = false;
   terminoBusqueda: string = '';
+  conteoLanzamientos: Map<number, number> = new Map();
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearAplicacionComponent) crearAplicacionComponent?: CrearAplicacionComponent;
 
   constructor(
     private aplicacionService: AplicacionService,
+    private lanzamientoService: LanzamientoService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -50,10 +55,22 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
 
   cargarAplicaciones(): void {
     this.loadingService.show();
-    this.aplicacionService.listar().subscribe({
-      next: (aplicaciones) => {
+    forkJoin({
+      aplicaciones: this.aplicacionService.listar(),
+      lanzamientos: this.lanzamientoService.listar()
+    }).subscribe({
+      next: ({ aplicaciones, lanzamientos }) => {
         this.aplicaciones = aplicaciones;
         this.aplicacionesFiltradas = aplicaciones;
+        
+        // Contar lanzamientos por aplicación
+        this.conteoLanzamientos.clear();
+        lanzamientos.forEach(lanzamiento => {
+          const idAplicacion = lanzamiento.idAplicacion;
+          const conteoActual = this.conteoLanzamientos.get(idAplicacion) || 0;
+          this.conteoLanzamientos.set(idAplicacion, conteoActual + 1);
+        });
+        
         this.loadingService.hide();
       },
       error: (error) => {
@@ -201,6 +218,16 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
           life: 5000
         });
       }
+    });
+  }
+
+  obtenerConteoLanzamientos(idAplicacion: number): number {
+    return this.conteoLanzamientos.get(idAplicacion) || 0;
+  }
+
+  verLanzamientos(aplicacion: Aplicacion): void {
+    this.router.navigate(['/lanzamientos'], {
+      queryParams: { aplicacion: aplicacion.idAplicacion }
     });
   }
 }

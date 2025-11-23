@@ -1,61 +1,40 @@
 <div class="usuarios-aplicaciones-container">
-  <p-toolbar class="custom-toolbar mb-3">
-    <div class="p-toolbar-group-start">
-      <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input
-          type="text"
-          pInputText
-          placeholder="Buscar por usuario, aplicación o notas..."
-          [(ngModel)]="terminoBusqueda"
-          (input)="filtrarUsuariosAplicaciones()"
-          class="p-inputtext-lg"
-        />
-      </span>
-      <button
-        *ngIf="terminoBusqueda"
-        pButton
-        type="button"
-        icon="pi pi-times"
-        label="Limpiar"
-        class="p-button-text p-button-sm ml-2"
-        (click)="limpiarBusqueda()"
-      ></button>
-    </div>
-    <div class="p-toolbar-group-end">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-plus"
-        label="Nueva Relación"
-        class="p-button-primary"
-        (click)="abrirDialogoCrear()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        icon="pi pi-refresh"
-        label="Actualizar"
-        class="p-button-info ml-2"
-        (click)="cargarUsuariosAplicaciones()"
-        [disabled]="loading"
-      ></button>
-    </div>
+  <p-toolbar class="custom-toolbar">
+    <ng-template #start>
+      <div class="d-flex gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input type="text" pInputText placeholder="Buscar por usuario, aplicación o notas..."
+            [(ngModel)]="terminoBusqueda" (input)="filtrarUsuariosAplicaciones()" />
+        </p-iconfield>
+
+        <p-button *ngIf="terminoBusqueda" icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
+          (onClick)="limpiarBusqueda()"></p-button>
+
+        <p-button icon="pi pi-filter" label="filtros" styleClass="p-button-info" [disabled]="loading"></p-button>
+      </div>
+
+    </ng-template>
+
+    <ng-template #end>
+      <div class="d-flex gap-2">
+        <p-button icon="pi pi-plus" label="Nueva Relación" styleClass="p-button-primary"
+          (onClick)="abrirDialogoCrear()"></p-button>
+        <p-button icon="pi pi-refresh" label="Actualizar" styleClass="p-button-info" (onClick)="cargarUsuariosAplicaciones()"
+          [disabled]="loading"></p-button>
+      </div>
+    </ng-template>
   </p-toolbar>
 
-  <div class="card tabla-datos">
-    <p-table
-      [value]="usuariosAplicacionesFiltrados"
-      [loading]="loading"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} relaciones"
-      [globalFilterFields]="['usuarioNombre', 'usuarioEmail', 'aplicacionNombre', 'notas']"
-      styleClass="p-datatable-striped"
-      [tableStyle]="{ 'min-width': '50rem' }"
-    >
+  <p-divider></p-divider>
+
+  <p-table [value]="usuariosAplicacionesFiltrados" [loading]="loading" [paginator]="true" [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} relaciones"
+    [globalFilterFields]="['usuarioNombre', 'usuarioEmail', 'aplicacionNombre', 'notas']"
+    styleClass="tabla-datos">
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 5%">ID</th>
@@ -82,59 +61,53 @@
             <strong>{{ relacion.aplicacionNombre || '-' }}</strong>
           </td>
           <td>
-            <p-tag
-              [value]="getEstadoLabel(relacion.licenciaActiva)"
-              [severity]="getSeverity(relacion.licenciaActiva)"
-            ></p-tag>
+            <p-tag [value]="getEstadoLabel(relacion.licenciaActiva)" class="tag-success"></p-tag>
           </td>
-          <td>{{ formatearFecha(relacion.fechaRegistro) }}</td>
-          <td>{{ formatearFecha(relacion.fechaUltimoAcceso) }}</td>
-          <td>{{ formatearFecha(relacion.fechaExpiracionLicencia) }}</td>
+          <td>
+            <span class="fecha-modificacion" [title]="formatearFechaCompleta(relacion.fechaRegistro)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(relacion.fechaRegistro) }}
+            </span>
+          </td>
+          <td>
+            <span class="fecha-modificacion" [title]="formatearFechaCompleta(relacion.fechaUltimoAcceso)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(relacion.fechaUltimoAcceso) }}
+            </span>
+          </td>
+          <td>
+            <span class="fecha-modificacion" [title]="formatearFechaCompleta(relacion.fechaExpiracionLicencia)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(relacion.fechaExpiracionLicencia) }}
+            </span>
+          </td>
           <td>
             <div class="acciones-cell">
-              <button
-                pButton
-                type="button"
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-text p-button-sm p-button-success"
-                pTooltip="Editar relación"
-                tooltipPosition="top"
-                (click)="editarUsuarioAplicacion(relacion)"
-              ></button>
-              <button
-                pButton
-                type="button"
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                pTooltip="Eliminar relación"
-                tooltipPosition="top"
-                (click)="confirmarEliminar(relacion)"
-              ></button>
+              <p-button icon="pi pi-pencil" styleClass="btn-success btn-v2" pTooltip="Editar relación" tooltipPosition="top"
+                (click)="editarUsuarioAplicacion(relacion)"></p-button>
+              <p-button icon="pi pi-trash" styleClass="btn-danger btn-v2" pTooltip="Eliminar relación"
+                tooltipPosition="top" (click)="confirmarEliminar(relacion)"></p-button>
             </div>
           </td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="8" class="text-center p-4">
-            <div class="empty-message">
-              <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-              <p>No se encontraron relaciones usuario-aplicación</p>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- Componente de crear/editar relación -->
-  <app-crear-usuario-aplicacion
-    #crearUsuarioAplicacionComponent
-    (usuarioAplicacionCreado)="onUsuarioAplicacionCreado()"
-    (usuarioAplicacionActualizado)="onUsuarioAplicacionActualizado()"
-  ></app-crear-usuario-aplicacion>
-
-  <!-- Confirmación de eliminación -->
-  <p-confirmDialog></p-confirmDialog>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center p-4">
+          <div class="empty-message">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+            <p>No se encontraron relaciones usuario-aplicación</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<!-- Componente de crear/editar relación -->
+<app-crear-usuario-aplicacion #crearUsuarioAplicacionComponent (usuarioAplicacionCreado)="onUsuarioAplicacionCreado()"
+  (usuarioAplicacionActualizado)="onUsuarioAplicacionActualizado()"></app-crear-usuario-aplicacion>
+
+<!-- Confirmación de eliminación -->
+<p-confirmDialog></p-confirmDialog>
 

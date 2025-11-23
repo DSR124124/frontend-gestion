@@ -1,61 +1,40 @@
 <div class="grupos-despliegue-container">
-  <p-toolbar class="custom-toolbar mb-3">
-    <div class="p-toolbar-group-start">
-      <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input
-          type="text"
-          pInputText
-          placeholder="Buscar por nombre, descripción u orden..."
-          [(ngModel)]="terminoBusqueda"
-          (input)="filtrarGruposDespliegue()"
-          class="p-inputtext-lg"
-        />
-      </span>
-      <button
-        *ngIf="terminoBusqueda"
-        pButton
-        type="button"
-        icon="pi pi-times"
-        label="Limpiar"
-        class="p-button-text p-button-sm ml-2"
-        (click)="limpiarBusqueda()"
-      ></button>
-    </div>
-    <div class="p-toolbar-group-end">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-plus"
-        label="Nuevo Grupo"
-        class="p-button-primary"
-        (click)="abrirDialogoCrear()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        icon="pi pi-refresh"
-        label="Actualizar"
-        class="p-button-info ml-2"
-        (click)="cargarGruposDespliegue()"
-        [disabled]="loading"
-      ></button>
-    </div>
+  <p-toolbar class="custom-toolbar">
+    <ng-template #start>
+      <div class="d-flex gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input type="text" pInputText placeholder="Buscar por nombre, descripción u orden..."
+            [(ngModel)]="terminoBusqueda" (input)="filtrarGruposDespliegue()" />
+        </p-iconfield>
+
+        <p-button *ngIf="terminoBusqueda" icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
+          (onClick)="limpiarBusqueda()"></p-button>
+
+        <p-button icon="pi pi-filter" label="filtros" styleClass="p-button-info" [disabled]="loading"></p-button>
+      </div>
+
+    </ng-template>
+
+    <ng-template #end>
+      <div class="d-flex gap-2">
+        <p-button icon="pi pi-plus" label="Nuevo Grupo" styleClass="p-button-primary"
+          (onClick)="abrirDialogoCrear()"></p-button>
+        <p-button icon="pi pi-refresh" label="Actualizar" styleClass="p-button-info" (onClick)="cargarGruposDespliegue()"
+          [disabled]="loading"></p-button>
+      </div>
+    </ng-template>
   </p-toolbar>
 
-  <div class="card tabla-datos">
-    <p-table
-      [value]="gruposDespliegueFiltrados"
-      [loading]="loading"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} grupos de despliegue"
-      [globalFilterFields]="['nombreGrupo', 'descripcion', 'ordenPrioridad']"
-      styleClass="p-datatable-striped"
-      [tableStyle]="{ 'min-width': '50rem' }"
-    >
+  <p-divider></p-divider>
+
+  <p-table [value]="gruposDespliegueFiltrados" [loading]="loading" [paginator]="true" [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} grupos de despliegue"
+    [globalFilterFields]="['nombreGrupo', 'descripcion', 'ordenPrioridad']"
+    styleClass="tabla-datos">
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 5%">ID</th>
@@ -76,9 +55,7 @@
           </td>
           <td>{{ grupo.descripcion || '-' }}</td>
           <td>
-            <span class="badge-orden" *ngIf="grupo.ordenPrioridad">
-              {{ grupo.ordenPrioridad }}
-            </span>
+            <p-tag *ngIf="grupo.ordenPrioridad" [value]="grupo.ordenPrioridad.toString()" class="tag-secondary"></p-tag>
             <span *ngIf="!grupo.ordenPrioridad">-</span>
           </td>
           <td>
@@ -88,57 +65,41 @@
             <span *ngIf="grupo.porcentajeUsuarios === null || grupo.porcentajeUsuarios === undefined">-</span>
           </td>
           <td>
-            <p-tag
-              [value]="getEstadoLabel(grupo.activo)"
-              [severity]="getSeverity(grupo.activo)"
-            ></p-tag>
+            <p-tag [value]="getEstadoLabel(grupo.activo)" class="tag-success"></p-tag>
           </td>
-          <td>{{ formatearFecha(grupo.fechaCreacion) }}</td>
+          <td>
+            <span class="fecha-modificacion" [title]="formatearFechaCompleta(grupo.fechaCreacion)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(grupo.fechaCreacion) }}
+            </span>
+          </td>
           <td>
             <div class="acciones-cell">
-              <button
-                pButton
-                type="button"
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-text p-button-sm p-button-success"
-                pTooltip="Editar grupo"
-                tooltipPosition="top"
-                (click)="editarGrupoDespliegue(grupo)"
-              ></button>
-              <button
-                pButton
-                type="button"
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                pTooltip="Eliminar grupo"
-                tooltipPosition="top"
-                (click)="confirmarEliminar(grupo)"
-              ></button>
+              <p-button icon="pi pi-pencil" styleClass="btn-success btn-v2" pTooltip="Editar grupo" tooltipPosition="top"
+                (click)="editarGrupoDespliegue(grupo)"></p-button>
+              <p-button icon="pi pi-trash" styleClass="btn-danger btn-v2" pTooltip="Eliminar grupo"
+                tooltipPosition="top" (click)="confirmarEliminar(grupo)"></p-button>
             </div>
           </td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="8" class="text-center p-4">
-            <div class="empty-message">
-              <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-              <p>No se encontraron grupos de despliegue</p>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- Componente de crear/editar grupo de despliegue -->
-  <app-crear-grupo-despliegue
-    #crearGrupoDespliegueComponent
-    (grupoDespliegueCreado)="onGrupoDespliegueCreado()"
-    (grupoDespliegueActualizado)="onGrupoDespliegueActualizado()"
-  ></app-crear-grupo-despliegue>
-
-  <!-- Confirmación de eliminación -->
-  <p-confirmDialog></p-confirmDialog>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center p-4">
+          <div class="empty-message">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+            <p>No se encontraron grupos de despliegue</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<!-- Componente de crear/editar grupo de despliegue -->
+<app-crear-grupo-despliegue #crearGrupoDespliegueComponent (grupoDespliegueCreado)="onGrupoDespliegueCreado()"
+  (grupoDespliegueActualizado)="onGrupoDespliegueActualizado()"></app-crear-grupo-despliegue>
+
+<!-- Confirmación de eliminación -->
+<p-confirmDialog></p-confirmDialog>
 

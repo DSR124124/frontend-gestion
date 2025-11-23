@@ -1,1676 +1,193 @@
-/* ============================================
-   RESET CSS GLOBAL - Eliminar bordes blancos
-   ============================================ */
+/* =====================================================
+   GLOBAL STYLES - NETTALCO DESIGN SYSTEM
+   ===================================================== */
+
+/*
+   Bootstrap 5.3.8 is configured in angular.json
+   - CSS: node_modules/bootstrap/dist/css/bootstrap.min.css
+   - JS: node_modules/bootstrap/dist/js/bootstrap.bundle.min.js
+   You can override Bootstrap styles here or in the modular CSS files
+   Bootstrap utilities are also defined below to ensure they work correctly
+*/
+
+/* =====================================================
+   IMPORT MODULAR STYLE FILES
+   All @import rules must come first before any other CSS rules
+   ===================================================== */
+   @import url("assets/styles/colors.css");
+   @import url("assets/styles/typography.css");
+   @import url("assets/styles/inputs.css");
+   @import url("assets/styles/toolbar.css");
+   @import url("assets/styles/buttons.css");
+   @import url("assets/styles/tags.css");
+   @import url("assets/styles/icons.css");
+   @import url("assets/styles/tables.css");
+   @import url("assets/styles/cards.css");
+   @import url("assets/styles/overlays.css");
+   @import url("assets/styles/components.css");
+   @import url("assets/styles/modals.css");
+   @import url("assets/styles/stepper.css");
+   @import url("assets/styles/effects.css");
+   @import url("assets/styles/driver.css");
+   @import url("assets/styles/responsive.css");
    @import "primeicons/primeicons.css";
 
 
-@font-face {
-  font-family: "Anek Latin";
-  src: url("assets/fonts/AnekLatin-VariableFont_wdth,wght.ttf")
-    format("truetype");
-  font-display: swap;
-}
+   /* =====================================================
+      DARK MODE SUPPORT
+      ===================================================== */
+
+   /* Modo claro (por defecto) */
+   * {
+     box-sizing: border-box;
+   }
+
+   html, body {
+     margin: 0;
+     padding: 0;
+     width: 100%;
+     height: 100%;
+     overflow: hidden;
+     background-color: #ffffff;
+     color: #2d3748;
+     transition: background-color 0.3s ease, color 0.3s ease;
+   }
+
+   app-root {
+     display: block;
+     width: 100%;
+     height: 100vh;
+     margin: 0;
+     padding: 0;
+     overflow: hidden;
+   }
+
+   /* Modo oscuro - cuando tiene la clase .app-dark en el elemento html */
+   html.app-dark {
+     background-color: #1a202c !important;
+     margin: 0 !important;
+     padding: 0 !important;
+     width: 100% !important;
+     height: 100% !important;
+     overflow: hidden !important;
+   }
+
+   html.app-dark body {
+     background-color: #1a202c !important;
+     color: #ffffff !important;
+     margin: 0 !important;
+     padding: 0 !important;
+     width: 100% !important;
+     height: 100% !important;
+     overflow: hidden !important;
+   }
+
+   html.app-dark .container-fluid {
+     background-color: #1a202c !important;
+     color: #ffffff !important;
+   }
+
+   html.app-dark h1,
+   html.app-dark h2,
+   html.app-dark h3,
+   html.app-dark h4,
+   html.app-dark h5,
+   html.app-dark h6,
+   html.app-dark p {
+     color: #ffffff !important;
+   }
+
+   /* =====================================================
+      ADDITIONAL BUTTON MODIFICATIONS
+      ===================================================== */
+
+   /* Mejorando botones modificados */
+   .p-button-modificado .p-button {
+     width: 100% !important;
+     font-size: var(--font-size-button) !important;
+     font-weight: var(--font-weight-medium) !important;
+     letter-spacing: var(--letter-spacing-wide) !important;
+   }
+
+   /* =====================================================
+      BOOTSTRAP UTILITIES - Asegurar que funcionen
+      ===================================================== */
+
+   /* Display Flex */
+   .d-flex {
+     display: flex !important;
+   }
+
+   .d-inline-flex {
+     display: inline-flex !important;
+   }
+
+   /* Gap Utilities */
+   .gap-0 {
+     gap: 0 !important;
+   }
+
+   .gap-1 {
+     gap: 0.25rem !important;
+   }
+
+   .gap-2 {
+     gap: 0.5rem !important;
+   }
 
-@font-face {
-  font-family: "Anek Devanagari";
-  src: url("assets/fonts/AnekDevanagari-VariableFont_wdth,wght.ttf")
-    format("truetype");
-  font-display: swap;
-}
+   .gap-3 {
+     gap: 1rem !important;
+   }
 
+   .gap-4 {
+     gap: 1.5rem !important;
+   }
 
+   .gap-5 {
+     gap: 3rem !important;
+   }
 
-:root {
-  /* Colores BRANDING */
-  --color-navy-dark: #1c224d; /* Color principal de fondo oscuro */
-  --color-blue-light: #4a7aff; /* Color secundario azul claro */
-  --color-mint-light: #a2f0a1; /* Color verde menta claro */
-  --color-teal-dark: #176973; /* Color verde azulado oscuro */
-  --color-light-blue: #b7caffb2; /* Color azul claro */
-  --color-white: #ffffff; /* Blanco */
+   /* Flex Direction */
+   .flex-row {
+     flex-direction: row !important;
+   }
 
-  --color-light-gray: #e6e6e6; /* Gris claro */
-  --color-gray-medium: #7a7a7a; /* Gris medio */
+   .flex-column {
+     flex-direction: column !important;
+   }
 
-  /* Variables de PrimeNG (se generan automáticamente desde el preset) */
-  /* Usar var(--p-primary-color) para acceder al color primario de PrimeNG */
-  /* Usar var(--p-secondary-color) para acceder al color secundario de PrimeNG */
+   /* Justify Content */
+   .justify-content-start {
+     justify-content: flex-start !important;
+   }
 
-  /* Variables de layout (compatibilidad con código existente) */
-  --layout-header-bg: var(--color-navy-dark);
-  --layout-sidebar-bg: #f5f8fc;
-  --layout-footer-bg: #151515;
-  --layout-main-bg: #ffffff;
+   .justify-content-end {
+     justify-content: flex-end !important;
+   }
 
-  --primary-content-color: #ffffff;
+   .justify-content-center {
+     justify-content: center !important;
+   }
 
-  /* Colores de texto */
-  --texto-content-color: #000000;
-  --texto-header-color: #ffffff;
-  --texto-footer-color: #ffffff;
-  --texto-sidebar-color: #ffffff;
+   .justify-content-between {
+     justify-content: space-between !important;
+   }
 
-  /* Colores derivados y variaciones basados en la marca existente */
-  --color-navy-lighter: #2a3066; /* Navy más claro */
-  --color-navy-darker: #141a3d; /* Navy más oscuro */
-  --color-blue-lighter: #6b8fff; /* Azul más claro */
-  --color-blue-darker: #2954ff; /* Azul más oscuro */
-  --color-mint-lighter: #b8f5b7; /* Menta más claro */
-  --color-mint-darker: #7ed47d; /* Menta más oscuro */
+   .justify-content-around {
+     justify-content: space-around !important;
+   }
 
-  /* Colores de estado basados en la paleta existente */
-  --color-success: var(--color-mint-light);
-  --color-info: var(--color-blue-light);
-  --color-warning: #ffa726; /* Naranja complementario */
-  --color-danger: #ef5350; /* Rojo complementario */
+   /* Align Items */
+   .align-items-start {
+     align-items: flex-start !important;
+   }
 
-  /* Grises adicionales */
-  --color-gray-dark: #4a5568;
-  --color-gray-light: #f7fafc;
-  --color-gray-lighter: #edf2f7;
+   .align-items-end {
+     align-items: flex-end !important;
+   }
 
-  /* Sistema de Tipografía - Tamaños de letra */
-  /* Títulos y Encabezados */
-  --font-size-h1: 2.5rem; /* 40px - Títulos principales de página */
-  --font-size-h2: 2rem; /* 32px - Títulos de sección */
-  --font-size-h3: 1.75rem; /* 28px - Subtítulos importantes */
-  --font-size-h4: 1.5rem; /* 24px - Títulos de componentes */
-  --font-size-h5: 1.25rem; /* 20px - Títulos de tarjetas */
-  --font-size-h6: 1.125rem; /* 18px - Títulos menores */
+   .align-items-center {
+     align-items: center !important;
+   }
 
-  /* Contenido y Navegación */
-  --font-size-large: 1.125rem; /* 18px - Texto destacado */
-  --font-size-base: 1rem; /* 16px - Texto base, párrafos */
-  --font-size-medium: 0.875rem; /* 14px - Texto secundario, labels */
-  --font-size-small: 0.75rem; /* 12px - Texto auxiliar, ayudas */
-  --font-size-xs: 0.625rem; /* 10px - Copyright, metadatos */
 
-  /* Elementos específicos */
-  --font-size-button: 0.875rem; /* 14px - Botones */
-  --font-size-input: 1rem; /* 16px - Campos de entrada */
-  --font-size-menu: 0.875rem; /* 14px - Elementos de menú */
-  --font-size-breadcrumb: 0.875rem; /* 14px - Breadcrumbs */
-  --font-size-caption: 0.75rem; /* 12px - Pies de imagen, notas */
-  --font-size-tooltip: 0.75rem; /* 12px - Tooltips */
-
-  /* Pesos de fuente */
-  --font-weight-light: 300;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-
-  /* Espaciado de línea */
-  --line-height-tight: 1.2; /* Para títulos */
-  --line-height-normal: 1.5; /* Para texto base */
-  --line-height-relaxed: 1.6; /* Para texto largo */
-  --line-height-loose: 1.8; /* Para texto muy espaciado */
-
-  /* Espaciado de letras */
-  --letter-spacing-tight: -0.025em; /* Para títulos grandes */
-  --letter-spacing-normal: 0; /* Para texto normal */
-  --letter-spacing-wide: 0.025em; /* Para labels y botones */
-  --letter-spacing-wider: 0.05em; /* Para texto en mayúsculas */
-}
-
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  background-color: #ffffff !important; /* Fondo blanco por defecto */
-}
-body {
-  font-family: "Anek Latin", sans-serif !important;
-  background-color: #ffffff !important; /* Asegurar fondo blanco */
-  color: #000000 !important; /* Texto negro por defecto */
-}
-
-/* =============================================
-   CONFIGURACIÓN GLOBAL PARA OVERLAYS DE PRIMENG
-   ============================================= */
-
-/* Configuración global para overlays de splitbutton */
-.p-component-overlay {
-  position: fixed !important;
-  z-index: 1100 !important;
-}
-
-/* Prevenir problemas de scroll cuando se abren overlays */
-.p-overflow-hidden {
-  overflow: auto !important;
-}
-
-/* Asegurar que los overlays de PrimeNG no afecten el layout */
-.p-menu-overlay,
-.p-splitbutton .p-menu {
-  position: fixed !important;
-  z-index: 1100 !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* ============================================
-   MEJORAS A ESTILOS PRIMENG EXISTENTES
-   ============================================ */
-
-/* Mejorando tabla-datos con el nuevo sistema de tipografía y diseño moderno */
-.tabla-datos {
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  box-shadow: 0 4px 12px rgba(28, 34, 77, 0.08),
-    0 2px 4px rgba(28, 34, 77, 0.04) !important;
-}
-
-.tabla-datos .p-datatable-wrapper {
-  border-radius: inherit !important;
-}
-
-.tabla-datos .p-datatable-table {
-  border-radius: inherit !important;
-}
-
-.tabla-datos th {
-  line-height: 1;
-  padding: 0.5rem 5px 0.5rem 5px !important;
-  font-size: var(--font-size-medium) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  letter-spacing: var(--letter-spacing-wide) !important;
-  color: var(--color-white) !important;
-  background: var(--color-navy-dark) !important;
-  border: none !important;
-  position: relative !important;
-  text-align: center;
-}
-
-.tabla-datos th:first-child {
-  border-top-left-radius: 12px !important;
-}
-
-.tabla-datos th:last-child {
-  border-top-right-radius: 12px !important;
-}
-
-.tabla-datos th::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-}
-
-.tabla-datos td {
-  padding: 0.3rem 5px 0.3rem 5px !important;
-  font-size: var(--font-size-medium) !important;
-  font-weight: var(--font-weight-normal) !important;
-  line-height: var(--line-height-normal) !important;
-  border-bottom: 1px solid rgba(28, 34, 77, 0.06) !important;
-  border-left: none !important;
-  border-right: none !important;
-  transition: background-color 0.2s ease, transform 0.1s ease !important;
-}
-
-.tabla-datos tbody tr:hover td {
-  background-color: rgba(74, 122, 255, 0.04) !important;
-  transform: translateY(-1px) !important;
-}
-
-.tabla-datos tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 12px !important;
-}
-
-.tabla-datos tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 12px !important;
-}
-
-.tabla-datos tbody tr:last-child td {
-  border-bottom: none !important;
-}
-
-.tabla-datos td button {
-  padding: 0.375rem 0.75rem !important;
-  font-size: var(--font-size-small) !important;
-  font-weight: var(--font-weight-medium) !important;
-  border-radius: 6px !important;
-  transition: all 0.2s ease !important;
-}
-
-.tabla-datos td button:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-}
-
-.tabla-datos th button {
-  padding: 0.5rem 0.75rem !important;
-  font-size: var(--font-size-base) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  border-radius: 6px !important;
-  transition: all 0.2s ease !important;
-}
-
-/* Mejorando p-card-modified */
-.p-card-modified .header {
-  border-radius: 12px 12px 0 0;
-  background: linear-gradient(135deg, #798eb3, var(--color-navy-dark));
-  color: var(--color-white);
-  font-size: var(--font-size-h5) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  letter-spacing: var(--letter-spacing-normal) !important;
-  --bs-gutter-x: 0 !important;
-}
-
-/* Mejorando botones modificados */
-.p-button-modificado .p-button {
-  width: 100% !important;
-}
-
-/* ============================================
-   APLICACIÓN A ELEMENTOS HTML ESTÁNDAR
-   ============================================ */
-
-h1,
-.h1 {
-  font-size: var(--font-size-h1);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
-  margin-bottom: 1.5rem;
-  color: var(--texto-content-color);
-}
-
-h2,
-.h2 {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
-  margin-bottom: 1.25rem;
-  color: var(--texto-content-color);
-}
-
-h3,
-.h3 {
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-  margin-bottom: 1rem;
-  color: var(--texto-content-color);
-}
-
-h4,
-.h4 {
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-normal);
-  margin-bottom: 0.875rem;
-  color: var(--texto-content-color);
-}
-
-h5,
-.h5 {
-  font-size: var(--font-size-h5);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-normal);
-  margin-bottom: 0.75rem;
-  color: var(--texto-content-color);
-}
-
-h6,
-.h6 {
-  font-size: var(--font-size-h6);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-normal);
-  margin-bottom: 0.625rem;
-  color: var(--texto-content-color);
-}
-
-p {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-  margin-bottom: 1rem;
-  color: var(--texto-content-color);
-}
-
-small,
-.small {
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-  color: var(--color-gray-medium);
-}
-
-/* ============================================
-   CLASES DE UTILIDAD TIPOGRÁFICA
-   ============================================ */
-
-/* Tamaños de texto */
-.text-h1 {
-  font-size: var(--font-size-h1);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-}
-.text-h2 {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-}
-.text-h3 {
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-}
-.text-h4 {
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-normal);
-}
-.text-h5 {
-  font-size: var(--font-size-h5);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-normal);
-}
-.text-h6 {
-  font-size: var(--font-size-h6);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-normal);
-}
-
-.text-large {
-  font-size: var(--font-size-large);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-}
-.text-base {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-}
-.text-medium {
-  font-size: var(--font-size-medium);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-}
-.text-small {
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-}
-.text-xs {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-}
-
-/* Pesos de fuente */
-.font-light {
-  font-weight: var(--font-weight-light);
-}
-.font-normal {
-  font-weight: var(--font-weight-normal);
-}
-.font-medium {
-  font-weight: var(--font-weight-medium);
-}
-.font-semibold {
-  font-weight: var(--font-weight-semibold);
-}
-.font-bold {
-  font-weight: var(--font-weight-bold);
-}
-.font-extrabold {
-  font-weight: var(--font-weight-extrabold);
-}
-
-/* Espaciado de línea */
-.leading-tight {
-  line-height: var(--line-height-tight);
-}
-.leading-normal {
-  line-height: var(--line-height-normal);
-}
-.leading-relaxed {
-  line-height: var(--line-height-relaxed);
-}
-.leading-loose {
-  line-height: var(--line-height-loose);
-}
-
-/* Espaciado de letras */
-.tracking-tight {
-  letter-spacing: var(--letter-spacing-tight);
-}
-.tracking-normal {
-  letter-spacing: var(--letter-spacing-normal);
-}
-.tracking-wide {
-  letter-spacing: var(--letter-spacing-wide);
-}
-.tracking-wider {
-  letter-spacing: var(--letter-spacing-wider);
-}
-
-/* ============================================
-   COLORES DE TEXTO - CLASES DE UTILIDAD
-   ============================================ */
-
-/* Colores principales de marca */
-.text-navy {
-  color: var(--color-navy-dark) !important;
-}
-.text-navy-light {
-  color: var(--color-navy-lighter) !important;
-}
-.text-navy-dark {
-  color: var(--color-navy-darker) !important;
-}
-
-.text-blue {
-  color: var(--color-blue-light) !important;
-}
-.text-blue-light {
-  color: var(--color-blue-lighter) !important;
-}
-.text-blue-dark {
-  color: var(--color-blue-darker) !important;
-}
-
-.text-mint {
-  color: var(--color-mint-light) !important;
-}
-.text-mint-light {
-  color: var(--color-mint-lighter) !important;
-}
-.text-mint-dark {
-  color: var(--color-mint-darker) !important;
-}
-
-.text-teal {
-  color: var(--color-teal-dark) !important;
-}
-.text-light-blue {
-  color: var(--color-light-blue) !important;
-}
-
-/* Colores neutros */
-.text-white {
-  color: var(--color-white) !important;
-}
-.text-gray {
-  color: var(--color-gray-medium) !important;
-}
-.text-gray-light {
-  color: var(--color-gray-light) !important;
-}
-.text-gray-dark {
-  color: var(--color-gray-dark) !important;
-}
-
-/* Colores de estado */
-.text-success {
-  color: var(--color-success) !important;
-}
-.text-info {
-  color: var(--color-info) !important;
-}
-.text-warning {
-  color: var(--color-warning) !important;
-}
-.text-danger {
-  color: var(--color-danger) !important;
-}
-
-/* Colores contextuales */
-.text-primary {
-  color: var(--color-navy-dark) !important;
-}
-.text-secondary {
-  color: var(--color-blue-light) !important;
-}
-.text-muted {
-  color: var(--color-gray-medium) !important;
-}
-
-/* ============================================
-   GRADIENTES DE TEXTO
-   ============================================ */
-
-.text-gradient-primary {
-  background: linear-gradient(
-    135deg,
-    var(--color-navy-dark),
-    var(--color-blue-light)
-  ) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-}
-
-.text-gradient-secondary {
-  background: linear-gradient(
-    135deg,
-    var(--color-blue-light),
-    var(--color-mint-light)
-  ) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-}
-
-.text-gradient-accent {
-  background: linear-gradient(
-    135deg,
-    var(--color-mint-light),
-    var(--color-teal-dark)
-  ) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-}
-
-/* ============================================
-   PRIMENG OVERRIDES MEJORADOS
-   ============================================ */
-
-/* Inputs y formularios */
-.p-inputtext,
-.p-dropdown,
-.p-calendar input,
-.p-multiselect {
-  font-size: var(--font-size-input) !important;
-  font-weight: var(--font-weight-normal) !important;
-  line-height: var(--line-height-normal) !important;
-}
-
-/* Labels */
-.p-field label,
-.p-float-label label {
-  font-size: var(--font-size-medium) !important;
-  font-weight: var(--font-weight-medium) !important;
-  color: var(--color-navy-dark) !important;
-}
-
-/* Breadcrumb */
-.p-breadcrumb {
-  font-size: var(--font-size-breadcrumb) !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-}
-
-.p-breadcrumb .p-menuitem-link {
-  color: var(--color-navy-dark) !important;
-  transition: color 0.2s ease !important;
-}
-
-.p-breadcrumb .p-menuitem-link:hover {
-  color: var(--color-blue-light) !important;
-}
-
-.p-breadcrumb .p-breadcrumb-chevron {
-  color: var(--color-gray-medium) !important;
-}
-
-/* Menús */
-.p-menu .p-menuitem-text,
-.p-megamenu .p-menuitem-text {
-  font-size: var(--font-size-menu) !important;
-  font-weight: var(--font-weight-medium) !important;
-}
-
-/* Tooltips */
-.p-tooltip .p-tooltip-text {
-  font-size: var(--font-size-tooltip) !important;
-  font-weight: var(--font-weight-normal) !important;
-  line-height: var(--line-height-tight) !important;
-}
-
-/* Cards */
-.p-card .p-card-title {
-  font-size: var(--font-size-h5) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  line-height: var(--line-height-tight) !important;
-  color: var(--color-navy-dark) !important;
-}
-
-.p-card .p-card-subtitle {
-  font-size: var(--font-size-medium) !important;
-  font-weight: var(--font-weight-normal) !important;
-  color: var(--color-gray-medium) !important;
-}
-
-.p-card .p-card-content {
-  font-size: var(--font-size-base) !important;
-  font-weight: var(--font-weight-normal) !important;
-  line-height: var(--line-height-normal) !important;
-}
-
-/* Dialogs */
-.p-dialog .p-dialog-title {
-  font-size: var(--font-size-h4) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  color: var(--color-navy-dark) !important;
-}
-
-/* Panels */
-.p-panel .p-panel-header {
-  font-size: var(--font-size-h5) !important;
-  font-weight: var(--font-weight-semibold) !important;
-}
-
-/* DataTable específico (manteniendo tus overrides) */
-.p-datatable .p-datatable-header {
-  font-size: var(--font-size-medium) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  background: linear-gradient(
-    135deg,
-    var(--color-gray-light),
-    var(--color-gray-lighter)
-  ) !important;
-  color: var(--color-navy-dark) !important;
-}
-
-.p-datatable .p-datatable-thead > tr > th {
-  font-size: var(--font-size-medium) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  color: var(--color-white) !important;
-  text-align: center;
-  background-color: var(--color-navy-dark) !important;
-}
-
-.p-datatable .p-datatable-tbody > tr > td {
-  font-size: var(--font-size-medium) !important;
-  font-weight: var(--font-weight-normal) !important;
-}
-
-/* ============================================
-   COMBINACIONES COMUNES PARA COMPONENTES
-   ============================================ */
-
-/* Para títulos de sección principales */
-.section-title {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-  color: var(--color-navy-dark);
-  margin-bottom: 1.5rem;
-}
-
-/* Para subtítulos de componentes */
-.component-title {
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-normal);
-  color: var(--color-navy-dark);
-  margin-bottom: 1rem;
-}
-
-/* Para texto de ayuda y descripciones */
-.help-text {
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-gray-medium);
-  font-style: italic;
-}
-
-/* Para labels importantes */
-.label-important {
-  font-size: var(--font-size-medium);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-navy-dark);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-}
-
-/* Para metadatos y información secundaria */
-.metadata {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-normal);
-  color: var(--color-gray-medium);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wider);
-}
-
-/* Para texto destacado */
-.text-highlight {
-  font-size: var(--font-size-large);
-  font-weight: var(--font-weight-medium);
-  background: linear-gradient(
-    135deg,
-    var(--color-blue-light),
-    var(--color-mint-light)
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ============================================
-   RESPONSIVE - AJUSTES POR TAMAÑO DE PANTALLA
-   ============================================ */
-
-/* Mobile First - Reducir tamaños en pantallas pequeñas */
-@media (max-width: 576px) {
-  :root {
-    --font-size-h1: 2rem; /* 32px */
-    --font-size-h2: 1.75rem; /* 28px */
-    --font-size-h3: 1.5rem; /* 24px */
-    --font-size-h4: 1.25rem; /* 20px */
-    --font-size-h5: 1.125rem; /* 18px */
-    --font-size-h6: 1rem; /* 16px */
-  }
-}
-
-/* Tablet */
-@media (min-width: 577px) and (max-width: 768px) {
-  :root {
-    --font-size-h1: 2.25rem; /* 36px */
-    --font-size-h2: 1.875rem; /* 30px */
-  }
-}
-
-/* Desktop grande - Aumentar ligeramente para mejor legibilidad */
-@media (min-width: 1200px) {
-  :root {
-    --font-size-h1: 2.75rem; /* 44px */
-    --font-size-h2: 2.25rem; /* 36px */
-    --font-size-base: 1.125rem; /* 18px */
-  }
-}
-
-/* ============================================
-   MEJORAS ADICIONALES A PRIMENG - ELEMENTOS MODERNOS
-   ============================================ */
-
-/* ===== INPUTS Y FORMULARIOS MEJORADOS ===== */
-/* Los estilos de inputs se manejan automáticamente por el tema de PrimeNG */
-
-.p-inputtext:focus,
-.p-dropdown:not(.p-disabled).p-focus,
-.p-calendar input:focus,
-.p-multiselect:not(.p-disabled).p-focus,
-.p-inputnumber input:focus,
-.p-password input:focus,
-.p-inputtextarea:focus {
-  border-color: var(--color-blue-light) !important;
-  box-shadow: 0 0 0 3px rgba(74, 122, 255, 0.1),
-    0 4px 12px rgba(28, 34, 77, 0.08) !important;
-  outline: none !important;
-}
-
-/* Dropdown específico */
-.p-dropdown {
-  border-radius: 10px !important;
-  border: 2px solid rgba(28, 34, 77, 0.1) !important;
-  box-shadow: 0 2px 4px rgba(28, 34, 77, 0.04) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.p-dropdown:not(.p-disabled):hover {
-  border-color: var(--color-blue-light) !important;
-}
-
-.p-dropdown-panel {
-  border-radius: 12px !important;
-  border: 1px solid rgba(28, 34, 77, 0.1) !important;
-  box-shadow: 0 10px 25px rgba(28, 34, 77, 0.15),
-    0 5px 10px rgba(28, 34, 77, 0.08) !important;
-  backdrop-filter: blur(10px) !important;
-  margin-top: 4px !important;
-}
-
-.p-dropdown-items .p-dropdown-item {
-  padding: 0.75rem 1rem !important;
-  border-radius: 8px !important;
-  margin: 2px 4px !important;
-  transition: all 0.2s ease !important;
-}
-
-.p-dropdown-items .p-dropdown-item:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(74, 122, 255, 0.08),
-    rgba(162, 240, 161, 0.06)
-  ) !important;
-  transform: translateX(4px) !important;
-}
-
-.p-dropdown-items .p-dropdown-item.p-highlight {
-  background: linear-gradient(
-    135deg,
-    var(--color-blue-light),
-    var(--color-mint-light)
-  ) !important;
-  color: white !important;
-  font-weight: var(--font-weight-medium) !important;
-}
-
-/* ===== PANELS MEJORADOS ===== */
-.p-panel {
-  border-radius: 14px !important;
-  border: 1px solid rgba(28, 34, 77, 0.08) !important;
-  box-shadow: 0 4px 12px rgba(28, 34, 77, 0.06) !important;
-  overflow: hidden !important;
-}
-
-.p-panel .p-panel-content {
-  padding: 1.5rem !important;
-}
-
-.p-panel .p-panel-header .p-panel-title {
-  font-weight: var(--font-weight-semibold) !important;
-}
-.p-tabpanels {
-  padding: 0 !important;
-}
-
-/* ===== TOOLTIPS MEJORADOS ===== */
-.p-tooltip .p-tooltip-text {
-  background: rgba(28, 34, 77, 0.95) !important;
-  color: white !important;
-  border-radius: 8px !important;
-  padding: 0.75rem 1rem !important;
-  box-shadow: 0 8px 24px rgba(28, 34, 77, 0.2) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.p-tooltip .p-tooltip-arrow {
-  border-bottom-color: rgba(28, 34, 77, 0.95) !important;
-}
-
-/* ===== MENÚS MEJORADOS ===== */
-.p-menu {
-  border-radius: 12px !important;
-  border: 1px solid rgba(28, 34, 77, 0.1) !important;
-  box-shadow: 0 10px 25px rgba(28, 34, 77, 0.15),
-    0 5px 10px rgba(28, 34, 77, 0.08) !important;
-  backdrop-filter: blur(10px) !important;
-  padding: 0.5rem !important;
-}
-
-.p-menu .p-menuitem-link {
-  border-radius: 8px !important;
-  margin: 2px 0 !important;
-  padding: 0.75rem 1rem !important;
-  transition: all 0.2s ease !important;
-}
-
-.p-menu .p-menuitem-link:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(74, 122, 255, 0.08),
-    rgba(162, 240, 161, 0.06)
-  ) !important;
-  transform: translateX(4px) !important;
-}
-
-.p-menu .p-menuitem-icon {
-  margin-right: 0.75rem !important;
-  color: var(--color-blue-light) !important;
-}
-
-/* ===== TABVIEW MEJORADO ===== */
-.p-tabview .p-tabview-nav {
-  background: rgba(28, 34, 77, 0.02) !important;
-  border-bottom: 1px solid rgba(28, 34, 77, 0.08) !important;
-  border-radius: 12px 12px 0 0 !important;
-  padding: 0.5rem !important;
-}
-
-.p-tabview .p-tabview-nav li .p-tabview-nav-link {
-  border-radius: 8px !important;
-  padding: 0.75rem 1.5rem !important;
-  margin-right: 0.25rem !important;
-  transition: all 0.3s ease !important;
-  border: none !important;
-  background: transparent !important;
-}
-
-.p-tabview .p-tabview-nav li:not(.p-highlight) .p-tabview-nav-link:hover {
-  background: rgba(74, 122, 255, 0.08) !important;
-  transform: translateY(-2px) !important;
-}
-
-.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
-  background: linear-gradient(
-    135deg,
-    var(--color-blue-light),
-    var(--color-mint-light)
-  ) !important;
-  color: white !important;
-  font-weight: var(--font-weight-semibold) !important;
-  box-shadow: 0 4px 12px rgba(74, 122, 255, 0.25) !important;
-}
-
-.p-tabview .p-tabview-panels {
-  background: white !important;
-  border-radius: 0 0 12px 12px !important;
-}
-
-/* ===== ACCORDION MEJORADO ===== */
-.p-accordion .p-accordion-tab {
-  margin-bottom: 0.5rem !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(28, 34, 77, 0.08) !important;
-  overflow: hidden !important;
-  box-shadow: 0 2px 8px rgba(28, 34, 77, 0.06) !important;
-}
-
-.p-accordion .p-accordion-header .p-accordion-header-link {
-  background: linear-gradient(
-    135deg,
-    rgba(74, 122, 255, 0.05),
-    rgba(162, 240, 161, 0.03)
-  ) !important;
-  padding: 1.25rem 1.5rem !important;
-  border: none !important;
-  transition: all 0.3s ease !important;
-}
-
-.p-accordion
-  .p-accordion-header:not(.p-disabled)
-  .p-accordion-header-link:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(74, 122, 255, 0.08),
-    rgba(162, 240, 161, 0.06)
-  ) !important;
-}
-
-.p-accordion .p-accordion-header.p-highlight .p-accordion-header-link {
-  background: linear-gradient(
-    135deg,
-    var(--color-blue-light),
-    var(--color-mint-light)
-  ) !important;
-  color: white !important;
-}
-
-.p-accordion .p-accordion-content {
-  padding: 1.5rem !important;
-}
-
-/* ===== CALENDAR MEJORADO ===== */
-.p-calendar .p-datepicker {
-  border-radius: 16px !important;
-  border: 1px solid rgba(28, 34, 77, 0.1) !important;
-  box-shadow: 0 15px 35px rgba(28, 34, 77, 0.15),
-    0 8px 15px rgba(28, 34, 77, 0.08) !important;
-  backdrop-filter: blur(10px) !important;
-}
-
-.p-calendar .p-datepicker .p-datepicker-header {
-  background: linear-gradient(
-    135deg,
-    var(--color-navy-dark),
-    var(--color-blue-light)
-  ) !important;
-  color: white !important;
-  border-radius: 16px 16px 0 0 !important;
-  padding: 1rem !important;
-}
-
-.p-calendar .p-datepicker table td > span {
-  border-radius: 8px !important;
-  transition: all 0.2s ease !important;
-}
-
-.p-calendar .p-datepicker table td > span:hover {
-  background: rgba(74, 122, 255, 0.1) !important;
-  transform: scale(1.1) !important;
-}
-
-.p-calendar .p-datepicker table td > span.p-highlight {
-  background: linear-gradient(
-    135deg,
-    var(--color-blue-light),
-    var(--color-mint-light)
-  ) !important;
-  color: white !important;
-}
-
-/* ===== PROGRESSBAR MEJORADO ===== */
-.p-progressbar {
-  border-radius: 50px !important;
-  height: 8px !important;
-  background: rgba(28, 34, 77, 0.1) !important;
-  overflow: hidden !important;
-  box-shadow: inset 0 2px 4px rgba(28, 34, 77, 0.1) !important;
-}
-
-.p-progressbar .p-progressbar-value {
-  background: linear-gradient(
-    90deg,
-    var(--color-blue-light),
-    var(--color-mint-light)
-  ) !important;
-  border-radius: inherit !important;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  position: relative !important;
-}
-
-.p-progressbar .p-progressbar-value::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* ===== TOAST MEJORADO ===== */
-/* Los estilos de Toast se manejan automáticamente por el tema de PrimeNG */
-
-/* ===== TOOLBAR MEJORADO ===== */
-.p-toolbar {
-  background: linear-gradient(
-    135deg,
-    rgba(74, 122, 255, 0.05),
-    rgba(162, 240, 161, 0.03)
-  ) !important;
-  border: 1px solid rgba(28, 34, 77, 0.08) !important;
-  border-radius: 12px !important;
-  padding: 1rem 1.5rem !important;
-  box-shadow: 0 2px 8px rgba(28, 34, 77, 0.06) !important;
-}
-
-/* ===== SIDEBAR MEJORADO ===== */
-.p-sidebar {
-  border-radius: 0 16px 16px 0 !important;
-  box-shadow: 0 0 40px rgba(28, 34, 77, 0.2) !important;
-  backdrop-filter: blur(10px) !important;
-}
-
-.p-sidebar .p-sidebar-header {
-  background: linear-gradient(
-    135deg,
-    var(--color-navy-dark),
-    var(--color-blue-light)
-  ) !important;
-  color: white !important;
-  padding: 1.5rem !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-/* ===== PAGINATOR MEJORADO ===== */
-.p-paginator {
-  background: rgba(28, 34, 77, 0.02) !important;
-  border: 1px solid rgba(28, 34, 77, 0.08) !important;
-  border-radius: 0 0 12px 12px !important;
-  padding: 0.75rem 1rem !important;
-}
-
-.p-paginator .p-paginator-page,
-.p-paginator .p-paginator-next,
-.p-paginator .p-paginator-prev,
-.p-paginator .p-paginator-first,
-.p-paginator .p-paginator-last {
-  border-radius: 8px !important;
-  margin: 0 2px !important;
-  transition: all 0.2s ease !important;
-  border: none !important;
-}
-
-.p-paginator .p-paginator-page:hover,
-.p-paginator .p-paginator-next:hover,
-.p-paginator .p-paginator-prev:hover,
-.p-paginator .p-paginator-first:hover,
-.p-paginator .p-paginator-last:hover {
-  background: rgba(74, 122, 255, 0.1) !important;
-  transform: translateY(-1px) !important;
-}
-
-.p-paginator .p-paginator-page.p-highlight {
-  background: linear-gradient(
-    135deg,
-    var(--color-blue-light),
-    var(--color-mint-light)
-  ) !important;
-  color: white !important;
-  font-weight: var(--font-weight-semibold) !important;
-}
-
-/* Mejorando toolbar */
-.custom-toolbar {
-  background: linear-gradient(
-    90deg,
-    var(--color-navy-dark) 0%,
-    var(--color-blue-light) 100%
-  ) !important;
-  color: white !important;
-}
-.custom-toolbar-dialog {
-  background: var(--color-light-blue) !important;
-  color: var(--color-navy-dark) !important;
-}
-
-/* ===== MEJORAS PARA TRUNCADO DE TEXTO CON COMPATIBILIDAD ===== */
-.text-truncate,
-.truncate {
-  overflow: hidden !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important;
-  /* Fallback para navegadores que no soportan todas las propiedades */
-  max-width: 100% !important;
-  display: inline-block !important;
-}
-
-/* Truncado con múltiples líneas */
-.text-truncate-2,
-.truncate-2 {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  /* Fallback */
-  max-height: calc(var(--line-height-normal) * 2em) !important;
-}
-
-.text-truncate-3,
-.truncate-3 {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 3 !important;
-  line-clamp: 3 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  /* Fallback */
-  max-height: calc(var(--line-height-normal) * 3em) !important;
-}
-
-/* ===== EFECTOS DE GLASSMORPHISM ===== */
-.glass-effect {
-  backdrop-filter: blur(10px) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-.glass-effect-dark {
-  backdrop-filter: blur(10px) !important;
-  background: rgba(28, 34, 77, 0.1) !important;
-  border: 1px solid rgba(28, 34, 77, 0.2) !important;
-}
-
-/* ===== ANIMACIONES GLOBALES ===== */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-/* Clases de utilidad para animaciones */
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.animate-fade-in-right {
-  animation: fadeInRight 0.6s ease-out;
-}
-
-.animate-pulse {
-  animation: pulse 2s infinite;
-}
-
-/* ============================================
-   RESPONSIVE GLOBAL MÍNIMO
-   ============================================ */
-
-/* Prevenir overflow horizontal en móviles */
-html,
-body {
-  overflow-x: hidden;
-}
-
-/* Mejorar touch scrolling en móviles */
-* {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Responsive para componentes PrimeNG en móviles */
-@media (max-width: 767.98px) {
-  .p-dropdown,
-  .p-inputtext {
-    padding: 0.625rem 0.75rem !important;
-    font-size: var(--font-size-medium) !important;
-  }
-
-  .p-card {
-    margin: 0.5rem 0 !important;
-  }
-
-  .p-card .p-card-body {
-    padding: 1rem !important;
-  }
-
-  .p-dialog {
-    margin: 1rem !important;
-    width: calc(100vw - 2rem) !important;
-    max-width: none !important;
-  }
-}
-
-/* Tablet ajustes */
-@media (min-width: 768px) and (max-width: 991.98px) {
-  .p-dialog {
-    width: 80vw !important;
-    max-width: 600px !important;
-  }
-}
-
-.tabla-datos .filtro th {
-  padding: 0px !important;
-}
-
-.tabla-datos .filtro th:last-child {
-  border-top-right-radius: 0px !important;
-}
-.tabla-datos .filtro th:first-child {
-  border-top-left-radius: 0px !important;
-}
-
-/* Estilos para el modal de error */
-.custom-modal-mask {
-  background-color: rgba(0, 0, 0, 0.6) !important;
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  z-index: 9999 !important;
-}
-
-.custom-error-dialog .p-dialog {
-  border-radius: 8px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
-  border: 2px solid #e74c3c !important;
-  animation: modalFadeIn 0.3s ease-out !important;
-}
-
-.custom-error-dialog .p-dialog-header {
-  background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
-  color: white !important;
-  border-bottom: 1px solid #c0392b !important;
-  border-radius: 6px 6px 0 0 !important;
-}
-
-.custom-error-dialog .p-dialog-header .p-dialog-title {
-  font-weight: 600 !important;
-  font-size: 1.1rem !important;
-}
-
-.custom-error-dialog .p-dialog-content {
-  padding: 0 !important;
-  border-radius: 0 0 6px 6px !important;
-}
-
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* Prevenir interacción con elementos de fondo */
-.custom-modal-mask ~ * {
-  pointer-events: none !important;
-}
-
-.custom-error-dialog {
-  pointer-events: all !important;
-}
-
-/* Estilos para el stepper */
-
-.p-step .p-step-title {
-  color: var(--color-navy-dark) !important;
-  font-weight: 600 !important;
-}
-.p-step .p-step-number {
-  color: var(--color-navy-dark) !important;
-  font-weight: 600 !important;
-}
-
-.p-step-active .p-step-title {
-  color: var(--color-blue-light) !important;
-  font-weight: 600 !important;
-}
-.p-step-active .p-step-number {
-  color: var(--color-blue-light) !important;
-  font-weight: 600 !important;
-}
-.p-step:has(~ .p-step-active) .p-step-title {
-  color: var(--color-blue-light) !important;
-  font-weight: 600 !important;
-}
-.p-step:has(~ .p-step-active) .p-step-number {
-  color: var(--color-blue-light) !important;
-  font-weight: 600 !important;
-}
-.p-step:has(~ .p-step-active) .p-stepper-separator {
-  background-color: var(--color-blue-light) !important;
-}
-.p-tablist-tab-list {
-  background-color: var(--color-light-blue) !important;
-  color: white !important;
-}
-
-/* Estilos para accordion no activo */
-.p-accordionpanel:not(.p-accordionpanel-active) > .p-accordionheader {
-  background: var(--color-light-blue) !important;
-  color: var(--color-navy-dark) !important;
-}
-
-/* Reducir margin y padding del accordion */
-.p-accordion {
-  margin: 0.5rem 0 !important;
-}
-
-.p-accordion .p-accordion-tab {
-  margin-bottom: 0.25rem !important;
-}
-
-.p-accordion .p-accordion-header .p-accordion-header-link {
-  padding: 0.5rem 0.75rem !important;
-}
-
-.p-accordion .p-accordion-content {
-  padding: 0.75rem !important;
-}
-
-/* ===================== DRIVER.JS TOUR OVERRIDES ===================== */
-/* Estilos globales para sobrescribir el max-width de driver.js */
-
-.driver-popover,
-div.driver-popover,
-body .driver-popover,
-html body .driver-popover,
-html body div.driver-popover {
-  max-width: 370px !important;
-  min-width: 280px !important;
-  width: auto !important;
-  padding: 16px !important;
-  border-radius: 12px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
-  border: 2px solid rgba(102, 126, 234, 0.2) !important;
-}
-
-/* Estilos globales para los elementos del tour */
-.driver-popover-title {
-  color: #667eea !important;
-  font-weight: 700 !important;
-  font-size: 1.1rem !important;
-  margin-bottom: 10px !important;
-  padding-bottom: 4px !important;
-}
-
-.driver-popover-description {
-  line-height: 1.5 !important;
-  color: #555 !important;
-  font-size: 0.9rem !important;
-  padding: 6px 0 !important;
-  white-space: pre-line !important;
-  min-height: 50px !important;
-}
-
-.driver-popover-footer {
-  border-top: 1px solid rgba(102, 126, 234, 0.2) !important;
-  padding-top: 12px !important;
-  margin-top: 12px !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  gap: 8px !important;
-}
-
-/* Botones del tour globales */
-.driver-popover-next-btn {
-  border: none !important;
-  border-radius: 6px !important;
-  padding: 8px 14px !important;
-  min-width: 70px !important;
-  /* Eliminar duplicación en pantallas grandes */
-  text-shadow: none !important;
-  position: relative !important;
-}
-
-.driver-popover-prev-btn {
-  background: transparent !important;
-  border: 2px solid #667eea !important;
-  color: #667eea !important;
-  border-radius: 6px !important;
-  padding: 6px 12px !important;
-  min-width: 60px !important;
-  /* Eliminar duplicación en pantallas grandes */
-  text-shadow: none !important;
-  position: relative !important;
-}
-
-/* Botón de cerrar: mantener posición absoluta pero mejorar apariencia */
-.driver-popover-close-btn {
-  position: absolute !important;
-  top: 8px !important;
-  right: 8px !important;
-  width: 28px !important;
-  height: 28px !important;
-  background: rgba(255, 107, 107, 0.1) !important;
-  border: 1px solid rgba(255, 107, 107, 0.3) !important;
-  border-radius: 50% !important;
-  color: #ff6b6b !important;
-  font-size: 20px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 2 !important;
-  padding: 0 !important;
-}
-
-.driver-popover-close-btn:hover {
-  background: rgba(255, 107, 107, 0.2) !important;
-  border-color: #ff6b6b !important;
-  transform: scale(1.1) !important;
-}
-
-.driver-popover-progress-text {
-  background: rgba(102, 126, 234, 0.1) !important;
-  color: #667eea !important;
-  padding: 4px 8px !important;
-  border-radius: 4px !important;
-  font-size: 0.8rem !important;
-  font-weight: 600 !important;
-  margin-left: auto !important;
-}
-
-/* Responsividad para móviles */
-@media (max-width: 768px) {
-  .driver-popover,
-  div.driver-popover,
-  body .driver-popover,
-  html body .driver-popover,
-  html body div.driver-popover {
-    padding: 12px !important;
-  }
-
-  .driver-popover-title {
-    font-size: 1rem !important;
-    margin-bottom: 8px !important;
-  }
-
-  .driver-popover-description {
-    font-size: 0.85rem !important;
-    min-height: 40px !important;
-  }
-
-  .driver-popover-next-btn,
-  .driver-popover-prev-btn,
-  .driver-popover-close-btn {
-    font-size: 0.8rem !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .driver-popover,
-  div.driver-popover,
-  body .driver-popover,
-  html body .driver-popover,
-  html body div.driver-popover {
-    max-width: 280px !important;
-    min-width: 140px !important;
-    padding: 10px !important;
-  }
-
-  .driver-popover-title {
-    font-size: 0.8rem !important;
-    margin-bottom: 8px !important;
-  }
-
-  .driver-popover-description {
-    font-size: 0.7rem !important;
-    min-height: 40px !important;
-  }
-
-  /* Botones compactos con mayor especificidad para sobrescribir 768px */
-  html body .driver-popover .driver-popover-next-btn,
-  html body .driver-popover .driver-popover-prev-btn {
-    width: 60px !important;
-    height: 24px !important;
-    padding: 2px 6px !important;
-    font-size: 9px !important;
-  }
-
-  .driver-popover-footer {
-    gap: 4px !important;
-    padding-top: 8px !important;
-    margin-top: 8px !important;
-  }
-
-  .driver-popover-progress-text {
-    font-size: 9px !important;
-    padding: 2px 4px !important;
-  }
-}
-
-/* =====================================================
-   GLOBAL OVERRIDES FOR SELECTED ROWS IN TABLES
-   Prevents hover states from overriding selection styles
-   ===================================================== */
-
-/* Selected row must maintain appearance on hover - GLOBAL OVERRIDE */
-.p-datatable .p-datatable-tbody > tr.selected-row {
-  background: #e3f2fd !important;
-  border-left: 4px solid #2196f3 !important;
-}
-
-/* Override ALL hover states for selected rows */
-.p-datatable .p-datatable-tbody > tr.selected-row:hover,
-.p-datatable .p-datatable-tbody > tr.selected-row.p-selectable-row:hover,
-.p-datatable .p-datatable-tbody > tr.selected-row.p-highlight:hover {
-  background: #e3f2fd !important;
-  border-left: 4px solid #2196f3 !important;
-}
-
-/* Prevent cell backgrounds from changing in selected rows */
-.p-datatable .p-datatable-tbody > tr.selected-row:hover > td,
-.p-datatable .p-datatable-tbody > tr.selected-row.p-selectable-row:hover > td {
-  background: transparent !important;
-}
-
-/* Only apply hover to non-selected rows */
-.p-datatable .p-datatable-tbody > tr:not(.selected-row):hover {
-  background: rgba(0, 0, 0, 0.04) !important;
-}
-
-/* =====================================================
-   RESPONSIVE INPUT STYLES - GLOBAL
-   Aplica a todos los inputs del proyecto
-   ===================================================== */
-
-/* Tablet: 900px */
-@media (max-width: 900px) {
-  .p-inputnumber {
-    height: 36px !important;
-  }
-
-  .p-inputtext {
-    padding: 0.4rem 0.6rem !important;
-  }
-
-  .custom-toolbar {
-    min-width: 300px !important;
-    padding: 0.5rem !important;
-  }
-}
-
-/* Móvil pequeño: 480px */
-@media (max-width: 480px) {
-  .p-inputnumber {
-    height: 32px !important;
-  }
-
-  .p-inputnumber input {
-    padding: 0.3rem 0.5rem !important;
-    font-size: 0.875rem !important;
-  }
-
-  .p-inputtext {
-    padding: 0.3rem 0.5rem !important;
-    font-size: 0.875rem !important;
-  }
-}

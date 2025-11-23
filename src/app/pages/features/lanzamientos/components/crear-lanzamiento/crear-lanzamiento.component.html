@@ -72,6 +72,7 @@
           placeholder="Seleccione un estado"
           styleClass="w-full"
           [class.ng-invalid]="isFieldInvalid('estado')"
+          appendTo="body"
         ></p-dropdown>
         <small
           *ngIf="isFieldInvalid('estado')"
@@ -193,6 +194,7 @@
           [filter]="true"
           filterBy="nombreCompleto,username,email"
           styleClass="w-full"
+          appendTo="body"
         >
           <ng-template let-usuario pTemplate="item">
             <div class="flex align-items-center">

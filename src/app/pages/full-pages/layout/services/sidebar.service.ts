@@ -34,6 +34,21 @@ export class SidebarService {
         visible: true,
       },
       {
+        id: 'roles',
+        label: 'Roles',
+        icon: 'pi pi-shield',
+        items: [
+          {
+            id: 'roles-list',
+            label: 'Listar Roles',
+            icon: 'pi pi-list',
+            routerLink: ['/roles'],
+            visible: true,
+          },
+        ],
+        visible: true,
+      },
+      {
         id: 'users',
         label: 'Usuarios',
         icon: 'pi pi-users',
@@ -49,15 +64,15 @@ export class SidebarService {
         visible: true,
       },
       {
-        id: 'roles',
-        label: 'Roles',
-        icon: 'pi pi-shield',
+        id: 'grupos-despliegue',
+        label: 'Grupos',
+        icon: 'pi pi-sitemap',
         items: [
           {
-            id: 'roles-list',
-            label: 'Listar Roles',
+            id: 'grupos-despliegue-list',
+            label: 'Listar Grupos',
             icon: 'pi pi-list',
-            routerLink: ['/roles'],
+            routerLink: ['/grupos-despliegue'],
             visible: true,
           },
         ],
@@ -75,34 +90,11 @@ export class SidebarService {
             routerLink: ['/aplicaciones'],
             visible: true,
           },
-        ],
-        visible: true,
-      },
-      {
-        id: 'lanzamientos',
-        label: 'Lanzamientos',
-        icon: 'pi pi-download',
-        items: [
           {
             id: 'lanzamientos-list',
             label: 'Listar Lanzamientos',
             icon: 'pi pi-list',
             routerLink: ['/lanzamientos'],
-            visible: true,
-          },
-        ],
-        visible: true,
-      },
-      {
-        id: 'grupos-despliegue',
-        label: 'Grupos de Despliegue',
-        icon: 'pi pi-sitemap',
-        items: [
-          {
-            id: 'grupos-despliegue-list',
-            label: 'Listar Grupos',
-            icon: 'pi pi-list',
-            routerLink: ['/grupos-despliegue'],
             visible: true,
           },
         ],

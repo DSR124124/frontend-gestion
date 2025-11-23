@@ -1,61 +1,40 @@
 <div class="lanzamientos-grupos-container">
-  <p-toolbar class="custom-toolbar mb-3">
-    <div class="p-toolbar-group-start">
-      <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input
-          type="text"
-          pInputText
-          placeholder="Buscar por versión, aplicación, grupo o notas..."
-          [(ngModel)]="terminoBusqueda"
-          (input)="filtrarLanzamientosGrupos()"
-          class="p-inputtext-lg"
-        />
-      </span>
-      <button
-        *ngIf="terminoBusqueda"
-        pButton
-        type="button"
-        icon="pi pi-times"
-        label="Limpiar"
-        class="p-button-text p-button-sm ml-2"
-        (click)="limpiarBusqueda()"
-      ></button>
-    </div>
-    <div class="p-toolbar-group-end">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-plus"
-        label="Nueva Asignación"
-        class="p-button-primary"
-        (click)="abrirDialogoCrear()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        icon="pi pi-refresh"
-        label="Actualizar"
-        class="p-button-info ml-2"
-        (click)="cargarLanzamientosGrupos()"
-        [disabled]="loading"
-      ></button>
-    </div>
+  <p-toolbar class="custom-toolbar">
+    <ng-template #start>
+      <div class="d-flex gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input type="text" pInputText placeholder="Buscar por versión, aplicación, grupo o notas..."
+            [(ngModel)]="terminoBusqueda" (input)="filtrarLanzamientosGrupos()" />
+        </p-iconfield>
+
+        <p-button *ngIf="terminoBusqueda" icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
+          (onClick)="limpiarBusqueda()"></p-button>
+
+        <p-button icon="pi pi-filter" label="filtros" styleClass="p-button-info" [disabled]="loading"></p-button>
+      </div>
+
+    </ng-template>
+
+    <ng-template #end>
+      <div class="d-flex gap-2">
+        <p-button icon="pi pi-plus" label="Nueva Asignación" styleClass="p-button-primary"
+          (onClick)="abrirDialogoCrear()"></p-button>
+        <p-button icon="pi pi-refresh" label="Actualizar" styleClass="p-button-info" (onClick)="cargarLanzamientosGrupos()"
+          [disabled]="loading"></p-button>
+      </div>
+    </ng-template>
   </p-toolbar>
 
-  <div class="card tabla-datos">
-    <p-table
-      [value]="lanzamientosGruposFiltrados"
-      [loading]="loading"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} asignaciones"
-      [globalFilterFields]="['lanzamientoVersion', 'aplicacionNombre', 'grupoNombre', 'notas']"
-      styleClass="p-datatable-striped"
-      [tableStyle]="{ 'min-width': '50rem' }"
-    >
+  <p-divider></p-divider>
+
+  <p-table [value]="lanzamientosGruposFiltrados" [loading]="loading" [paginator]="true" [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} asignaciones"
+    [globalFilterFields]="['lanzamientoVersion', 'aplicacionNombre', 'grupoNombre', 'notas']"
+    styleClass="tabla-datos">
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 5%">ID</th>
@@ -80,18 +59,18 @@
             <strong>{{ asignacion.grupoNombre || '-' }}</strong>
           </td>
           <td>
-            <span class="badge-orden" *ngIf="asignacion.ordenPrioridad">
-              {{ asignacion.ordenPrioridad }}
-            </span>
+            <p-tag *ngIf="asignacion.ordenPrioridad" [value]="asignacion.ordenPrioridad.toString()" class="tag-secondary"></p-tag>
             <span *ngIf="!asignacion.ordenPrioridad">-</span>
           </td>
           <td>
-            <p-tag
-              [value]="getEstadoLabel(asignacion.activo)"
-              [severity]="getSeverity(asignacion.activo)"
-            ></p-tag>
+            <p-tag [value]="getEstadoLabel(asignacion.activo)" class="tag-success"></p-tag>
           </td>
-          <td>{{ formatearFecha(asignacion.fechaDisponibilidad) }}</td>
+          <td>
+            <span class="fecha-modificacion" [title]="formatearFechaCompleta(asignacion.fechaDisponibilidad)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(asignacion.fechaDisponibilidad) }}
+            </span>
+          </td>
           <td>
             <i 
               *ngIf="asignacion.notificacionEnviada" 
@@ -108,49 +87,31 @@
           </td>
           <td>
             <div class="acciones-cell">
-              <button
-                pButton
-                type="button"
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-text p-button-sm p-button-success"
-                pTooltip="Editar asignación"
-                tooltipPosition="top"
-                (click)="editarLanzamientoGrupo(asignacion)"
-              ></button>
-              <button
-                pButton
-                type="button"
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                pTooltip="Eliminar asignación"
-                tooltipPosition="top"
-                (click)="confirmarEliminar(asignacion)"
-              ></button>
+              <p-button icon="pi pi-pencil" styleClass="btn-success btn-v2" pTooltip="Editar asignación" tooltipPosition="top"
+                (click)="editarLanzamientoGrupo(asignacion)"></p-button>
+              <p-button icon="pi pi-trash" styleClass="btn-danger btn-v2" pTooltip="Eliminar asignación"
+                tooltipPosition="top" (click)="confirmarEliminar(asignacion)"></p-button>
             </div>
           </td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="9" class="text-center p-4">
-            <div class="empty-message">
-              <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-              <p>No se encontraron asignaciones lanzamiento-grupo</p>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- Componente de crear/editar asignación -->
-  <app-crear-lanzamiento-grupo
-    #crearLanzamientoGrupoComponent
-    (lanzamientoGrupoCreado)="onLanzamientoGrupoCreado()"
-    (lanzamientoGrupoActualizado)="onLanzamientoGrupoActualizado()"
-  ></app-crear-lanzamiento-grupo>
-
-  <!-- Confirmación de eliminación -->
-  <p-confirmDialog></p-confirmDialog>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9" class="text-center p-4">
+          <div class="empty-message">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+            <p>No se encontraron asignaciones lanzamiento-grupo</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<!-- Componente de crear/editar asignación -->
+<app-crear-lanzamiento-grupo #crearLanzamientoGrupoComponent (lanzamientoGrupoCreado)="onLanzamientoGrupoCreado()"
+  (lanzamientoGrupoActualizado)="onLanzamientoGrupoActualizado()"></app-crear-lanzamiento-grupo>
+
+<!-- Confirmación de eliminación -->
+<p-confirmDialog></p-confirmDialog>
 

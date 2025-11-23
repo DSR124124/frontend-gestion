@@ -1,61 +1,40 @@
 <div class="lanzamientos-container">
-  <p-toolbar class="custom-toolbar mb-3">
-    <div class="p-toolbar-group-start">
-      <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input
-          type="text"
-          pInputText
-          placeholder="Buscar por versión, aplicación, estado, notas o publicador..."
-          [(ngModel)]="terminoBusqueda"
-          (input)="filtrarLanzamientos()"
-          class="p-inputtext-lg"
-        />
-      </span>
-      <button
-        *ngIf="terminoBusqueda"
-        pButton
-        type="button"
-        icon="pi pi-times"
-        label="Limpiar"
-        class="p-button-text p-button-sm ml-2"
-        (click)="limpiarBusqueda()"
-      ></button>
-    </div>
-    <div class="p-toolbar-group-end">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-plus"
-        label="Nuevo Lanzamiento"
-        class="p-button-primary"
-        (click)="abrirDialogoCrear()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        icon="pi pi-refresh"
-        label="Actualizar"
-        class="p-button-info ml-2"
-        (click)="cargarLanzamientos()"
-        [disabled]="loading"
-      ></button>
-    </div>
+  <p-toolbar class="custom-toolbar">
+    <ng-template #start>
+      <div class="d-flex gap-2">
+        <p-iconfield iconPosition="left">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input type="text" pInputText placeholder="Buscar por versión, aplicación, estado, notas o publicador..."
+            [(ngModel)]="terminoBusqueda" (input)="filtrarLanzamientos()" />
+        </p-iconfield>
+
+        <p-button *ngIf="terminoBusqueda" icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
+          (onClick)="limpiarBusqueda()"></p-button>
+
+        <p-button icon="pi pi-filter" label="filtros" styleClass="p-button-info" [disabled]="loading"></p-button>
+      </div>
+
+    </ng-template>
+
+    <ng-template #end>
+      <div class="d-flex gap-2">
+        <p-button icon="pi pi-plus" label="Nuevo Lanzamiento" styleClass="p-button-primary"
+          (onClick)="abrirDialogoCrear()"></p-button>
+        <p-button icon="pi pi-refresh" label="Actualizar" styleClass="p-button-info" (onClick)="cargarLanzamientos()"
+          [disabled]="loading"></p-button>
+      </div>
+    </ng-template>
   </p-toolbar>
 
-  <div class="card tabla-datos">
-    <p-table
-      [value]="lanzamientosFiltrados"
-      [loading]="loading"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} lanzamientos"
-      [globalFilterFields]="['version', 'nombreAplicacion', 'estado', 'notasVersion', 'publicadoPorNombre']"
-      styleClass="p-datatable-striped"
-      [tableStyle]="{ 'min-width': '50rem' }"
-    >
+  <p-divider></p-divider>
+
+  <p-table [value]="lanzamientosFiltrados" [loading]="loading" [paginator]="true" [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} lanzamientos"
+    [globalFilterFields]="['version', 'nombreAplicacion', 'estado', 'notasVersion', 'publicadoPorNombre']"
+    styleClass="tabla-datos">
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 5%">ID</th>
@@ -77,16 +56,23 @@
             <strong>{{ lanzamiento.nombreAplicacion || '-' }}</strong>
           </td>
           <td>
-            <span class="badge-version">{{ lanzamiento.version }}</span>
+            <p-tag [value]="lanzamiento.version" class="tag-secondary"></p-tag>
           </td>
           <td>
-            <p-tag
-              [value]="getEstadoLabel(lanzamiento.estado)"
-              [severity]="getSeverityEstado(lanzamiento.estado)"
-            ></p-tag>
+            <p-tag [value]="getEstadoLabel(lanzamiento.estado)" [severity]="getSeverityEstado(lanzamiento.estado)"></p-tag>
           </td>
-          <td>{{ formatearFecha(lanzamiento.fechaLanzamiento) }}</td>
-          <td>{{ formatearFecha(lanzamiento.fechaPublicacion) }}</td>
+          <td>
+            <span class="fecha-modificacion" [title]="formatearFechaCompleta(lanzamiento.fechaLanzamiento)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(lanzamiento.fechaLanzamiento) }}
+            </span>
+          </td>
+          <td>
+            <span class="fecha-modificacion" [title]="formatearFechaCompleta(lanzamiento.fechaPublicacion)">
+              <i class="pi pi-clock"></i>
+              {{ formatearFecha(lanzamiento.fechaPublicacion) }}
+            </span>
+          </td>
           <td>
             <span class="notas-version" [pTooltip]="lanzamiento.notasVersion" tooltipPosition="top">
               {{ (lanzamiento.notasVersion || '-').substring(0, 50) }}{{ (lanzamiento.notasVersion?.length || 0) > 50 ? '...' : '' }}
@@ -104,49 +90,31 @@
           </td>
           <td>
             <div class="acciones-cell">
-              <button
-                pButton
-                type="button"
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-text p-button-sm p-button-success"
-                pTooltip="Editar lanzamiento"
-                tooltipPosition="top"
-                (click)="editarLanzamiento(lanzamiento)"
-              ></button>
-              <button
-                pButton
-                type="button"
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                pTooltip="Eliminar lanzamiento"
-                tooltipPosition="top"
-                (click)="confirmarEliminar(lanzamiento)"
-              ></button>
+              <p-button icon="pi pi-pencil" styleClass="btn-success btn-v2" pTooltip="Editar lanzamiento" tooltipPosition="top"
+                (click)="editarLanzamiento(lanzamiento)"></p-button>
+              <p-button icon="pi pi-trash" styleClass="btn-danger btn-v2" pTooltip="Eliminar lanzamiento"
+                tooltipPosition="top" (click)="confirmarEliminar(lanzamiento)"></p-button>
             </div>
           </td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="10" class="text-center p-4">
-            <div class="empty-message">
-              <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-              <p>No se encontraron lanzamientos</p>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- Componente de crear/editar lanzamiento -->
-  <app-crear-lanzamiento
-    #crearLanzamientoComponent
-    (lanzamientoCreado)="onLanzamientoCreado()"
-    (lanzamientoActualizado)="onLanzamientoActualizado()"
-  ></app-crear-lanzamiento>
-
-  <!-- Confirmación de eliminación -->
-  <p-confirmDialog></p-confirmDialog>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="10" class="text-center p-4">
+          <div class="empty-message">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+            <p>No se encontraron lanzamientos</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<!-- Componente de crear/editar lanzamiento -->
+<app-crear-lanzamiento #crearLanzamientoComponent (lanzamientoCreado)="onLanzamientoCreado()"
+  (lanzamientoActualizado)="onLanzamientoActualizado()"></app-crear-lanzamiento>
+
+<!-- Confirmación de eliminación -->
+<p-confirmDialog></p-confirmDialog>
 
