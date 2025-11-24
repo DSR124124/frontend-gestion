@@ -7,6 +7,10 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   
   // Excluir el endpoint de login del interceptor
   if (req.url.includes('/api/auth/login')) {
+    // Aún así, enviar con credenciales
+    req = req.clone({
+      withCredentials: true
+    });
     return next(req);
   }
   
@@ -16,7 +20,12 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     req = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
-      }
+      },
+      withCredentials: true
+    });
+  } else {
+    req = req.clone({
+      withCredentials: true
     });
   }
 
