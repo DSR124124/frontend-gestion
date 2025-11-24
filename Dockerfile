@@ -12,8 +12,8 @@ RUN npm ci --only=production=false
 # Copiar el código fuente
 COPY . .
 
-# Construir la aplicación en modo producción
-RUN npm run build -- --configuration production
+# Construir la aplicación en modo producción con base-href
+RUN npm run build -- --configuration production --base-href /sistema-gestion/
 
 # Stage 2: Servir con Nginx
 FROM nginx:alpine
