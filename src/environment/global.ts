@@ -1,3 +1,3 @@
-export const urlAuth = 'http://localhost:8080/';
-export const urlAcces = 'http://localhost:8080/';
+export const urlAuth = 'https://edugen.brianuceda.xyz/gestion/api/';
+export const urlAcces = 'https://edugen.brianuceda.xyz/gestion/api/';
 
