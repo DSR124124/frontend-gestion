@@ -1,3 +1,3 @@
 export const environment = {
-   urlAuth: 'https://edugen.brianuceda.xyz/gestion/api/',
+   urlAuth: 'https://edugen.brianuceda.xyz/gestion/',
 };
