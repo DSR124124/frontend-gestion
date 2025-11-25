@@ -1,81 +1,65 @@
 <div class="login-container">
-  <div class="login-card">
-    <!-- Header -->
-    <div class="login-header">
-      <h1 class="login-title">Sistema de Gestión</h1>
-      <p class="login-subtitle">Inicia sesión para continuar</p>
-    </div>
-
-    <!-- Form -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- Username/Email Field -->
-      <div class="form-group">
-        <label for="usernameOrEmail" class="form-label">
-          Usuario o Email
-        </label>
-        <p-inputgroup class="login-input-wrapper">
-          <p-inputgroup-addon>
-            <i class="pi pi-user icon-md icon-primary"></i>
-          </p-inputgroup-addon>
+  <p-card styleClass="login-card">
+    <ng-template pTemplate="header">
+      <div class="login-header">
+        <h1 class="text-h1 m-0">Sistema de Gestión</h1>
+        <p class="text-h4 m-0">Inicia sesión para continuar</p>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Usuario -->
+        <div class="form-field">
+          <label class="field-label required">
+            <i class="pi pi-user icon-bg-primary icon-bg icon-1x2"></i>
+            Usuario o Email
+          </label>
           <input
             id="usernameOrEmail"
             type="text"
             pInputText
             formControlName="usernameOrEmail"
             placeholder="Ingrese su usuario o email"
-            class="login-input"
-            [class.ng-invalid]="loginForm.get('usernameOrEmail')?.invalid && loginForm.get('usernameOrEmail')?.touched"
-          />
-        </p-inputgroup>
-        <small
-          class="p-error login-error"
-          *ngIf="loginForm.get('usernameOrEmail')?.invalid && loginForm.get('usernameOrEmail')?.touched">
-          El usuario o email es requerido
-        </small>
-      </div>
+            class="form-control w-100"
+            [class.input-error]="submitted && loginForm.get('usernameOrEmail')?.invalid" />
+          <div class="field-helper error" *ngIf="submitted && loginForm.get('usernameOrEmail')?.invalid">
+            <i class="pi pi-exclamation-circle"></i>
+            El usuario o email es requerido
+          </div>
+        </div>
 
-      <!-- Password Field -->
-      <div class="form-group">
-        <label for="password" class="form-label">
-          Contraseña
-        </label>
-        <p-password
-          id="password"
-          formControlName="password"
-          placeholder="Ingrese su contraseña"
-          [toggleMask]="true"
-          [feedback]="false"
-          styleClass="login-password"
-          inputStyleClass="login-input"
-          [inputStyle]="{'width': '100%'}"
-        />
-        <small
-          class="p-error login-error"
-          *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          La contraseña es requerida (mínimo 4 caracteres)
-        </small>
-      </div>
+        <!-- Contraseña -->
+        <div class="form-field">
+          <label class="field-label required">
+            <i class="pi pi-key icon-bg-primary icon-bg icon-1x2"></i>
+            Contraseña
+          </label>
+          <p-password
+            id="password"
+            formControlName="password"
+            [toggleMask]="true"
+            [feedback]="false"
+            placeholder="Ingrese su contraseña"
+            [styleClass]="submitted && loginForm.get('password')?.invalid ? 'w-100 password-error' : 'w-100'"
+            inputStyleClass="w-100" />
+          <div class="field-helper error" *ngIf="submitted && loginForm.get('password')?.invalid">
+            <i class="pi pi-exclamation-circle"></i>
+            La contraseña es requerida (mínimo 4 caracteres)
+          </div>
+        </div>
 
-      <!-- Submit Button -->
-      <p-button
-        type="submit"
-        label="Iniciar Sesión"
-        icon="pi pi-sign-in"
-        [loading]="loading"
-        [disabled]="loginForm.invalid || loading"
-        styleClass="btn-primary login-button"
-      />
-    </form>
+        <!-- Botón de inicio de sesión -->
+        <p-button
+          label="Iniciar sesión"
+          icon="pi pi-sign-in"
+          type="submit"
+          styleClass="btn-primary btn-lg w-100"
+          [loading]="loading" />
+      </form>
+    </ng-template>
+    <ng-template pTemplate="footer">
 
-    <!-- Footer -->
-    <div class="login-footer">
-      <p class="login-info">
-        <i class="pi pi-info-circle icon-sm icon-primary"></i>
-        <span>Solo usuarios con rol de administrador pueden acceder</span>
-      </p>
-    </div>
-  </div>
+        <p-tag value="Solo usuarios con rol de administrador pueden acceder" icon="pi pi-info-circle" styleClass="p-tag-info tag-sm w-100 m-1" />
+    </ng-template>
+  </p-card>
 </div>
-
-<p-toast />
-

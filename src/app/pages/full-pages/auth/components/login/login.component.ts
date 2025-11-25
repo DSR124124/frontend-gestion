@@ -20,6 +20,7 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
+  submitted = false;
 
   constructor(
     private fb: FormBuilder,
@@ -42,6 +43,8 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
+    this.submitted = true;
+
     if (this.loginForm.invalid) {
       this.messageService.warn('Por favor, complete todos los campos correctamente', 'Validación');
       return;
@@ -53,10 +56,10 @@ export class LoginComponent {
     this.authService.login(credentials).subscribe({
       next: (response) => {
         this.loading = false;
-        this.messageService.success(`Hola ${response.nombreCompleto || response.username}`, 'Bienvenido');
 
-        // Verificar si es administrador
+        // Verificar si es administrador antes de mostrar mensajes
         if (this.authService.isAdmin()) {
+          this.messageService.success(`Hola ${response.nombreCompleto || response.username}`, 'Bienvenido');
           this.router.navigate(['/']);
         } else {
           this.authService.logout();

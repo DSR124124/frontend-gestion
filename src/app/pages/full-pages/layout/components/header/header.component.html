@@ -1,11 +1,9 @@
 <header class="header">
   <div class="header-left">
-    <button 
-      class="header-menu-btn" 
-      (click)="onToggleSidebar()"
+    <p-button styleClass="p-button-secondary p-button-rounded" (click)="onToggleSidebar()"
       [attr.aria-label]="'Toggle sidebar'">
       <i class="pi pi-bars"></i>
-    </button>
+    </p-button>
   </div>
 
   <div class="header-center">
@@ -13,15 +11,13 @@
   </div>
 
   <div class="header-right">
-    <p-menu #userMenu [model]="userMenuItems" [popup]="true"></p-menu>
-    <button 
-      pButton 
-      type="button" 
-      icon="pi pi-user" 
-      class="p-button-text p-button-rounded header-user-btn"
-      (click)="userMenu.toggle($event)"
-      [attr.aria-label]="'Menú de usuario'">
-    </button>
+    <p-select
+      [options]="userMenuItems"
+      [(ngModel)]="selectedUserMenuItem"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Acciones"
+      (onChange)="onUserMenuSelection($event.value)">
+    </p-select>
   </div>
 </header>
-

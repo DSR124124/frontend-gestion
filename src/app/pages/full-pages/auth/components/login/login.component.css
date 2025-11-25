@@ -1,303 +1,109 @@
-/* =============================================
-   LOGIN COMPONENT STYLES - NETTALCO
-   ============================================= */
-
 .login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-blue-light) 100%);
-  padding: 2rem;
-  position: relative;
-}
-
-.login-container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 20% 50%, rgba(74, 122, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(162, 240, 161, 0.1) 0%, transparent 50%);
-  pointer-events: none;
-}
-
-.login-card {
-  background: var(--color-white);
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(28, 34, 77, 0.3);
-  padding: 3rem;
-  width: 100%;
-  max-width: 450px;
-  position: relative;
-  z-index: 1;
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.login-title {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: 0.75rem;
-  line-height: var(--line-height-tight);
   background: linear-gradient(135deg, var(--color-navy-dark), var(--color-blue-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.login-subtitle {
-  font-size: var(--font-size-base);
-  color: var(--color-gray-medium);
-  margin: 0;
+:host ::ng-deep .login-card {
+  max-width: 450px;
+  width: 100%;
+}
+
+:host ::ng-deep .login-card .p-card-header {
+  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-blue-light));
+  text-align: center;
+}
+
+.login-header h1 {
+  color: white;
+}
+
+.login-header p {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
-  width: 100%;
+  gap: 1.25rem;
 }
 
-.form-group {
+.form-field {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 100%;
 }
 
-.form-label {
-  font-size: var(--font-size-medium);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-navy-dark);
-}
-
-/* Input Group - Username Field */
-.login-input-wrapper {
-  width: 100%;
-  display: flex;
-  align-items: stretch;
-}
-
-.login-input-wrapper .p-inputgroup {
-  width: 100%;
-  display: flex;
-  align-items: stretch;
-}
-
-.login-input-wrapper .p-inputgroup-addon {
-  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-blue-light)) !important;
-  border: 2px solid rgba(28, 34, 77, 0.1) !important;
-  border-right: none !important;
-  border-radius: 10px 0 0 10px !important;
-  padding: 0.75rem 1rem !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  min-width: 48px !important;
-  flex-shrink: 0 !important;
-}
-
-.login-input-wrapper .p-inputgroup-addon i {
-  color: var(--color-white) !important;
-  font-size: 1rem !important;
-}
-
-.login-input-wrapper .p-inputgroup input {
-  border-left: none !important;
-  border-radius: 0 10px 10px 0 !important;
-  flex: 1 !important;
-  min-width: 0 !important;
-}
-
-/* Input Styles (shared) - Consistent sizing */
-.login-input-wrapper .p-inputgroup input,
-.login-password .p-password-input {
-  width: 100% !important;
-  padding: 0.75rem 1rem !important;
-  border: 2px solid rgba(28, 34, 77, 0.1) !important;
-  font-size: var(--font-size-base) !important;
-  color: var(--color-navy-dark) !important;
-  transition: all 0.3s ease !important;
-  background: var(--color-white) !important;
-  height: auto !important;
-  min-height: 48px !important;
-  box-sizing: border-box !important;
-}
-
-.login-input-wrapper .p-inputgroup input:focus,
-.login-password .p-password-input:focus {
-  border-color: var(--color-blue-light) !important;
-  box-shadow: 0 0 0 3px rgba(74, 122, 255, 0.1) !important;
-  outline: none !important;
-}
-
-.login-input-wrapper .p-inputgroup input.ng-invalid.ng-touched,
-.login-password .p-password-input.ng-invalid.ng-touched {
-  border-color: var(--color-danger) !important;
-}
-
-.login-input-wrapper .p-inputgroup input::placeholder,
-.login-password .p-password-input::placeholder {
-  color: var(--color-gray-medium) !important;
-}
-
-/* Password Component - Match username field structure */
-.login-password {
-  width: 100%;
-  display: block;
-}
-
-.login-password .p-password {
-  width: 100%;
-  display: block;
-}
-
-.login-password .p-password-input-wrapper {
-  width: 100%;
-  display: block;
-  position: relative;
-}
-
-.login-password .p-password-input {
-  width: 100% !important;
-  padding: 0.75rem 1rem !important;
-  padding-right: 3rem !important;
-  border: 2px solid rgba(28, 34, 77, 0.1) !important;
-  border-radius: 10px !important;
-  font-size: var(--font-size-base) !important;
-  color: var(--color-navy-dark) !important;
-  transition: all 0.3s ease !important;
-  background: var(--color-white) !important;
-  height: auto !important;
-  min-height: 48px !important;
-  box-sizing: border-box !important;
-  line-height: 1.5 !important;
-}
-
-.login-password .p-password-input:focus {
-  border-color: var(--color-blue-light) !important;
-  box-shadow: 0 0 0 3px rgba(74, 122, 255, 0.1) !important;
-  outline: none !important;
-}
-
-.login-password .p-password-toggle {
-  position: absolute !important;
-  right: 0.75rem !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  color: var(--color-gray-medium) !important;
-  transition: color 0.2s ease !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0.5rem !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 1 !important;
-  width: auto !important;
-  height: auto !important;
-}
-
-.login-password .p-password-toggle:hover {
-  color: var(--color-blue-light) !important;
-}
-
-/* Error Messages */
-.login-error {
-  font-size: var(--font-size-small) !important;
-  color: var(--color-danger) !important;
-  margin-top: 0.25rem;
-}
-
-/* Button */
-.login-button {
-  margin-top: 0.5rem;
-  width: 100%;
-}
-
-.login-button .p-button {
-  width: 100% !important;
-  padding: 0.875rem 1.5rem !important;
-  font-size: var(--font-size-base) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  border-radius: 10px !important;
-  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-blue-light)) !important;
-  border: none !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 12px rgba(74, 122, 255, 0.25) !important;
-}
-
-.login-button .p-button:hover:not(:disabled) {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(74, 122, 255, 0.35) !important;
-}
-
-.login-button .p-button:active:not(:disabled) {
-  transform: translateY(0) !important;
-}
-
-.login-button .p-button:disabled {
-  opacity: 0.6 !important;
-  cursor: not-allowed !important;
-}
-
-/* Footer */
-.login-footer {
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(28, 34, 77, 0.1);
-  text-align: center;
-}
-
-.login-info {
-  font-size: var(--font-size-small);
-  color: var(--color-gray-medium);
+.field-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 0;
+  gap: 0.25rem;
 }
 
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.field-label.required::after {
+  content: " *";
+  color: #dc2626;
 }
 
-/* Responsive */
-@media (max-width: 576px) {
-  .login-container {
-    padding: 1rem;
-  }
-
-  .login-card {
-    padding: 2rem 1.5rem;
-    border-radius: 16px;
-  }
-
-  .login-title {
-    font-size: var(--font-size-h3);
-  }
-
-  .login-subtitle {
-    font-size: var(--font-size-medium);
-  }
-
-  .login-form {
-    gap: 1.5rem;
-  }
+.form-control {
+  padding: 0.625rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
 }
 
+.form-control:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+:host ::ng-deep .p-password {
+  width: 100%;
+}
+
+:host ::ng-deep .p-password .p-inputtext {
+  padding: 0.625rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+:host ::ng-deep .p-password .p-inputtext:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.field-helper {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.field-helper.error {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.input-error {
+  border-color: #dc2626 !important;
+}
+
+.input-error:focus {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
+:host ::ng-deep .password-error .p-inputtext {
+  border-color: #dc2626 !important;
+}
+
+:host ::ng-deep .password-error .p-inputtext:focus {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}

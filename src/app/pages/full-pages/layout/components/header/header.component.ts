@@ -1,21 +1,25 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
-import { MenuModule } from 'primeng/menu';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { MenuItem } from 'primeng/api';
+import { SelectModule } from 'primeng/select';
+import { AuthService } from '../../../auth/services/auth.service';
+import { UserInfo } from '../../../auth/interfaces/auth.interfaces';
+import { MessageService } from '../../../../../core/services/message.service';
+
+type UserMenuAction = 'profile' | 'settings' | 'logout';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ButtonModule,
     AvatarModule,
-    MenuModule,
-    OverlayPanelModule
+    SelectModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
@@ -23,31 +27,45 @@ import { MenuItem } from 'primeng/api';
 export class HeaderComponent {
   @Output() toggleSidebar = new EventEmitter<void>();
 
-  userMenuItems: MenuItem[] = [
-    {
-      label: 'Perfil',
-      icon: 'pi pi-user',
-      command: () => this.navigateToProfile()
-    },
-    {
-      label: 'Configuración',
-      icon: 'pi pi-cog',
-      command: () => this.navigateToSettings()
-    },
-    {
-      separator: true
-    },
-    {
-      label: 'Cerrar Sesión',
-      icon: 'pi pi-sign-out',
-      command: () => this.logout()
-    }
+  currentUser?: UserInfo | null;
+  userMenuItems = [
+    { label: 'Mi Perfil', value: 'profile' as UserMenuAction },
+    { label: 'Configuración', value: 'settings' as UserMenuAction },
+    { label: 'Salir', value: 'logout' as UserMenuAction }
   ];
+  selectedUserMenuItem: UserMenuAction | null = null;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private messageService: MessageService
+  ) {
+    this.currentUser = this.authService.getCurrentUser();
+  }
 
   onToggleSidebar() {
     this.toggleSidebar.emit();
+  }
+
+  onUserMenuSelection(action: UserMenuAction | null) {
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case 'profile':
+        this.navigateToProfile();
+        break;
+      case 'settings':
+        this.navigateToSettings();
+        break;
+      case 'logout':
+        this.logout();
+        break;
+    }
+
+    // reset select so placeholder shows again
+    setTimeout(() => (this.selectedUserMenuItem = null));
   }
 
   navigateToProfile() {
@@ -61,10 +79,8 @@ export class HeaderComponent {
   }
 
   logout() {
-    // Implementar logout
-    console.log('Cerrar sesión');
-    localStorage.removeItem('token');
-    this.router.navigate(['/auth/login']);
+    this.authService.logout();
+    this.messageService.info('Sesión cerrada correctamente', 'Hasta luego');
   }
 }
 
