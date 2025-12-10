@@ -236,7 +236,7 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
   gestionarSistema(): void {
     const sistemaSeguridad = this.externalSystemService.getSystemById('seguridad');
     if (sistemaSeguridad && this.externalSystemService.canAccessSystem(sistemaSeguridad)) {
-      this.router.navigate(['/sistemas/seguridad']);
+      this.externalSystemService.openSystemInNewWindow('seguridad');
     } else {
       this.messageService.add({
         severity: 'warn',

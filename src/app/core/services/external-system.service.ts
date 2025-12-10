@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ExternalSystem, ExternalSystemConfig } from '../interfaces/external-system.interface';
 import { AuthService } from '../../pages/full-pages/auth/services/auth.service';
 import { environment } from '../../../environment/environment';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,10 @@ export class ExternalSystemService {
   private systemsSubject = new BehaviorSubject<ExternalSystem[]>([]);
   public systems$: Observable<ExternalSystem[]> = this.systemsSubject.asObservable();
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private messageService: MessageService
+  ) {
     this.initializeSystems();
   }
 
@@ -78,6 +82,30 @@ export class ExternalSystemService {
 
     const separator = system.url.includes('?') ? '&' : '?';
     return `${system.url}${separator}token=${encodeURIComponent(token)}`;
+  }
+
+  openSystemInNewWindow(systemId: string): void {
+    const system = this.getSystemById(systemId);
+    if (!system) {
+      this.messageService.error(
+        `Sistema con ID "${systemId}" no encontrado`,
+        'Error',
+        5000
+      );
+      return;
+    }
+
+    if (!this.canAccessSystem(system)) {
+      this.messageService.warn(
+        'No tiene permisos para acceder a este sistema',
+        'Acceso Denegado',
+        5000
+      );
+      return;
+    }
+
+    const url = this.getSystemUrlWithAuth(system);
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   registerSystem(system: ExternalSystem): void {
