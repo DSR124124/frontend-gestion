@@ -203,14 +203,6 @@ export class CrearUsuarioComponent implements OnInit, OnDestroy {
               detail: errorMessage,
               life: 7000
             });
-            
-            // Log para debugging
-            console.error('[CrearUsuarioComponent] Error 403 al actualizar usuario:', {
-              status: error.status,
-              statusText: error.statusText,
-              url: error.url,
-              error: error.error
-            });
           } else {
             const errorMessage = error?.error?.mensaje || error?.error?.message || 
               error?.message || 'Error al actualizar el usuario';
