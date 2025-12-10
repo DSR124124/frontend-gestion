@@ -25,6 +25,7 @@
           [filter]="true"
           filterBy="version,nombreAplicacion"
           styleClass="w-full"
+          appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idLanzamiento')"
         >
           <ng-template let-lanzamiento pTemplate="item">
@@ -60,6 +61,7 @@
           [filter]="true"
           filterBy="nombreGrupo,descripcion"
           styleClass="w-full"
+          appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idGrupo')"
         >
           <ng-template let-grupo pTemplate="item">
@@ -129,6 +131,7 @@
           [filter]="true"
           filterBy="nombreCompleto,username,email"
           styleClass="w-full"
+          appendTo="body"
         >
           <ng-template let-usuario pTemplate="item">
             <div class="flex align-items-center">

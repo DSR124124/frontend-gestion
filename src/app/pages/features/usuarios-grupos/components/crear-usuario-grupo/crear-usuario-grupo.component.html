@@ -25,6 +25,7 @@
           [filter]="true"
           filterBy="nombreCompleto,username,email"
           styleClass="w-full"
+          appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idUsuario')"
         >
           <ng-template let-usuario pTemplate="item">
@@ -60,6 +61,7 @@
           [filter]="true"
           filterBy="nombreGrupo,descripcion"
           styleClass="w-full"
+          appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idGrupo')"
         >
           <ng-template let-grupo pTemplate="item">
