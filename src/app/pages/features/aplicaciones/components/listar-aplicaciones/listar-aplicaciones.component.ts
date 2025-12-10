@@ -8,6 +8,7 @@ import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { CrearAplicacionComponent } from '../crear-aplicacion/crear-aplicacion.component';
 import { Subscription, forkJoin } from 'rxjs';
+import { ExternalSystemService } from '../../../../../core/services/external-system.service';
 
 @Component({
   selector: 'app-listar-aplicaciones',
@@ -36,7 +37,8 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private loadingService: LoadingService,
-    private router: Router
+    private router: Router,
+    private externalSystemService: ExternalSystemService
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
       next: ({ aplicaciones, lanzamientos }) => {
         this.aplicaciones = aplicaciones;
         this.aplicacionesFiltradas = aplicaciones;
-        
+
         // Contar lanzamientos por aplicación
         this.conteoLanzamientos.clear();
         lanzamientos.forEach(lanzamiento => {
@@ -70,7 +72,7 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
           const conteoActual = this.conteoLanzamientos.get(idAplicacion) || 0;
           this.conteoLanzamientos.set(idAplicacion, conteoActual + 1);
         });
-        
+
         this.loadingService.hide();
       },
       error: (error) => {
@@ -229,6 +231,20 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
     this.router.navigate(['/lanzamientos'], {
       queryParams: { aplicacion: aplicacion.idAplicacion }
     });
+  }
+
+  gestionarSistema(): void {
+    const sistemaSeguridad = this.externalSystemService.getSystemById('seguridad');
+    if (sistemaSeguridad && this.externalSystemService.canAccessSystem(sistemaSeguridad)) {
+      this.router.navigate(['/sistemas/seguridad']);
+    } else {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Acceso Denegado',
+        detail: 'No tiene permisos para acceder al sistema de gestión de seguridad',
+        life: 5000
+      });
+    }
   }
 }
 

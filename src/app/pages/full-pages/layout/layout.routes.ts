@@ -49,6 +49,10 @@ export const layoutRoutes: Routes = [
       {
         path: 'lanzamientos-disponibles',
         loadComponent: () => import('../../features/usuarios-lanzamientos-disponibles/components/listar-usuarios-lanzamientos-disponibles/listar-usuarios-lanzamientos-disponibles.component').then(m => m.ListarUsuariosLanzamientosDisponiblesComponent)
+      },
+      {
+        path: 'sistemas/:id',
+        loadComponent: () => import('./components/external-system-wrapper/external-system-wrapper.component').then(m => m.ExternalSystemWrapperComponent)
       }
     ]
   }

@@ -20,6 +20,9 @@
 
     <ng-template #end>
       <div class="d-flex gap-2">
+        <p-button icon="pi pi-shield" label="Gestionar Sistema" styleClass="p-button-warning"
+          (onClick)="gestionarSistema()" pTooltip="Abrir sistema de gestión de seguridad y transporte"
+          tooltipPosition="bottom"></p-button>
         <p-button icon="pi pi-plus" label="Nueva Aplicación" styleClass="p-button-primary"
           (onClick)="abrirDialogoCrear()"></p-button>
         <p-button icon="pi pi-refresh" label="Actualizar" styleClass="p-button-info" (onClick)="cargarAplicaciones()"

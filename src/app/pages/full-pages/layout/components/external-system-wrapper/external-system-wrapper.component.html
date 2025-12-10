@@ -1,0 +1,58 @@
+<div class="external-system-wrapper">
+  <div class="system-header" *ngIf="system">
+    <div class="header-content">
+      <div class="system-info">
+        <i [class]="system.icon || 'pi pi-external-link'" class="system-icon"></i>
+        <div>
+          <h3>{{ system.name }}</h3>
+          <p *ngIf="system.description" class="system-description">{{ system.description }}</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <p-button
+          icon="pi pi-arrow-left"
+          label="Volver"
+          styleClass="p-button-secondary"
+          (onClick)="goBack()">
+        </p-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="system-content">
+    <div *ngIf="loading" class="loading-container">
+      <p-progressSpinner></p-progressSpinner>
+      <p>Cargando sistema...</p>
+    </div>
+
+    <div *ngIf="error && !loading" class="error-container">
+      <i class="pi pi-exclamation-triangle error-icon"></i>
+      <h3>Error al cargar el sistema</h3>
+      <p>{{ error }}</p>
+      <p-button
+        icon="pi pi-refresh"
+        label="Reintentar"
+        styleClass="p-button-primary"
+        (onClick)="retry()">
+      </p-button>
+      <p-button
+        icon="pi pi-arrow-left"
+        label="Volver"
+        styleClass="p-button-secondary"
+        (onClick)="goBack()">
+      </p-button>
+    </div>
+
+    <iframe
+      *ngIf="system && systemUrl && !loading && !error"
+      [src]="systemUrl"
+      [title]="system.name"
+      class="system-iframe"
+      [attr.sandbox]="system.iframeConfig?.sandbox?.join(' ') || undefined"
+      [attr.allowfullscreen]="system.iframeConfig?.allowFullscreen ? '' : null"
+      (load)="onIframeLoad()"
+      (error)="onIframeError()">
+    </iframe>
+  </div>
+</div>
+
