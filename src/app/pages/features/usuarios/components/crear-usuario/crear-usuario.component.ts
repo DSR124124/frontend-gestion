@@ -7,6 +7,8 @@ import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { Usuario, UsuarioDTO } from '../../interfaces/usuario.interface';
 import { Rol } from '../../../roles/interfaces/rol.interface';
+import { AuthService } from '../../../../full-pages/auth/services/auth.service';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -37,7 +39,9 @@ export class CrearUsuarioComponent implements OnInit, OnDestroy {
     private usuarioService: UsuarioService,
     private rolService: RolService,
     private messageService: MessageService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private authService: AuthService,
+    private router: Router
   ) {
     this.initForm();
   }
@@ -157,6 +161,19 @@ export class CrearUsuarioComponent implements OnInit, OnDestroy {
       usuarioDTO.password = this.usuarioForm.value.password;
     }
 
+    // Verificar que el token existe antes de hacer la petición
+    const token = this.authService.getToken();
+    if (!token || token.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Sesión Expirada',
+        detail: 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.',
+        life: 5000
+      });
+      this.authService.logout();
+      return;
+    }
+    
     this.loadingService.show();
     
     if (this.modoEdicion && this.usuarioId) {
@@ -175,13 +192,35 @@ export class CrearUsuarioComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.loadingService.hide();
-          const errorMessage = error?.message || error?.error?.message || 'Error al actualizar el usuario';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          
+          // Manejo específico para errores 403 (Forbidden)
+          if (error?.status === 403) {
+            const errorMessage = error?.error?.mensaje || error?.error?.message || 
+              'Acceso denegado. Su sesión puede haber expirado. Por favor, inicie sesión nuevamente.';
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Acceso Denegado (403)',
+              detail: errorMessage,
+              life: 7000
+            });
+            
+            // Log para debugging
+            console.error('[CrearUsuarioComponent] Error 403 al actualizar usuario:', {
+              status: error.status,
+              statusText: error.statusText,
+              url: error.url,
+              error: error.error
+            });
+          } else {
+            const errorMessage = error?.error?.mensaje || error?.error?.message || 
+              error?.message || 'Error al actualizar el usuario';
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorMessage,
+              life: 5000
+            });
+          }
         }
       });
       this.subscriptions.push(sub);
