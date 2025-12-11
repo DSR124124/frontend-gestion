@@ -87,12 +87,6 @@
         <canvas id="chartLanzamientosPorAplicacion"></canvas>
       </div>
     </div>
-
-    <div class="card chart-card">
-      <div class="chart-container">
-        <canvas id="chartUsuariosConAcceso"></canvas>
-      </div>
-    </div>
   </div>
 
   <!-- Tabla de estadísticas -->
@@ -147,8 +141,8 @@
             <p-tag [value]="(estadistica.gruposAsignados || 0).toString()" class="tag-secondary"></p-tag>
           </td>
           <td>
-            <i 
-              *ngIf="estadistica.esCritico" 
+            <i
+              *ngIf="estadistica.esCritico"
               class="pi pi-exclamation-triangle text-danger"
               pTooltip="Actualización crítica"
               tooltipPosition="top"

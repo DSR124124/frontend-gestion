@@ -59,23 +59,16 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
 
   cargarAplicaciones(): void {
     this.loadingService.show();
-    forkJoin({
-      aplicaciones: this.aplicacionService.listar(),
-      lanzamientos: this.lanzamientoService.listar()
-    }).subscribe({
-      next: ({ aplicaciones, lanzamientos }) => {
+
+    // Cargar aplicaciones primero (obligatorio)
+    this.aplicacionService.listar().subscribe({
+      next: (aplicaciones) => {
         this.aplicaciones = aplicaciones;
         this.aplicacionesFiltradas = aplicaciones;
-
-        // Contar lanzamientos por aplicación
-        this.conteoLanzamientos.clear();
-        lanzamientos.forEach(lanzamiento => {
-          const idAplicacion = lanzamiento.idAplicacion;
-          const conteoActual = this.conteoLanzamientos.get(idAplicacion) || 0;
-          this.conteoLanzamientos.set(idAplicacion, conteoActual + 1);
-        });
-
         this.loadingService.hide();
+
+        // Intentar cargar lanzamientos de forma opcional (no bloquea si falla)
+        this.cargarLanzamientosOpcional();
       },
       error: (error) => {
         this.loadingService.hide();
@@ -86,6 +79,32 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
           detail: errorMessage,
           life: 5000
         });
+      }
+    });
+  }
+
+  private cargarLanzamientosOpcional(): void {
+    // Intentar cargar lanzamientos, pero no mostrar error si falla por permisos
+    this.lanzamientoService.listar().subscribe({
+      next: (lanzamientos) => {
+        // Contar lanzamientos por aplicación
+        this.conteoLanzamientos.clear();
+        lanzamientos.forEach(lanzamiento => {
+          const idAplicacion = lanzamiento.idAplicacion;
+          const conteoActual = this.conteoLanzamientos.get(idAplicacion) || 0;
+          this.conteoLanzamientos.set(idAplicacion, conteoActual + 1);
+        });
+      },
+      error: (error) => {
+        // Si es un error 403 (Forbidden), simplemente no cargar los conteos
+        // No mostrar error al usuario ya que es opcional
+        if (error?.status === 403) {
+          this.conteoLanzamientos.clear();
+        } else {
+          // Para otros errores, solo loguear sin mostrar mensaje al usuario
+          console.warn('No se pudieron cargar los lanzamientos:', error);
+          this.conteoLanzamientos.clear();
+        }
       }
     });
   }

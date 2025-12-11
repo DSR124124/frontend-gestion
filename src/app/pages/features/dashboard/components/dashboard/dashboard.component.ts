@@ -40,7 +40,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   chartUsuariosPorAplicacion: any;
   chartLanzamientosPorEstado: any;
   chartLanzamientosPorAplicacion: any;
-  chartUsuariosConAcceso: any;
 
   private loadingSubscription?: Subscription;
   private subscriptions: Subscription[] = [];
@@ -74,9 +73,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     if (this.chartLanzamientosPorAplicacion) {
       this.chartLanzamientosPorAplicacion.destroy();
-    }
-    if (this.chartUsuariosConAcceso) {
-      this.chartUsuariosConAcceso.destroy();
     }
   }
 
@@ -143,7 +139,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.crearGraficoUsuariosPorAplicacion();
     this.crearGraficoLanzamientosPorEstado();
     this.crearGraficoLanzamientosPorAplicacion();
-    this.crearGraficoUsuariosConAcceso();
   }
 
   crearGraficoUsuariosPorAplicacion(): void {
@@ -360,75 +355,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.chartLanzamientosPorAplicacion = new Chart(canvas, config);
     } catch (error) {
       console.error('Error al crear gráfico de lanzamientos por aplicación:', error);
-    }
-  }
-
-  crearGraficoUsuariosConAcceso(): void {
-    const canvas = document.getElementById('chartUsuariosConAcceso') as HTMLCanvasElement;
-    if (!canvas) {
-      console.error('Canvas chartUsuariosConAcceso no encontrado');
-      return;
-    }
-
-    // Destruir gráfico anterior si existe
-    if (this.chartUsuariosConAcceso) {
-      this.chartUsuariosConAcceso.destroy();
-    }
-
-    // Top 10 lanzamientos con más usuarios
-    const topLanzamientos = [...this.estadisticas]
-      .sort((a, b) => (b.usuariosConAcceso || 0) - (a.usuariosConAcceso || 0))
-      .slice(0, 10);
-
-    if (topLanzamientos.length === 0) {
-      console.warn('No hay datos para el gráfico de usuarios con acceso');
-      return;
-    }
-
-    const labels = topLanzamientos.map(est =>
-      `${est.nombreAplicacion || 'N/A'} - ${est.version || 'N/A'}`
-    );
-    const data = topLanzamientos.map(est => est.usuariosConAcceso || 0);
-
-    const config: ChartConfiguration = {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Usuarios con Acceso',
-          data: data,
-          fill: false,
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          tension: 0.1,
-          pointRadius: 5,
-          pointHoverRadius: 7
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true
-          },
-          title: {
-            display: true,
-            text: 'Top 10 Lanzamientos por Usuarios con Acceso'
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    };
-
-    try {
-      this.chartUsuariosConAcceso = new Chart(canvas, config);
-    } catch (error) {
-      console.error('Error al crear gráfico de usuarios con acceso:', error);
     }
   }
 
