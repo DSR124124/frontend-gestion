@@ -57,7 +57,6 @@
   }
 
   .field:has(#descripcion),
-  .field:has(#iconoUrl),
   .field:has(#repositorioUrl) {
     grid-column: span 2;
   }

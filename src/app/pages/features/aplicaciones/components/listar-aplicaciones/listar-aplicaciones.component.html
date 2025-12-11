@@ -45,7 +45,8 @@
         <th style="width: 12%">Fecha Creación</th>
         <th style="width: 12%">Última Modificación</th>
         <th style="width: 12%">Lanzamientos</th>
-        <th style="width: 14%">Acciones</th>
+        <th style="width: 10%">Sistema</th>
+        <th style="width: 12%">Acciones</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-aplicacion>
@@ -75,9 +76,22 @@
             (click)="verLanzamientos(aplicacion)"></p-button>
         </td>
         <td>
+          <p-button
+            *ngIf="aplicacion.url && tienePermisosParaSistema(aplicacion)"
+            icon="pi pi-external-link"
+            styleClass="btn-info btn-v2"
+            pTooltip="Abrir {{ aplicacion.nombreAplicacion }}"
+            tooltipPosition="top"
+            (click)="abrirSistema(aplicacion)"
+            [disabled]="!aplicacion.url || !aplicacion.activo">
+          </p-button>
+          <span *ngIf="!aplicacion.url" class="text-secondary">-</span>
+          <span *ngIf="aplicacion.url && !tienePermisosParaSistema(aplicacion)" class="text-secondary" pTooltip="No tiene permisos para acceder" tooltipPosition="top">
+            <i class="pi pi-lock"></i>
+          </span>
+        </td>
+        <td>
           <div class="acciones-cell">
-            <p-button icon="pi pi-shield" styleClass="btn-warning btn-v2" pTooltip="Gestionar Sistema" tooltipPosition="top"
-              (click)="gestionarSistema()"></p-button>
             <p-button icon="pi pi-pencil" styleClass="btn-success btn-v2" pTooltip="Editar aplicación" tooltipPosition="top"
               (click)="editarAplicacion(aplicacion)"></p-button>
             <p-button icon="pi pi-trash" styleClass="btn-danger btn-v2" pTooltip="Eliminar aplicación"
@@ -88,7 +102,7 @@
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="9" class="text-center p-4">
+        <td colspan="10" class="text-center p-4">
           <div class="empty-message">
             <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
             <p>No se encontraron aplicaciones</p>

@@ -9,6 +9,7 @@ import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { CrearAplicacionComponent } from '../crear-aplicacion/crear-aplicacion.component';
 import { Subscription, forkJoin } from 'rxjs';
 import { ExternalSystemService } from '../../../../../core/services/external-system.service';
+import { AuthService } from '../../../../full-pages/auth/services/auth.service';
 
 @Component({
   selector: 'app-listar-aplicaciones',
@@ -38,7 +39,8 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private loadingService: LoadingService,
     private router: Router,
-    private externalSystemService: ExternalSystemService
+    private externalSystemService: ExternalSystemService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -233,18 +235,66 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
     });
   }
 
-  gestionarSistema(): void {
-    const sistemaSeguridad = this.externalSystemService.getSystemById('seguridad');
-    if (sistemaSeguridad && this.externalSystemService.canAccessSystem(sistemaSeguridad)) {
-      this.externalSystemService.openSystemInNewWindow('seguridad');
-    } else {
+  tienePermisosParaSistema(aplicacion: Aplicacion): boolean {
+    // Verificar que el usuario esté autenticado
+    if (!this.authService.isAuthenticated()) {
+      return false;
+    }
+
+    // Por ahora, permitir acceso si el usuario está autenticado
+    // Puedes agregar lógica adicional aquí basada en roles o permisos específicos
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      return false;
+    }
+
+    // Si la aplicación está inactiva, no permitir acceso
+    if (!aplicacion.activo) {
+      return false;
+    }
+
+    // Aquí puedes agregar validaciones adicionales basadas en roles
+    // Por ejemplo: solo administradores pueden acceder a ciertos sistemas
+    // if (aplicacion.codigoProducto === 'SISTEMA_ADMIN' && user.nombreRol !== 'ADMINISTRADOR') {
+    //   return false;
+    // }
+
+    return true;
+  }
+
+  abrirSistema(aplicacion: Aplicacion): void {
+    if (!aplicacion.url) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'URL no disponible',
+        detail: 'Esta aplicación no tiene una URL configurada',
+        life: 5000
+      });
+      return;
+    }
+
+    if (!this.tienePermisosParaSistema(aplicacion)) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Acceso Denegado',
-        detail: 'No tiene permisos para acceder al sistema de gestión de seguridad',
+        detail: 'No tiene permisos para acceder a este sistema',
         life: 5000
       });
+      return;
     }
+
+    // Obtener el token del usuario autenticado
+    const token = this.authService.getToken();
+    let url = aplicacion.url;
+
+    // Agregar el token como parámetro si está disponible
+    if (token) {
+      const separator = url.includes('?') ? '&' : '?';
+      url = `${url}${separator}token=${encodeURIComponent(token)}`;
+    }
+
+    // Abrir en una nueva ventana
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
 

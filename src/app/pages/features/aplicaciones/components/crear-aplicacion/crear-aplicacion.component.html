@@ -76,28 +76,6 @@
         </small>
       </div>
 
-      <!-- URL del Icono -->
-      <div class="field">
-        <label for="iconoUrl">
-          URL del Icono
-        </label>
-        <input
-          id="iconoUrl"
-          type="url"
-          pInputText
-          formControlName="iconoUrl"
-          [class.ng-invalid]="isFieldInvalid('iconoUrl')"
-          placeholder="https://ejemplo.com/icono.png"
-          maxlength="500"
-        />
-        <small
-          *ngIf="isFieldInvalid('iconoUrl')"
-          class="p-error"
-        >
-          <span *ngIf="f['iconoUrl'].errors?.['maxlength']">La URL no puede exceder 500 caracteres</span>
-        </small>
-      </div>
-
       <!-- URL del Repositorio -->
       <div class="field">
         <label for="repositorioUrl">
@@ -117,6 +95,28 @@
           class="p-error"
         >
           <span *ngIf="f['repositorioUrl'].errors?.['maxlength']">La URL no puede exceder 500 caracteres</span>
+        </small>
+      </div>
+
+      <!-- URL -->
+      <div class="field">
+        <label for="url">
+          URL
+        </label>
+        <input
+          id="url"
+          type="url"
+          pInputText
+          formControlName="url"
+          [class.ng-invalid]="isFieldInvalid('url')"
+          placeholder="https://edugen.brianuceda.xyz/sistema-seguridad/"
+          maxlength="500"
+        />
+        <small
+          *ngIf="isFieldInvalid('url')"
+          class="p-error"
+        >
+          <span *ngIf="f['url'].errors?.['maxlength']">La URL no puede exceder 500 caracteres</span>
         </small>
       </div>
 

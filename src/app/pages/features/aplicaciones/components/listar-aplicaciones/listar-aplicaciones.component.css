@@ -43,3 +43,9 @@
   align-items: center;
 }
 
+/* Texto secundario */
+.text-secondary {
+  color: var(--color-gray-medium);
+  font-size: var(--font-size-small);
+}
+

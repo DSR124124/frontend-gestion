@@ -55,8 +55,8 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
       nombreAplicacion: ['', [Validators.required, Validators.maxLength(255)]],
       descripcion: ['', [Validators.maxLength(500)]],
       codigoProducto: ['', [Validators.maxLength(50)]],
-      iconoUrl: ['', [Validators.maxLength(500)]],
       repositorioUrl: ['', [Validators.maxLength(500)]],
+      url: ['', [Validators.maxLength(500)]],
       responsableId: [null],
       activo: [true]
     });
@@ -94,8 +94,8 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
         nombreAplicacion: aplicacion.nombreAplicacion,
         descripcion: aplicacion.descripcion || '',
         codigoProducto: aplicacion.codigoProducto || '',
-        iconoUrl: aplicacion.iconoUrl || '',
         repositorioUrl: aplicacion.repositorioUrl || '',
+        url: aplicacion.url || '',
         responsableId: aplicacion.responsableId || null,
         activo: aplicacion.activo
       });
@@ -134,8 +134,8 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
       nombreAplicacion: this.aplicacionForm.value.nombreAplicacion,
       descripcion: this.aplicacionForm.value.descripcion || undefined,
       codigoProducto: this.aplicacionForm.value.codigoProducto || undefined,
-      iconoUrl: this.aplicacionForm.value.iconoUrl || undefined,
       repositorioUrl: this.aplicacionForm.value.repositorioUrl || undefined,
+      url: this.aplicacionForm.value.url || undefined,
       responsableId: this.aplicacionForm.value.responsableId || undefined,
       activo: this.aplicacionForm.value.activo ?? true
     };
