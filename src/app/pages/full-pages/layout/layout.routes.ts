@@ -36,19 +36,23 @@ export const layoutRoutes: Routes = [
       },
       {
         path: 'usuarios-aplicaciones',
-        loadComponent: () => import('../../features/usuarios-aplicaciones/components/listar-usuarios-aplicaciones/listar-usuarios-aplicaciones.component').then(m => m.ListarUsuariosAplicacionesComponent)
+        loadComponent: () => import('../../features/aplicaciones/components/listar-usuarios-aplicaciones/listar-usuarios-aplicaciones.component').then(m => m.ListarUsuariosAplicacionesComponent)
       },
       {
         path: 'usuarios-grupos',
-        loadComponent: () => import('../../features/usuarios-grupos/components/listar-usuarios-grupos/listar-usuarios-grupos.component').then(m => m.ListarUsuariosGruposComponent)
+        loadComponent: () => import('../../features/grupos-despliegue/components/listar-usuarios-grupos/listar-usuarios-grupos.component').then(m => m.ListarUsuariosGruposComponent)
       },
       {
         path: 'lanzamientos-grupos',
-        loadComponent: () => import('../../features/lanzamientos-grupos/components/listar-lanzamientos-grupos/listar-lanzamientos-grupos.component').then(m => m.ListarLanzamientosGruposComponent)
+        loadComponent: () => import('../../features/lanzamientos/components/listar-lanzamientos-grupos/listar-lanzamientos-grupos.component').then(m => m.ListarLanzamientosGruposComponent)
       },
       {
         path: 'lanzamientos-disponibles',
-        loadComponent: () => import('../../features/usuarios-lanzamientos-disponibles/components/listar-usuarios-lanzamientos-disponibles/listar-usuarios-lanzamientos-disponibles.component').then(m => m.ListarUsuariosLanzamientosDisponiblesComponent)
+        loadComponent: () => import('../../features/dashboard/components/listar-usuarios-lanzamientos-disponibles/listar-usuarios-lanzamientos-disponibles.component').then(m => m.ListarUsuariosLanzamientosDisponiblesComponent)
+      },
+      {
+        path: 'notificaciones',
+        loadComponent: () => import('../../features/notificaciones/components/listar-notificaciones/listar-notificaciones.component').then(m => m.ListarNotificacionesComponent)
       },
       {
         path: 'sistemas/:id',

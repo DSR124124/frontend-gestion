@@ -1,0 +1,72 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field.full-width {
+  grid-column: 1 / -1;
+}
+
+label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+label.required {
+  position: relative;
+}
+
+.required-asterisk {
+  color: #dc3545;
+  margin-left: 0.25rem;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+.text-secondary {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.p-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.ng-invalid {
+  border-color: #dc3545;
+}
+

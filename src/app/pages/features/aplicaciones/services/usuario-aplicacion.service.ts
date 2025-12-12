@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError } from 'rxjs';
-import { UsuarioAplicacion, UsuarioAplicacionDTO } from '../interfaces/usuario-aplicacion.interface';
+import { UsuarioAplicacion, UsuarioAplicacionDTO } from '../../aplicaciones/interfaces/usuario-aplicacion.interface';
 import { environment } from '../../../../../environment/environment';
 import { HttpUtilsService } from '../../../../shared/services/http-utils.service';
 

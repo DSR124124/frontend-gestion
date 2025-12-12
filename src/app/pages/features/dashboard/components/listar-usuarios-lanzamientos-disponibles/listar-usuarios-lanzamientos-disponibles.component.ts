@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UsuarioLanzamientoDisponible } from '../../interfaces/usuario-lanzamiento-disponible.interface';
-import { UsuarioLanzamientoDisponibleService } from '../../services/usuario-lanzamiento-disponible.service';
+import { UsuarioLanzamientoDisponible } from '../../../dashboard/interfaces/usuario-lanzamiento-disponible.interface';
+import { UsuarioLanzamientoDisponibleService } from '../../../dashboard/services/usuario-lanzamiento-disponible.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
 import { AplicacionService } from '../../../aplicaciones/services/aplicacion.service';
 import { GrupoDespliegueService } from '../../../grupos-despliegue/services/grupo-despliegue.service';
@@ -95,7 +95,7 @@ export class ListarUsuariosLanzamientosDisponiblesComponent implements OnInit, O
 
   cargarLanzamientosDisponibles(): void {
     this.loadingService.show();
-    
+
     let observable;
     if (this.filtroUsuario) {
       observable = this.usuarioLanzamientoDisponibleService.listarPorUsuario(this.filtroUsuario);
@@ -217,12 +217,12 @@ export class ListarUsuariosLanzamientosDisponiblesComponent implements OnInit, O
     const unidades = ['B', 'KB', 'MB', 'GB'];
     let tamanoFormateado = tamano;
     let unidadIndex = 0;
-    
+
     while (tamanoFormateado >= 1024 && unidadIndex < unidades.length - 1) {
       tamanoFormateado /= 1024;
       unidadIndex++;
     }
-    
+
     return `${tamanoFormateado.toFixed(2)} ${unidades[unidadIndex]}`;
   }
 

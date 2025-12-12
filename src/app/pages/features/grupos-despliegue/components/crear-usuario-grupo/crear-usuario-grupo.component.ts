@@ -2,13 +2,13 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/cor
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsuarioGrupoService } from '../../services/usuario-grupo.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
-import { GrupoDespliegueService } from '../../../grupos-despliegue/services/grupo-despliegue.service';
+import { GrupoDespliegueService } from '../../services/grupo-despliegue.service';
 import { MessageService } from 'primeng/api';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { UsuarioGrupo, UsuarioGrupoDTO } from '../../interfaces/usuario-grupo.interface';
 import { Usuario } from '../../../usuarios/interfaces/usuario.interface';
-import { GrupoDespliegue } from '../../../grupos-despliegue/interfaces/grupo-despliegue.interface';
+import { GrupoDespliegue } from '../../interfaces/grupo-despliegue.interface';
 import { Subscription } from 'rxjs';
 
 @Component({

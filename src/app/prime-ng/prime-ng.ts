@@ -10,6 +10,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ChipModule } from 'primeng/chip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { CalendarModule } from 'primeng/calendar';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
@@ -83,6 +84,7 @@ export const PrimeNGModules = [
   CardModule,
   CarouselModule,
   // ChartModule, // Comentado - descomenta si necesitas gráficos
+  CalendarModule,
   CheckboxModule,
   ChipModule,
   ConfirmDialogModule,

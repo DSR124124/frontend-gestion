@@ -2,13 +2,13 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/cor
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsuarioAplicacionService } from '../../services/usuario-aplicacion.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
-import { AplicacionService } from '../../../aplicaciones/services/aplicacion.service';
+import { AplicacionService } from '../../services/aplicacion.service';
 import { MessageService } from 'primeng/api';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { UsuarioAplicacion, UsuarioAplicacionDTO } from '../../interfaces/usuario-aplicacion.interface';
 import { Usuario } from '../../../usuarios/interfaces/usuario.interface';
-import { Aplicacion } from '../../../aplicaciones/interfaces/aplicacion.interface';
+import { Aplicacion } from '../../interfaces/aplicacion.interface';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -114,14 +114,14 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
     this.submitted = false;
 
     if (usuarioAplicacion) {
-      const fechaUltimoAcceso = usuarioAplicacion.fechaUltimoAcceso 
+      const fechaUltimoAcceso = usuarioAplicacion.fechaUltimoAcceso
         ? new Date(usuarioAplicacion.fechaUltimoAcceso).toISOString().slice(0, 16)
         : null;
-      
-      const fechaExpiracion = usuarioAplicacion.fechaExpiracionLicencia 
+
+      const fechaExpiracion = usuarioAplicacion.fechaExpiracionLicencia
         ? new Date(usuarioAplicacion.fechaExpiracionLicencia).toISOString().slice(0, 16)
         : null;
-      
+
       this.usuarioAplicacionForm.patchValue({
         idUsuario: usuarioAplicacion.idUsuario,
         idAplicacion: usuarioAplicacion.idAplicacion,
@@ -162,12 +162,12 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
     }
 
     const formValue = this.usuarioAplicacionForm.value;
-    const fechaUltimoAcceso = formValue.fechaUltimoAcceso 
-      ? new Date(formValue.fechaUltimoAcceso).toISOString() 
+    const fechaUltimoAcceso = formValue.fechaUltimoAcceso
+      ? new Date(formValue.fechaUltimoAcceso).toISOString()
       : undefined;
-    
-    const fechaExpiracion = formValue.fechaExpiracionLicencia 
-      ? new Date(formValue.fechaExpiracionLicencia).toISOString() 
+
+    const fechaExpiracion = formValue.fechaExpiracionLicencia
+      ? new Date(formValue.fechaExpiracionLicencia).toISOString()
       : undefined;
 
     const usuarioAplicacionDTO: UsuarioAplicacionDTO = {
