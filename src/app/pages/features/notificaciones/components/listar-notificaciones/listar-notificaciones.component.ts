@@ -1,24 +1,21 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Notificacion } from '../../interfaces/notificacion.interface';
 import { NotificacionService } from '../../services/notificacion.service';
 import { AplicacionService } from '../../../aplicaciones/services/aplicacion.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
-import { CrearNotificacionComponent } from '../crear-notificacion/crear-notificacion.component';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../../../full-pages/auth/services/auth.service';
 
 @Component({
   selector: 'app-listar-notificaciones',
   standalone: true,
   imports: [
-    ...PrimeNGModules,
-    CrearNotificacionComponent
+    ...PrimeNGModules
   ],
   templateUrl: './listar-notificaciones.component.html',
   styleUrl: './listar-notificaciones.component.css',
-  providers: [MessageService, ConfirmationService]
+  providers: [MessageService]
 })
 export class ListarNotificacionesComponent implements OnInit, OnDestroy {
   notificaciones: Notificacion[] = [];
@@ -30,8 +27,6 @@ export class ListarNotificacionesComponent implements OnInit, OnDestroy {
   filtroAplicacion: number | null = null;
   aplicaciones: any[] = [];
   private loadingSubscription?: Subscription;
-
-  @ViewChild(CrearNotificacionComponent) crearNotificacionComponent?: CrearNotificacionComponent;
 
   tiposNotificacion = [
     { label: 'Todas', value: '' },
@@ -54,9 +49,7 @@ export class ListarNotificacionesComponent implements OnInit, OnDestroy {
     private notificacionService: NotificacionService,
     private aplicacionService: AplicacionService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private loadingService: LoadingService,
-    private authService: AuthService
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -235,65 +228,6 @@ export class ListarNotificacionesComponent implements OnInit, OnDestroy {
     }
   }
 
-  abrirDialogoCrear(): void {
-    if (this.crearNotificacionComponent) {
-      this.crearNotificacionComponent.showDialog();
-    }
-  }
-
-  onNotificacionCreada(): void {
-    this.cargarNotificaciones();
-  }
-
-  onNotificacionActualizada(): void {
-    this.cargarNotificaciones();
-  }
-
-  editarNotificacion(notificacion: Notificacion): void {
-    if (this.crearNotificacionComponent) {
-      this.crearNotificacionComponent.showDialog(notificacion);
-    }
-  }
-
-  confirmarEliminar(notificacion: Notificacion): void {
-    this.confirmationService.confirm({
-      message: `¿Está seguro de que desea eliminar la notificación "${notificacion.titulo}"?`,
-      header: 'Confirmar Eliminación',
-      icon: 'pi pi-exclamation-triangle',
-      acceptButtonStyleClass: 'p-button-danger',
-      acceptLabel: 'Sí, eliminar',
-      rejectLabel: 'Cancelar',
-      accept: () => {
-        this.eliminarNotificacion(notificacion.idNotificacion);
-      }
-    });
-  }
-
-  eliminarNotificacion(id: number): void {
-    this.loadingService.show();
-    this.notificacionService.eliminar(id).subscribe({
-      next: () => {
-        this.loadingService.hide();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Notificación eliminada correctamente',
-          life: 5000
-        });
-        this.cargarNotificaciones();
-      },
-      error: (error) => {
-        this.loadingService.hide();
-        const errorMessage = error?.message || error?.error?.message || 'Error al eliminar la notificación';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
-      }
-    });
-  }
 
   estaExpirada(notificacion: Notificacion): boolean {
     if (!notificacion.fechaExpiracion) return false;

@@ -43,8 +43,6 @@
 
     <ng-template #end>
       <div class="d-flex gap-2">
-        <p-button icon="pi pi-plus" label="Nueva Notificación" styleClass="p-button-primary"
-          (onClick)="abrirDialogoCrear()"></p-button>
         <p-button icon="pi pi-refresh" label="Actualizar" styleClass="p-button-info" 
           (onClick)="cargarNotificaciones()" [disabled]="loading"></p-button>
       </div>
@@ -67,8 +65,7 @@
         <th style="width: 10%">Creador</th>
         <th style="width: 8%">Estado</th>
         <th style="width: 10%">Destinatarios</th>
-        <th style="width: 10%">Fecha Creación</th>
-        <th style="width: 12%">Acciones</th>
+        <th style="width: 22%">Fecha Creación</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-notificacion>
@@ -115,21 +112,11 @@
             {{ formatearFecha(notificacion.fechaCreacion) }}
           </span>
         </td>
-        <td>
-          <div class="acciones-cell">
-            <p-button icon="pi pi-pencil" styleClass="btn-success btn-v2" 
-              pTooltip="Editar notificación" tooltipPosition="top"
-              (click)="editarNotificacion(notificacion)"></p-button>
-            <p-button icon="pi pi-trash" styleClass="btn-danger btn-v2" 
-              pTooltip="Eliminar notificación" tooltipPosition="top" 
-              (click)="confirmarEliminar(notificacion)"></p-button>
-          </div>
-        </td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="10" class="text-center p-4">
+        <td colspan="9" class="text-center p-4">
           <div class="empty-message">
             <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
             <p>No se encontraron notificaciones</p>
@@ -139,12 +126,4 @@
     </ng-template>
   </p-table>
 </div>
-
-<!-- Componente de crear/editar notificación -->
-<app-crear-notificacion #crearNotificacionComponent 
-  (notificacionCreada)="onNotificacionCreada()"
-  (notificacionActualizada)="onNotificacionActualizada()"></app-crear-notificacion>
-
-<!-- Confirmación de eliminación -->
-<p-confirmDialog></p-confirmDialog>
 
