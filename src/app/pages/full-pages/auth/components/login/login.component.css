@@ -1,8 +1,9 @@
 .login-container {
   min-height: 100vh;
-  background-size: 130%;
-  background-position: right center;
+  background-size: cover;
+  background-position: center center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
   position: relative;
   padding: 1rem;
 }
@@ -40,11 +41,23 @@
   color: #ffffff;
   text-align: center;
   padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  overflow: hidden;
 }
 
 .logo {
-  height: 160px;
+  height: auto;
+  max-height: 160px;
   width: auto;
+  max-width: 90%;
+  min-width: 150px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .logo-floating {
@@ -99,11 +112,43 @@
 }
 
 @media screen and (max-width: 767px) {
+  .login-container {
+    background-size: cover;
+    background-position: center center;
+    background-attachment: scroll;
+  }
+
   .illustration-container {
     display: none;
   }
 
   .login-wrapper {
     flex-direction: column;
+  }
+
+  .logo {
+    max-height: 120px;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .login-container {
+    background-size: cover;
+    background-position: center center;
+  }
+
+  .logo {
+    max-height: 140px;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .login-container {
+    background-size: cover;
+    background-position: center center;
+  }
+
+  .logo {
+    max-height: 180px;
   }
 }
