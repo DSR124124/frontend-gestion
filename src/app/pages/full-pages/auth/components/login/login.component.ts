@@ -27,6 +27,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   logoFloating = true;
   buttonLabel = 'Pantalla completa';
   isFullscreen = false;
+  backgroundImageStyle: { [key: string]: string } = {};
   private fullscreenSubscription?: Subscription;
 
   constructor(
@@ -44,6 +45,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Configurar imagen de fondo
+    this.backgroundImageStyle = {
+      'background-image': `url('img/logo/fondo.jpg')`
+    };
+
     // Verificar si hay un error en los query params
     this.route.queryParams.subscribe(params => {
       if (params['error']) {

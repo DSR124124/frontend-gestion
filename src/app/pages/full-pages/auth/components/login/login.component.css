@@ -1,13 +1,10 @@
 .login-container {
   min-height: 100vh;
-  /* background-image: url("img/logo/DSC_0900.jpg"); */
-  background-image: url("/img/logo/fondo.jpg");
   background-size: 130%;
   background-position: right center;
   background-repeat: no-repeat;
   position: relative;
   padding: 1rem;
-
 }
 
 .login-container::before {
