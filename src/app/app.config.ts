@@ -26,7 +26,6 @@ export const appConfig: ApplicationConfig = {
         preset: NettalcoPreset,
         options: {
           darkModeSelector: '.app-dark', // Selector para modo oscuro
-          prefix: 'p' // Prefijo de variables CSS (por defecto 'p')
         }
       }
     }),

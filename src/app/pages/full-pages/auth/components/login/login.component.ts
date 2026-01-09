@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MessageService } from '../../../../../core/services/message.service';
+import { FullscreenService } from '../../../../../shared/services/fullscreen.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -12,34 +14,87 @@ import { CommonModule } from '@angular/common';
   imports: [
     ...PrimeNGModules,
     ReactiveFormsModule,
+    FormsModule,
     CommonModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   loading = false;
   submitted = false;
+  logoFloating = true;
+  buttonLabel = 'Pantalla completa';
+  isFullscreen = false;
+  private fullscreenSubscription?: Subscription;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private fullscreenService: FullscreenService
   ) {
     this.loginForm = this.fb.group({
-      usernameOrEmail: ['', [Validators.required]],
+      username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(4)]]
     });
+  }
 
+  ngOnInit(): void {
     // Verificar si hay un error en los query params
     this.route.queryParams.subscribe(params => {
       if (params['error']) {
         this.messageService.error(params['error'], 'Acceso Denegado');
       }
     });
+
+    // Suscribirse al estado de pantalla completa
+    this.fullscreenSubscription = this.fullscreenService.isFullscreen$.subscribe(isFullscreen => {
+      this.isFullscreen = isFullscreen;
+      this.buttonLabel = isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa';
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.fullscreenSubscription) {
+      this.fullscreenSubscription.unsubscribe();
+    }
+  }
+
+  toggleFullscreen(): void {
+    if (!this.isFullscreen) {
+      this.enterFullscreen();
+    } else {
+      this.exitFullscreen();
+    }
+  }
+
+  private enterFullscreen(): void {
+    const element = document.documentElement;
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if ((element as any).webkitRequestFullscreen) {
+      (element as any).webkitRequestFullscreen();
+    } else if ((element as any).mozRequestFullScreen) {
+      (element as any).mozRequestFullScreen();
+    } else if ((element as any).msRequestFullscreen) {
+      (element as any).msRequestFullscreen();
+    }
+  }
+
+  private exitFullscreen(): void {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if ((document as any).webkitExitFullscreen) {
+      (document as any).webkitExitFullscreen();
+    } else if ((document as any).mozCancelFullScreen) {
+      (document as any).mozCancelFullScreen();
+    } else if ((document as any).msExitFullscreen) {
+      (document as any).msExitFullscreen();
+    }
   }
 
   onSubmit(): void {
@@ -51,7 +106,10 @@ export class LoginComponent {
     }
 
     this.loading = true;
-    const credentials = this.loginForm.value;
+    const credentials = {
+      usernameOrEmail: this.loginForm.value.username,
+      password: this.loginForm.value.password
+    };
 
     this.authService.login(credentials).subscribe({
       next: (response) => {

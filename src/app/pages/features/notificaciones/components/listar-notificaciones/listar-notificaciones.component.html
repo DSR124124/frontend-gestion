@@ -10,30 +10,30 @@
             [(ngModel)]="terminoBusqueda" (input)="aplicarFiltros()" />
         </p-iconfield>
 
-        <p-dropdown 
-          [options]="tiposNotificacion" 
-          [(ngModel)]="filtroTipo" 
+        <p-select
+          [options]="tiposNotificacion"
+          [(ngModel)]="filtroTipo"
           placeholder="Tipo"
           (onChange)="aplicarFiltros()"
           styleClass="w-12rem">
-        </p-dropdown>
+        </p-select>
 
-        <p-dropdown 
-          [options]="prioridades" 
-          [(ngModel)]="filtroPrioridad" 
+        <p-select
+          [options]="prioridades"
+          [(ngModel)]="filtroPrioridad"
           placeholder="Prioridad"
           (onChange)="aplicarFiltros()"
           styleClass="w-12rem">
-        </p-dropdown>
+        </p-select>
 
-        <p-dropdown 
-          [options]="aplicaciones" 
-          [(ngModel)]="filtroAplicacion" 
+        <p-select
+          [options]="aplicaciones"
+          [(ngModel)]="filtroAplicacion"
           placeholder="Aplicación"
           (onChange)="aplicarFiltros()"
           [showClear]="true"
           styleClass="w-12rem">
-        </p-dropdown>
+        </p-select>
 
         <p-button *ngIf="terminoBusqueda || filtroTipo || filtroPrioridad || filtroAplicacion" 
           icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"

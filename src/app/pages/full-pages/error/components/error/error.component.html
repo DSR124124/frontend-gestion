@@ -1,0 +1,60 @@
+<div class="error-container" *ngIf="errorInfo">
+  <div class="error-content">
+    <!-- Ilustración del error -->
+    <div class="error-illustration">
+        <i
+          [class]="errorInfo.icon + ' icon-outline icon-circle icon-circle-xl'"
+          [ngClass]="'icon-outline-' + errorInfo.severity"
+        ></i>
+      <h1 class="error-code text-h1 text-navy m-0 p-0">{{ errorInfo.code }}</h1>
+    </div>
+
+    <!-- Contenido del error -->
+    <div class="error-text">
+      <h1 class="text-h1 text-blue">{{ errorInfo.title }}</h1>
+      <p class="text-h3 text-navy">{{ errorInfo.message }}</p>
+      <p class="text-base font-light">{{ errorInfo.description }}</p>
+    </div>
+
+    <!-- Acciones -->
+    <div class="error-actions">
+      <p-button
+        label="Ir al inicio"
+        icon="pi pi-home"
+        styleClass="btn-primary btn-lg"
+        (click)="goHome()">
+      </p-button>
+
+      <p-button
+        label="Volver atrás"
+        icon="pi pi-arrow-left"
+        styleClass="btn-secondary btn-lg"
+        (click)="goBack()">
+      </p-button>
+
+      <p-button
+        *ngIf="errorInfo.showRefresh"
+        label="Recargar"
+        icon="pi pi-refresh"
+        styleClass="btn-primary btn-v2 btn-lg"
+        (click)="refreshPage()">
+      </p-button>
+    </div>
+
+    <!-- Información de soporte -->
+    <div class="error-support" *ngIf="errorInfo.showSupport">
+      <div class="support-card">
+        <div class="support-content">
+          <i class="pi pi-question icon-bg icon-circle icon-circle-sm icon-bg-info p-0 m-0"></i>
+          <div class="support-text p-0">
+            <p class="text-h6 text-blue m-0">¿Necesitas ayuda?</p>
+            <p class="text-medium font-light m-0 p-0">
+              Si el problema persiste, contacta al equipo de soporte técnico con
+              el código de error.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

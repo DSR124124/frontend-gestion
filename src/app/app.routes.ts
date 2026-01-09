@@ -7,12 +7,16 @@ export const routes: Routes = [
     loadChildren: () => import('./pages/full-pages/auth/auth.routes').then(m => m.authRoutes)
   },
   {
+    path: 'error',
+    loadComponent: () => import('./pages/full-pages/error/components/error/error.component').then(m => m.ErrorComponent)
+  },
+  {
     path: '',
     canActivate: [adminGuard],
     loadChildren: () => import('./pages/full-pages/layout/layout.routes').then(m => m.layoutRoutes)
   },
   {
     path: '**',
-    redirectTo: '/auth/login'
+    redirectTo: '/error?type=404'
   }
 ];
