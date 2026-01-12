@@ -30,12 +30,11 @@ export class SidebarItemComponent implements OnInit, OnDestroy {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    // Cerrar submenús cuando cambia la ruta
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        if (this.depth === 0) {
-          this.expandChange.emit({ index: this.index, depth: this.depth, expanded: false });
+        if (this.item.items && this.item.items.length > 0 && this.hasActiveChild()) {
+          this.expandChange.emit({ index: this.index, depth: this.depth, expanded: true });
         }
       });
   }
@@ -51,29 +50,11 @@ export class SidebarItemComponent implements OnInit, OnDestroy {
     event.stopPropagation();
 
     if (this.item.items && this.item.items.length > 0) {
-      const newExpandedState = !this.expanded;
-      this.expandChange.emit({ index: this.index, depth: this.depth, expanded: newExpandedState });
+      this.expandChange.emit({ index: this.index, depth: this.depth, expanded: !this.expanded });
     } else if (this.item.routerLink) {
       this.router.navigate(Array.isArray(this.item.routerLink) ? this.item.routerLink : [this.item.routerLink]);
       this.onLinkClick();
     } else if (this.item.command) {
-      this.executeCommand();
-    }
-  }
-
-  toggleExpand() {
-    if (this.item.items && this.item.items.length > 0) {
-      const newExpandedState = !this.expanded;
-      this.expandChange.emit({ index: this.index, depth: this.depth, expanded: newExpandedState });
-    }
-  }
-
-  isExpanded(): boolean {
-    return this.expanded;
-  }
-
-  executeCommand() {
-    if (this.item.command) {
       this.item.command();
       this.onLinkClick();
     }
@@ -82,16 +63,42 @@ export class SidebarItemComponent implements OnInit, OnDestroy {
   isActive(): boolean {
     if (!this.item.routerLink) return false;
 
-    const currentUrl = this.router.url;
-    const itemRoute = Array.isArray(this.item.routerLink)
+    const currentUrl = this.router.url.replace(/^\/+/, '').replace(/\/+$/, '');
+    const itemRoute = (Array.isArray(this.item.routerLink)
       ? this.item.routerLink.join('/')
-      : this.item.routerLink;
+      : this.item.routerLink).replace(/^\/+/, '').replace(/\/+$/, '');
 
-    // Normalizar rutas (remover barras iniciales)
-    const normalizedCurrent = currentUrl.replace(/^\/+/, '');
-    const normalizedRoute = itemRoute.replace(/^\/+/, '');
+    if (currentUrl === itemRoute || currentUrl.startsWith(itemRoute + '/')) {
+      return true;
+    }
 
-    return normalizedCurrent === normalizedRoute || normalizedCurrent.startsWith(normalizedRoute + '/');
+    return !!(this.item.items && this.item.items.length > 0 && this.hasActiveChild());
+  }
+
+  hasActiveChild(): boolean {
+    if (!this.item.items?.length) return false;
+
+    const currentUrl = this.router.url.replace(/^\/+/, '').replace(/\/+$/, '');
+
+    return this.item.items.some(subItem => {
+      if (subItem.routerLink) {
+        const subRoute = (Array.isArray(subItem.routerLink)
+          ? subItem.routerLink.join('/')
+          : subItem.routerLink).replace(/^\/+/, '').replace(/\/+$/, '');
+
+        if (currentUrl === subRoute || currentUrl.startsWith(subRoute + '/')) {
+          return true;
+        }
+      }
+
+      return !!(subItem.items && subItem.items.length > 0 && subItem.items.some(grandChild => {
+        if (!grandChild.routerLink) return false;
+        const grandRoute = (Array.isArray(grandChild.routerLink)
+          ? grandChild.routerLink.join('/')
+          : grandChild.routerLink).replace(/^\/+/, '').replace(/\/+$/, '');
+        return currentUrl === grandRoute || currentUrl.startsWith(grandRoute + '/');
+      }));
+    });
   }
 
   onLinkClick() {
@@ -102,15 +109,9 @@ export class SidebarItemComponent implements OnInit, OnDestroy {
   }
 
   getTooltipText(): string {
-    if (this.sidebarCollapsed && this.item.label) {
-      return this.item.label;
-    }
-    return '';
+    return this.sidebarCollapsed && this.item.label ? this.item.label : '';
   }
 
-  handleExpandChange(event: { index: number, depth: number, expanded: boolean }) {
-    this.expandChange.emit(event);
-  }
 
   trackBySubItem(index: number, subItem: SidebarItem): any {
     return subItem.id || index;

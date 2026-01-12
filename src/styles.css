@@ -1,31 +1,30 @@
+@import "primeicons/primeicons.css";
 /* Importar estilos específicos de botones */
-@import "assets/styles/styles_botones.css";
+@import "./assets/styles/styles_botones.css";
 /* Importar estilos específicos de tags */
-@import "assets/styles/styles_tags.css";
+@import "./assets/styles/styles_tags.css";
 /* Importar estilos específicos de iconos */
-@import "assets/styles/styles_iconos.css";
-/* Importar estilos específicos de colores */
-@import "assets/styles/styles_colores.css";
+@import "./assets/styles/styles_iconos.css";
 /* Importar estilos específicos de tablas */
-@import "assets/styles/styles_tabla.css";
+@import "./assets/styles/styles_tabla.css";
 /* Importar estilos específicos de tablist */
-@import "assets/styles/styles_tablist.css";
+@import "./assets/styles/styles_tablist.css";
 /* Importar estilos específicos de toast */
-@import "assets/styles/styles_toast.css";
+@import "./assets/styles/styles_toast.css";
 /* Importar estilos específicos de cards */
-@import "assets/styles/styles-cards.css";
+@import "./assets/styles/styles-cards.css";
 /* Importar estilos específicos de driver.js */
-@import "assets/styles/styles_driver.css";
+@import "./assets/styles/styles_driver.css";
 /* Importar estilos específicos de toolbar */
-@import "assets/styles/styles_toolbar.css";
+@import "./assets/styles/styles_toolbar.css";
 /* Importar estilos específicos de tipografía */
-@import "assets/styles/styles_typography.css";
+@import "./assets/styles/styles_typography.css";
 /* Importar estilos específicos de stepper */
-@import "assets/styles/styles_stepper.css";
+@import "./assets/styles/styles_stepper.css";
 /* Importar estilos específicos de calendar */
-@import "assets/styles/styles_calendar.css";
+@import "./assets/styles/styles_calendar.css";
 /* Importar estilos específicos de inputs */
-@import "assets/styles/styles_imputs.css";
+@import "./assets/styles/styles_imputs.css";
 
 @font-face {
   font-family: "Anek Latin";
@@ -212,38 +211,12 @@ body {
 
 
 
-.header {
-  background-color: var(--layout-header-bg) !important;
-  color: var(--texto-header-color) !important;
-}
-
-.sidebar {
-  background-color: var(--layout-sidebar-bg) !important;
-  color: var(--texto-sidebar-color) !important;
-}
-
-.footer {
-  background-color: var(--layout-footer-bg) !important;
-  color: var(--texto-footer-color) !important;
-}
-
-.main-content {
-  background-color: var(--layout-main-bg) !important;
-  color: var(--texto-content-color) !important;
-}
-
-.icono {
-  color: var(--p-primary-color);
-}
-
 .p-password,
 .p-password > input {
   width: 100% !important;
 }
 
-.p-button-modificado .p-button {
-  width: 100% !important;
-}
+
 
 .p-drawer {
   border: 0 !important;
