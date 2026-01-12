@@ -668,3 +668,14 @@ body {
       font-size: 0.875rem !important;
     }
   }
+  .p-breadcrumb {
+    background-color: transparent !important;
+    padding: 0rem 0.2rem !important;
+    color: var(--v2-primary) !important;
+  }
+  .p-breadcrumb-item-link{
+    color: var(--v2-primary) !important;
+  }
+  .p-breadcrumb-item-label {
+    color: var(--v2-primary) !important;
+  }

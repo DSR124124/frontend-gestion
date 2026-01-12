@@ -1,9 +1,12 @@
 <header class="header">
   <div class="header-left">
-    <p-button styleClass="p-button-secondary p-button-rounded" (click)="onToggleSidebar()"
+    <p-button
+      styleClass="p-button-secondary p-button-rounded"
+      (click)="onToggleSidebar()"
       [attr.aria-label]="'Toggle sidebar'">
       <i class="pi pi-bars"></i>
     </p-button>
+    <app-breadcrumb *ngIf="config.breadcrumbVisible"></app-breadcrumb>
   </div>
 
   <div class="header-center">
@@ -12,6 +15,7 @@
 
   <div class="header-right">
     <p-select
+      class="user-menu-select"
       [options]="userMenuItems"
       [(ngModel)]="selectedUserMenuItem"
       optionLabel="label"
