@@ -36,6 +36,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/sistema-gestion/",
               "budgets": [
                 {
                   "type": "initial",
