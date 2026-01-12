@@ -42,7 +42,11 @@ export class AuthService {
   logout(): void {
     this.removeToken();
     this.removeUserInfo();
-    this.router.navigate(['/auth/login']);
+    // Usar navigateByUrl para forzar la navegación y limpiar el historial
+    this.router.navigateByUrl('/auth/login', { replaceUrl: true }).catch(() => {
+      // Si falla, intentar con navigate
+      this.router.navigate(['/auth/login'], { replaceUrl: true });
+    });
   }
 
   getToken(): string | null {

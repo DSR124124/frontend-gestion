@@ -100,8 +100,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.authService.logout();
     this.messageService.info('Sesión cerrada correctamente', 'Hasta luego');
+    // Pequeño delay para que el usuario vea el mensaje antes de navegar
+    setTimeout(() => {
+      this.authService.logout();
+    }, 500);
   }
 }
 
