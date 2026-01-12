@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-blue-light));
+  background: var(--color-navy-dark);
   color: var(--texto-header-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   min-height: 70px;

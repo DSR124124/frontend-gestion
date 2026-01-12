@@ -1,31 +1,30 @@
-::ng-deep .sidebar {
+.sidebar {
   width: 280px;
   min-width: 280px;
   max-width: 280px;
   height: 100vh;
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--p-primary-500) 0%, var(--p-primary-600) 100%) !important;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  color: var(--p-primary-inverse-color) !important;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  z-index: 1000 !important;
-  flex-shrink: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  background: linear-gradient(180deg, var(--p-primary-500) 0%, var(--p-primary-600) 100%);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: var(--p-primary-inverse-color);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
 }
 
-/* Modo oscuro - Sidebar con fondo claro */
-html.app-dark ::ng-deep .sidebar {
-  background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%) !important;
-  color: #1c224d !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1) !important;
+html.app-dark .sidebar {
+  background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%);
+  color: #1c224d;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar::before {
@@ -43,29 +42,28 @@ html.app-dark ::ng-deep .sidebar {
   );
 }
 
-/* Modo oscuro - Sidebar ::before con color oscuro */
 html.app-dark .sidebar::before {
   background: linear-gradient(
     90deg,
     transparent,
     rgba(0, 0, 0, 0.2),
     transparent
-  ) !important;
+  );
 }
 
-::ng-deep .sidebar-mini {
+.sidebar-mini {
   width: 70px !important;
   min-width: 70px !important;
   max-width: 70px !important;
-  background: linear-gradient(180deg, #2a3a6b 0%, #1e2749 100%) !important;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1) !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
+  background: linear-gradient(180deg, #2a3a6b 0%, #1e2749 100%);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
-::ng-deep .sidebar-hidden {
+.sidebar-hidden {
   display: none !important;
   width: 0 !important;
   min-width: 0 !important;
@@ -73,16 +71,10 @@ html.app-dark .sidebar::before {
   overflow: hidden !important;
 }
 
-/* Modo oscuro - Sidebar mini con fondo claro */
-html.app-dark ::ng-deep .sidebar-mini {
-  background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%) !important;
-  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1) !important;
-  color: #1c224d !important;
-}
-
-.texto-none {
-  display: none;
-  transition: width 0.5s ease, opacity 0.5s ease;
+html.app-dark .sidebar-mini {
+  background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%);
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  color: #1c224d;
 }
 
 .titulo-wrapper {
@@ -98,10 +90,9 @@ html.app-dark ::ng-deep .sidebar-mini {
   position: relative;
 }
 
-/* Modo oscuro - Título wrapper con fondo claro */
 html.app-dark .titulo-wrapper {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .titulo-wrapper::after {
@@ -120,15 +111,14 @@ html.app-dark .titulo-wrapper {
   opacity: 0.6;
 }
 
-/* Modo oscuro - Título wrapper ::after */
 html.app-dark .titulo-wrapper::after {
   background: linear-gradient(
     90deg,
     transparent,
     #4a7aff,
     transparent
-  ) !important;
-  opacity: 0.6 !important;
+  );
+  opacity: 0.6;
 }
 
 .titulo-wrapper-colapsado {
@@ -155,27 +145,15 @@ html.app-dark .titulo-wrapper::after {
   max-width: 200px;
 }
 
-/* Modo oscuro - Título con gradiente oscuro */
 html.app-dark .titulo {
-  background: linear-gradient(135deg, #1c224d, #4a7aff) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
+  background: linear-gradient(135deg, #1c224d, #4a7aff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.titulo-colapsado {
-  max-width: 0;
-  padding: 0;
-  opacity: 0;
-}
-
-.logo {
-  height: 30px;
-}
-
-ul {
+.menu {
   list-style: none;
-  /* padding: 1rem 0.75rem; */
   padding: 0.25rem 0 0 0;
   margin: 0;
   gap: 0.5rem;
@@ -205,30 +183,6 @@ ul {
   box-shadow: 0 4px 12px rgba(74, 122, 255, 0.2);
 }
 
-/* Utilidades para sidebar colapsado */
-.texto-none {
-  display: none;
-  transition: all 0.4s ease;
-}
-
-/* Estilos para PrimeNG overrides */
-::ng-deep .sidebar .p-button {
-  border-radius: 8px !important;
-  transition: all 0.3s ease !important;
-}
-
-::ng-deep .sidebar .active-button button {
-  background: linear-gradient(
-    135deg,
-    var(--p-highlight-background),
-    var(--color-mint-light)
-  ) !important;
-  border-color: transparent !important;
-  color: var(--p-primary-500) !important;
-  box-shadow: 0 4px 12px rgba(74, 122, 255, 0.3) !important;
-}
-
-/* Mejoras para scrollbar personalizado */
 .sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -257,9 +211,8 @@ ul {
   box-shadow: 0 0 8px rgba(74, 122, 255, 0.4);
 }
 
-/* Modo oscuro - Scrollbar del sidebar */
 html.app-dark .sidebar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05) !important;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 html.app-dark .sidebar::-webkit-scrollbar-thumb {
@@ -267,7 +220,7 @@ html.app-dark .sidebar::-webkit-scrollbar-thumb {
     180deg,
     #4a7aff,
     #a2f0a1
-  ) !important;
+  );
 }
 
 html.app-dark .sidebar::-webkit-scrollbar-thumb:hover {
@@ -275,100 +228,10 @@ html.app-dark .sidebar::-webkit-scrollbar-thumb:hover {
     180deg,
     #a2f0a1,
     #4a7aff
-  ) !important;
-  box-shadow: 0 0 8px rgba(74, 122, 255, 0.4) !important;
+  );
+  box-shadow: 0 0 8px rgba(74, 122, 255, 0.4);
 }
 
-/* Efectos de animación para sidebar colapsado */
-.sidebar-mini .menu-item {
-  justify-content: center;
-  padding: 0 8px;
-}
-
-.sidebar-mini .titulo {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  font-size: 12px;
-  letter-spacing: 2px;
-}
-
-/* Tooltip para sidebar colapsado */
-.sidebar-mini .menu-link {
-  position: relative;
-  justify-content: center;
-  padding: 12px 8px;
-}
-
-/* Ocultar texto en sidebar colapsado */
-.sidebar-mini .menu-text {
-  display: none !important;
-  opacity: 0 !important;
-  width: 0 !important;
-  overflow: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* Ajustar iconos en sidebar colapsado */
-.sidebar-mini .menu-link i.menu-icon {
-  margin-right: 0 !important;
-  margin-left: 0 !important;
-}
-
-/* Ocultar chevron en sidebar colapsado */
-.sidebar-mini .menu-link .pi-chevron-down {
-  display: none !important;
-}
-
-.sidebar-mini .menu-link:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--color-navy-dark);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  margin-left: 8px;
-  opacity: 0;
-  animation: tooltipFadeIn 0.3s ease forwards;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Modo oscuro - Tooltip del sidebar mini */
-html.app-dark .sidebar-mini .menu-link:hover::after {
-  background: #1c224d !important;
-  color: white !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-}
-
-@keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-50%) translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
-  }
-}
-
-/* Mejoras adicionales para accesibilidad */
-.sidebar {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Estado de hover para todo el sidebar */
-.sidebar:hover {
-  box-shadow: 6px 0 25px rgba(0, 0, 0, 0.2);
-}
-
-/* Efectos de luz ambiente */
 .sidebar::after {
   content: "";
   position: absolute;
@@ -386,7 +249,6 @@ html.app-dark .sidebar-mini .menu-link:hover::after {
   opacity: 0.6;
 }
 
-/* Modo oscuro - Sidebar ::after con colores ajustados */
 html.app-dark .sidebar::after {
   background: linear-gradient(
     180deg,
@@ -394,6 +256,26 @@ html.app-dark .sidebar::after {
     rgba(74, 122, 255, 0.2) 30%,
     rgba(162, 240, 161, 0.2) 70%,
     transparent
-  ) !important;
-  opacity: 0.4 !important;
+  );
+  opacity: 0.4;
+}
+
+.logo {
+  height: 30px;
+}
+
+.submenu-header {
+  color: var(--p-primary-color);
+  font-weight: bold;
+}
+
+.boton-perfil {
+  transition: background var(--p-menu-transition-duration),
+    color var(--p-menu-transition-duration);
+  border-radius: var(--p-menu-item-border-radius);
+}
+
+.boton-perfil:hover {
+  color: var(--p-menu-item-focus-color);
+  background: #f1f5f9;
 }
