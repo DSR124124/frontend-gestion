@@ -1,0 +1,11 @@
+<div
+  *ngIf="loading$ | async"
+  class="spinner-container"
+>
+  <p-progressSpinner
+    strokeWidth="8"
+    fill="transparent"
+    animationDuration=".5s"
+    [style]="{ width: '100px', height: '100px' }"
+  />
+</div>
