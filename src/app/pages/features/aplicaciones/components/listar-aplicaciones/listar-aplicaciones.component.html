@@ -12,8 +12,6 @@
 
         <p-button *ngIf="terminoBusqueda" icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
           (onClick)="limpiarBusqueda()"></p-button>
-
-        <p-button icon="pi pi-filter" label="fitros" styleClass="p-button-info" [disabled]="loading"></p-button>
       </div>
 
     </ng-template>
@@ -22,100 +20,15 @@
       <div class="d-flex gap-2">
         <p-button icon="pi pi-plus" label="Nueva Aplicación" styleClass="p-button-primary"
           (onClick)="abrirDialogoCrear()"></p-button>
-        <p-button icon="pi pi-refresh" label="Actualizar" styleClass="p-button-info" (onClick)="cargarAplicaciones()"
-          [disabled]="loading"></p-button>
       </div>
     </ng-template>
   </p-toolbar>
 
   <p-divider></p-divider>
 
-  <p-table [value]="aplicacionesFiltradas" [loading]="loading" [paginator]="true" [rows]="10"
-    [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
-    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} aplicaciones"
-    [globalFilterFields]="['nombreAplicacion', 'descripcion', 'codigoProducto', 'responsableNombre']"
-    styleClass="tabla-datos">
-    <ng-template pTemplate="header">
-      <tr>
-        <th style="width: 5%">ID</th>
-        <th style="width: 15%">Nombre</th>
-        <th style="width: 10%">Código</th>
-        <th style="width: 12%">Responsable</th>
-        <th style="width: 8%">Estado</th>
-        <th style="width: 12%">Fecha Creación</th>
-        <th style="width: 12%">Última Modificación</th>
-        <th style="width: 12%">Lanzamientos</th>
-        <th style="width: 10%">Sistema</th>
-        <th style="width: 12%">Acciones</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-aplicacion>
-      <tr>
-        <td>{{ aplicacion.idAplicacion }}</td>
-        <td>
-          <strong>{{ aplicacion.nombreAplicacion }}</strong>
-        </td>
-        <td>
-          <p-tag [value]="aplicacion.codigoProducto" class="tag-secondary"></p-tag>
-        </td>
-        <td>{{ aplicacion.responsableNombre || '-' }}</td>
-        <td>
-          <p-tag [value]="getEstadoLabel(aplicacion.activo)" class="tag-success"></p-tag>
-        </td>
-        <td>{{ formatearFecha(aplicacion.fechaCreacion) }}</td>
-        <td>
-          <span class="fecha-modificacion" [title]="formatearFechaCompleta(aplicacion.fechaModificacion)">
-            <i class="pi pi-clock"></i>
-            {{ formatearFecha(aplicacion.fechaModificacion) }}
-          </span>
-        </td>
-        <td>
-          <p-button icon="pi pi-box"
-            [label]="obtenerConteoLanzamientos(aplicacion.idAplicacion).toString()" styleClass="btn-success"
-            pTooltip="Ver lanzamientos de {{ aplicacion.nombreAplicacion }}" tooltipPosition="top"
-            (click)="verLanzamientos(aplicacion)"></p-button>
-        </td>
-        <td>
-          <p-button
-            *ngIf="aplicacion.url && tienePermisosParaSistema(aplicacion)"
-            icon="pi pi-external-link"
-            styleClass="btn-info btn-v2"
-            pTooltip="Abrir {{ aplicacion.nombreAplicacion }}"
-            tooltipPosition="top"
-            (click)="abrirSistema(aplicacion)"
-            [disabled]="!aplicacion.url || !aplicacion.activo">
-          </p-button>
-          <span *ngIf="!aplicacion.url" class="text-secondary">-</span>
-          <span *ngIf="aplicacion.url && !tienePermisosParaSistema(aplicacion)" class="text-secondary" pTooltip="No tiene permisos para acceder" tooltipPosition="top">
-            <i class="pi pi-lock"></i>
-          </span>
-        </td>
-        <td>
-          <div class="acciones-cell">
-            <p-button icon="pi pi-pencil" styleClass="btn-success btn-v2" pTooltip="Editar aplicación" tooltipPosition="top"
-              (click)="editarAplicacion(aplicacion)"></p-button>
-            <p-button icon="pi pi-trash" styleClass="btn-danger btn-v2" pTooltip="Eliminar aplicación"
-              tooltipPosition="top" (click)="confirmarEliminar(aplicacion)"></p-button>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="10" class="text-center p-4">
-          <div class="empty-message">
-            <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-            <p>No se encontraron aplicaciones</p>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <shared-data-table [config]="aplicacionesTableConfig"></shared-data-table>
 </div>
 
 <!-- Componente de crear/editar aplicación -->
 <app-crear-aplicacion #crearAplicacionComponent (aplicacionCreada)="onAplicacionCreada()"
   (aplicacionActualizada)="onAplicacionActualizada()"></app-crear-aplicacion>
-
-<!-- Confirmación de eliminación -->
-<p-confirmDialog></p-confirmDialog>

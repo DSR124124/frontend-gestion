@@ -1,28 +1,33 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { LanzamientoGrupo } from '../../interfaces/lanzamiento-grupo.interface';
 import { LanzamientoGrupoService } from '../../services/lanzamiento-grupo.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { CrearLanzamientoGrupoComponent } from '../crear-lanzamiento-grupo/crear-lanzamiento-grupo.component';
 import { Subscription } from 'rxjs';
+import { DataTableComponent } from '../../../../../shared/components/data-table/data-table.component';
+import { ColumnType, FilterType, TableConfig } from '../../../../../shared/components/data-table/interfaces/table-column.interface';
+import { DialogoComponent } from '../../../../../shared/components/dialogo/dialogo.component';
 
 @Component({
   selector: 'app-listar-lanzamientos-grupos',
   standalone: true,
   imports: [
     ...PrimeNGModules,
+    DataTableComponent,
     CrearLanzamientoGrupoComponent
   ],
   templateUrl: './listar-lanzamientos-grupos.component.html',
   styleUrl: './listar-lanzamientos-grupos.component.css',
-  providers: [MessageService, ConfirmationService]
+  providers: [DialogService]
 })
 export class ListarLanzamientosGruposComponent implements OnInit, OnDestroy {
   lanzamientosGrupos: LanzamientoGrupo[] = [];
-  lanzamientosGruposFiltrados: LanzamientoGrupo[] = [];
   loading: boolean = false;
   terminoBusqueda: string = '';
+  lanzamientosGruposTableConfig!: TableConfig;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearLanzamientoGrupoComponent) crearLanzamientoGrupoComponent?: CrearLanzamientoGrupoComponent;
@@ -30,13 +35,17 @@ export class ListarLanzamientosGruposComponent implements OnInit, OnDestroy {
   constructor(
     private lanzamientoGrupoService: LanzamientoGrupoService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
+    private dialogService: DialogService,
     private loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
+    this.lanzamientosGruposTableConfig = this.buildLanzamientosGruposTableConfig([]);
     this.loadingSubscription = this.loadingService.loading$.subscribe(
-      loading => this.loading = loading
+      loading => {
+        this.loading = loading;
+        this.lanzamientosGruposTableConfig = { ...this.lanzamientosGruposTableConfig, loading };
+      }
     );
     this.cargarLanzamientosGrupos();
   }
@@ -52,40 +61,36 @@ export class ListarLanzamientosGruposComponent implements OnInit, OnDestroy {
     this.lanzamientoGrupoService.listar().subscribe({
       next: (lanzamientosGrupos) => {
         this.lanzamientosGrupos = lanzamientosGrupos;
-        this.lanzamientosGruposFiltrados = lanzamientosGrupos;
+        this.lanzamientosGruposTableConfig = this.buildLanzamientosGruposTableConfig(lanzamientosGrupos);
         this.loadingService.hide();
       },
       error: (error) => {
         this.loadingService.hide();
         const errorMessage = error?.message || error?.error?.message || 'Error al cargar las asignaciones lanzamiento-grupo';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
   }
 
   filtrarLanzamientosGrupos(): void {
     if (!this.terminoBusqueda || this.terminoBusqueda.trim() === '') {
-      this.lanzamientosGruposFiltrados = this.lanzamientosGrupos;
+      this.lanzamientosGruposTableConfig = this.buildLanzamientosGruposTableConfig(this.lanzamientosGrupos);
       return;
     }
 
     const termino = this.terminoBusqueda.toLowerCase().trim();
-    this.lanzamientosGruposFiltrados = this.lanzamientosGrupos.filter(asignacion =>
+    const filtrados = this.lanzamientosGrupos.filter(asignacion =>
       (asignacion.lanzamientoVersion && asignacion.lanzamientoVersion.toLowerCase().includes(termino)) ||
       (asignacion.aplicacionNombre && asignacion.aplicacionNombre.toLowerCase().includes(termino)) ||
       (asignacion.grupoNombre && asignacion.grupoNombre.toLowerCase().includes(termino)) ||
       (asignacion.notas && asignacion.notas.toLowerCase().includes(termino))
     );
+    this.lanzamientosGruposTableConfig = this.buildLanzamientosGruposTableConfig(filtrados);
   }
 
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
-    this.lanzamientosGruposFiltrados = this.lanzamientosGrupos;
+    this.lanzamientosGruposTableConfig = this.buildLanzamientosGruposTableConfig(this.lanzamientosGrupos);
   }
 
   getSeverity(activo: boolean): string {
@@ -164,14 +169,22 @@ export class ListarLanzamientosGruposComponent implements OnInit, OnDestroy {
   }
 
   confirmarEliminar(lanzamientoGrupo: LanzamientoGrupo): void {
-    this.confirmationService.confirm({
-      message: `¿Está seguro de que desea eliminar la asignación del lanzamiento "${lanzamientoGrupo.lanzamientoVersion}" al grupo "${lanzamientoGrupo.grupoNombre}"?`,
+    const ref: DynamicDialogRef = this.dialogService.open(DialogoComponent, {
       header: 'Confirmar Eliminación',
-      icon: 'pi pi-exclamation-triangle',
-      acceptButtonStyleClass: 'p-button-danger',
-      acceptLabel: 'Sí, eliminar',
-      rejectLabel: 'Cancelar',
-      accept: () => {
+      width: '500px',
+      modal: true,
+      closable: true,
+      data: {
+        mensaje: `¿Está seguro de que desea eliminar la asignación del lanzamiento "<strong>${lanzamientoGrupo.lanzamientoVersion || 'versión'}</strong>" al grupo "<strong>${lanzamientoGrupo.grupoNombre || 'grupo'}</strong>"?`,
+        severidad: 'warn',
+        mostrarBotones: true,
+        labelAceptar: 'Sí, eliminar',
+        labelCerrar: 'Cancelar'
+      }
+    });
+
+    ref.onClose.subscribe((result: string | undefined) => {
+      if (result === 'aceptar') {
         this.eliminarLanzamientoGrupo(lanzamientoGrupo.idLanzamientoGrupo);
       }
     });
@@ -182,25 +195,144 @@ export class ListarLanzamientosGruposComponent implements OnInit, OnDestroy {
     this.lanzamientoGrupoService.eliminar(id).subscribe({
       next: () => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Asignación lanzamiento-grupo eliminada correctamente',
-          life: 5000
-        });
+        this.messageService.success('Asignación lanzamiento-grupo eliminada correctamente', 'Éxito', 5000);
         this.cargarLanzamientosGrupos();
       },
       error: (error) => {
         this.loadingService.hide();
         const errorMessage = error?.message || error?.error?.message || 'Error al eliminar la asignación lanzamiento-grupo';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
+  }
+
+  private buildLanzamientosGruposTableConfig(data: LanzamientoGrupo[]): TableConfig {
+    return {
+      loading: this.loading,
+      rowsPerPage: 10,
+      rowsPerPageOptions: [10, 25, 50],
+      showCurrentPageReport: true,
+      showGlobalSearch: false,
+      currentPageReportTemplate: 'Mostrando {first} a {last} de {totalRecords} asignaciones',
+      emptyMessage: 'No se encontraron asignaciones lanzamiento-grupo',
+      globalSearchPlaceholder: 'Buscar por versión, aplicación, grupo o notas...',
+      columns: [
+        {
+          field: 'idLanzamientoGrupo',
+          header: 'ID',
+          type: ColumnType.NUMBER,
+          filterType: FilterType.NUMBER,
+          width: '80px',
+          mobileVisible: true,
+        },
+        {
+          field: 'lanzamientoVersion',
+          header: 'Lanzamiento',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '150px',
+          mobileVisible: true,
+          getLabel: (value: any) => value || '-',
+        },
+        {
+          field: 'aplicacionNombre',
+          header: 'Aplicación',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '150px',
+          mobileVisible: true,
+          getLabel: (value: any) => value || '-',
+        },
+        {
+          field: 'grupoNombre',
+          header: 'Grupo',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '150px',
+          mobileVisible: true,
+          getLabel: (value: any) => value || '-',
+        },
+        {
+          field: 'ordenPrioridad',
+          header: 'Orden',
+          type: ColumnType.NUMBER,
+          filterType: FilterType.NUMBER,
+          align: 'center',
+          width: '100px',
+          mobileVisible: false,
+          getLabel: (value: any) => value !== null && value !== undefined ? value.toString() : '-',
+        },
+        {
+          field: 'estadoText',
+          header: 'Estado',
+          type: ColumnType.DROPDOWN,
+          filterType: FilterType.DROPDOWN,
+          dropdownOptions: [
+            { label: 'Activo', value: 'Activo' },
+            { label: 'Inactivo', value: 'Inactivo' },
+          ],
+          width: '120px',
+          mobileVisible: true,
+        },
+        {
+          field: 'fechaDisponibilidad',
+          header: 'Fecha Disponibilidad',
+          type: ColumnType.DATE,
+          filterType: FilterType.DATE,
+          dateFormat: 'dd/MM/yyyy',
+          width: '150px',
+          mobileVisible: false,
+          getLabel: (value: any) => this.formatearFecha(value),
+        },
+        {
+          field: 'notificacionText',
+          header: 'Notificación',
+          type: ColumnType.DROPDOWN,
+          filterType: FilterType.DROPDOWN,
+          dropdownOptions: [
+            { label: 'Enviada', value: 'Enviada' },
+            { label: 'Pendiente', value: 'Pendiente' },
+          ],
+          width: '130px',
+          align: 'center',
+          mobileVisible: false,
+        },
+        {
+          field: 'acciones',
+          header: 'Acciones',
+          type: ColumnType.TEXT,
+          isAction: true,
+          sortable: false,
+          filterType: FilterType.NONE,
+          width: '140px',
+          align: 'center',
+          mobileVisible: true,
+        },
+      ],
+      rowActions: [
+        {
+          icon: 'pi pi-pencil',
+          severity: 'success',
+          tooltip: 'Editar asignación',
+          action: (row: LanzamientoGrupo) => this.editarLanzamientoGrupo(row),
+        },
+        {
+          icon: 'pi pi-trash',
+          severity: 'danger',
+          tooltip: 'Eliminar asignación',
+          action: (row: LanzamientoGrupo) => this.confirmarEliminar(row),
+        },
+      ],
+      globalFilterFields: ['lanzamientoVersion', 'aplicacionNombre', 'grupoNombre', 'notas', 'estadoText', 'notificacionText'],
+      data: data.map(lg => ({
+        ...lg,
+        estadoText: this.getEstadoLabel(lg.activo),
+        notificacionText: lg.notificacionEnviada ? 'Enviada' : 'Pendiente',
+      })),
+    };
   }
 }
 

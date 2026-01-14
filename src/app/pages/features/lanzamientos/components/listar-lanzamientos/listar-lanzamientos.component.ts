@@ -1,28 +1,33 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Lanzamiento } from '../../interfaces/lanzamiento.interface';
 import { LanzamientoService } from '../../services/lanzamiento.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { CrearLanzamientoComponent } from '../crear-lanzamiento/crear-lanzamiento.component';
 import { Subscription } from 'rxjs';
+import { DataTableComponent } from '../../../../../shared/components/data-table/data-table.component';
+import { ColumnType, FilterType, TableConfig } from '../../../../../shared/components/data-table/interfaces/table-column.interface';
+import { DialogoComponent } from '../../../../../shared/components/dialogo/dialogo.component';
 
 @Component({
   selector: 'app-listar-lanzamientos',
   standalone: true,
   imports: [
     ...PrimeNGModules,
+    DataTableComponent,
     CrearLanzamientoComponent
   ],
   templateUrl: './listar-lanzamientos.component.html',
   styleUrl: './listar-lanzamientos.component.css',
-  providers: [MessageService, ConfirmationService]
+  providers: [DialogService]
 })
 export class ListarLanzamientosComponent implements OnInit, OnDestroy {
   lanzamientos: Lanzamiento[] = [];
-  lanzamientosFiltrados: Lanzamiento[] = [];
   loading: boolean = false;
   terminoBusqueda: string = '';
+  lanzamientosTableConfig!: TableConfig;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearLanzamientoComponent) crearLanzamientoComponent?: CrearLanzamientoComponent;
@@ -30,14 +35,17 @@ export class ListarLanzamientosComponent implements OnInit, OnDestroy {
   constructor(
     private lanzamientoService: LanzamientoService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
+    private dialogService: DialogService,
     private loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse al estado de loading del servicio
+    this.lanzamientosTableConfig = this.buildLanzamientosTableConfig([]);
     this.loadingSubscription = this.loadingService.loading$.subscribe(
-      loading => this.loading = loading
+      loading => {
+        this.loading = loading;
+        this.lanzamientosTableConfig = { ...this.lanzamientosTableConfig, loading };
+      }
     );
     this.cargarLanzamientos();
   }
@@ -53,41 +61,37 @@ export class ListarLanzamientosComponent implements OnInit, OnDestroy {
     this.lanzamientoService.listar().subscribe({
       next: (lanzamientos) => {
         this.lanzamientos = lanzamientos;
-        this.lanzamientosFiltrados = lanzamientos;
+        this.lanzamientosTableConfig = this.buildLanzamientosTableConfig(lanzamientos);
         this.loadingService.hide();
       },
       error: (error) => {
         this.loadingService.hide();
         const errorMessage = error?.message || error?.error?.message || 'Error al cargar los lanzamientos';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
   }
 
   filtrarLanzamientos(): void {
     if (!this.terminoBusqueda || this.terminoBusqueda.trim() === '') {
-      this.lanzamientosFiltrados = this.lanzamientos;
+      this.lanzamientosTableConfig = this.buildLanzamientosTableConfig(this.lanzamientos);
       return;
     }
 
     const termino = this.terminoBusqueda.toLowerCase().trim();
-    this.lanzamientosFiltrados = this.lanzamientos.filter(lanzamiento =>
+    const filtrados = this.lanzamientos.filter(lanzamiento =>
       lanzamiento.version.toLowerCase().includes(termino) ||
       (lanzamiento.nombreAplicacion && lanzamiento.nombreAplicacion.toLowerCase().includes(termino)) ||
       (lanzamiento.notasVersion && lanzamiento.notasVersion.toLowerCase().includes(termino)) ||
       (lanzamiento.estado && lanzamiento.estado.toLowerCase().includes(termino)) ||
       (lanzamiento.publicadoPorNombre && lanzamiento.publicadoPorNombre.toLowerCase().includes(termino))
     );
+    this.lanzamientosTableConfig = this.buildLanzamientosTableConfig(filtrados);
   }
 
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
-    this.lanzamientosFiltrados = this.lanzamientos;
+    this.lanzamientosTableConfig = this.buildLanzamientosTableConfig(this.lanzamientos);
   }
 
   getSeverityEstado(estado: string): string {
@@ -192,14 +196,22 @@ export class ListarLanzamientosComponent implements OnInit, OnDestroy {
   }
 
   confirmarEliminar(lanzamiento: Lanzamiento): void {
-    this.confirmationService.confirm({
-      message: `¿Está seguro de que desea eliminar el lanzamiento versión "${lanzamiento.version}" de "${lanzamiento.nombreAplicacion}"?`,
+    const ref: DynamicDialogRef = this.dialogService.open(DialogoComponent, {
       header: 'Confirmar Eliminación',
-      icon: 'pi pi-exclamation-triangle',
-      acceptButtonStyleClass: 'p-button-danger',
-      acceptLabel: 'Sí, eliminar',
-      rejectLabel: 'Cancelar',
-      accept: () => {
+      width: '500px',
+      modal: true,
+      closable: true,
+      data: {
+        mensaje: `¿Está seguro de que desea eliminar el lanzamiento versión "<strong>${lanzamiento.version}</strong>" de "<strong>${lanzamiento.nombreAplicacion || 'aplicación'}</strong>"?`,
+        severidad: 'warn',
+        mostrarBotones: true,
+        labelAceptar: 'Sí, eliminar',
+        labelCerrar: 'Cancelar'
+      }
+    });
+
+    ref.onClose.subscribe((result: string | undefined) => {
+      if (result === 'aceptar') {
         this.eliminarLanzamiento(lanzamiento.idLanzamiento);
       }
     });
@@ -210,25 +222,156 @@ export class ListarLanzamientosComponent implements OnInit, OnDestroy {
     this.lanzamientoService.eliminar(id).subscribe({
       next: () => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Lanzamiento eliminado correctamente',
-          life: 5000
-        });
+        this.messageService.success('Lanzamiento eliminado correctamente', 'Éxito', 5000);
         this.cargarLanzamientos();
       },
       error: (error) => {
         this.loadingService.hide();
         const errorMessage = error?.message || error?.error?.message || 'Error al eliminar el lanzamiento';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
+  }
+
+  private buildLanzamientosTableConfig(data: Lanzamiento[]): TableConfig {
+    return {
+      loading: this.loading,
+      rowsPerPage: 10,
+      rowsPerPageOptions: [10, 25, 50],
+      showCurrentPageReport: true,
+      showGlobalSearch: false,
+      currentPageReportTemplate: 'Mostrando {first} a {last} de {totalRecords} lanzamientos',
+      emptyMessage: 'No se encontraron lanzamientos',
+      globalSearchPlaceholder: 'Buscar por versión, aplicación, estado, notas o publicador...',
+      columns: [
+        {
+          field: 'idLanzamiento',
+          header: 'ID',
+          type: ColumnType.NUMBER,
+          filterType: FilterType.NUMBER,
+          width: '80px',
+          mobileVisible: true,
+        },
+        {
+          field: 'nombreAplicacion',
+          header: 'Aplicación',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '150px',
+          mobileVisible: true,
+          getLabel: (value: any) => value || '-',
+        },
+        {
+          field: 'version',
+          header: 'Versión',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          width: '120px',
+          mobileVisible: true,
+        },
+        {
+          field: 'estadoText',
+          header: 'Estado',
+          type: ColumnType.DROPDOWN,
+          filterType: FilterType.DROPDOWN,
+          dropdownOptions: [
+            { label: 'Activo', value: 'Activo' },
+            { label: 'Borrador', value: 'Borrador' },
+            { label: 'Deprecado', value: 'Deprecado' },
+            { label: 'Retirado', value: 'Retirado' },
+          ],
+          width: '120px',
+          mobileVisible: true,
+        },
+        {
+          field: 'fechaLanzamiento',
+          header: 'Fecha Lanzamiento',
+          type: ColumnType.DATE,
+          filterType: FilterType.DATE,
+          dateFormat: 'dd/MM/yyyy',
+          width: '150px',
+          mobileVisible: false,
+          getLabel: (value: any) => this.formatearFecha(value),
+        },
+        {
+          field: 'fechaPublicacion',
+          header: 'Fecha Publicación',
+          type: ColumnType.DATE,
+          filterType: FilterType.DATE,
+          dateFormat: 'dd/MM/yyyy',
+          width: '150px',
+          mobileVisible: false,
+          getLabel: (value: any) => this.formatearFecha(value),
+        },
+        {
+          field: 'notasVersion',
+          header: 'Notas',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '200px',
+          mobileVisible: false,
+          getLabel: (value: any) => {
+            if (!value) return '-';
+            return value.length > 50 ? value.substring(0, 50) + '...' : value;
+          },
+        },
+        {
+          field: 'tamanoArchivoText',
+          header: 'Tamaño',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          width: '100px',
+          mobileVisible: false,
+        },
+        {
+          field: 'criticoText',
+          header: 'Crítico',
+          type: ColumnType.TEXT,
+          filterType: FilterType.DROPDOWN,
+          dropdownOptions: [
+            { label: 'Sí', value: 'Sí' },
+            { label: 'No', value: '-' },
+          ],
+          width: '100px',
+          align: 'center',
+          mobileVisible: false,
+        },
+        {
+          field: 'acciones',
+          header: 'Acciones',
+          type: ColumnType.TEXT,
+          isAction: true,
+          sortable: false,
+          filterType: FilterType.NONE,
+          width: '140px',
+          align: 'center',
+          mobileVisible: true,
+        },
+      ],
+      rowActions: [
+        {
+          icon: 'pi pi-pencil',
+          severity: 'success',
+          tooltip: 'Editar lanzamiento',
+          action: (row: Lanzamiento) => this.editarLanzamiento(row),
+        },
+        {
+          icon: 'pi pi-trash',
+          severity: 'danger',
+          tooltip: 'Eliminar lanzamiento',
+          action: (row: Lanzamiento) => this.confirmarEliminar(row),
+        },
+      ],
+      globalFilterFields: ['version', 'nombreAplicacion', 'estadoText', 'notasVersion', 'publicadoPorNombre'],
+      data: data.map(l => ({
+        ...l,
+        estadoText: this.getEstadoLabel(l.estado),
+        tamanoArchivoText: this.formatearTamano(l.tamanoArchivo),
+        criticoText: l.esCritico ? 'Sí' : '-',
+      })),
+    };
   }
 }
 

@@ -146,8 +146,8 @@
             [ngClass]="getColumnClasses(col)"
             [ngStyle]="getColumnStyles(col)"
             [style.text-align]="col.align || 'center'"
-            [class.cursor-pointer]="col.clickable && isMobile"
-            (click)="col.clickable && isMobile ? onCellClick(row, col, $event) : null">
+            [class.cursor-pointer]="col.clickable"
+            (click)="col.clickable ? onCellClick(row, col, $event) : null">
           <!-- Contenido de celda normal -->
           <div *ngIf="!col.isAction" class="cell-content">
             <div class="cell-description"

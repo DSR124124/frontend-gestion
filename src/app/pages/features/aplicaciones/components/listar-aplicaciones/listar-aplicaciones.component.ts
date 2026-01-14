@@ -3,31 +3,36 @@ import { Router } from '@angular/router';
 import { Aplicacion } from '../../interfaces/aplicacion.interface';
 import { AplicacionService } from '../../services/aplicacion.service';
 import { LanzamientoService } from '../../../lanzamientos/services/lanzamiento.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { CrearAplicacionComponent } from '../crear-aplicacion/crear-aplicacion.component';
 import { Subscription, forkJoin } from 'rxjs';
 import { ExternalSystemService } from '../../../../../core/services/external-system.service';
 import { AuthService } from '../../../../full-pages/auth/services/auth.service';
+import { DataTableComponent } from '../../../../../shared/components/data-table/data-table.component';
+import { ColumnType, FilterType, TableConfig } from '../../../../../shared/components/data-table/interfaces/table-column.interface';
+import { DialogoComponent } from '../../../../../shared/components/dialogo/dialogo.component';
 
 @Component({
   selector: 'app-listar-aplicaciones',
   standalone: true,
   imports: [
     ...PrimeNGModules,
+    DataTableComponent,
     CrearAplicacionComponent
   ],
   templateUrl: './listar-aplicaciones.component.html',
   styleUrl: './listar-aplicaciones.component.css',
-  providers: [MessageService, ConfirmationService]
+  providers: [DialogService]
 })
 export class ListarAplicacionesComponent implements OnInit, OnDestroy {
   aplicaciones: Aplicacion[] = [];
-  aplicacionesFiltradas: Aplicacion[] = [];
   loading: boolean = false;
   terminoBusqueda: string = '';
   conteoLanzamientos: Map<number, number> = new Map();
+  aplicacionesTableConfig!: TableConfig;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearAplicacionComponent) crearAplicacionComponent?: CrearAplicacionComponent;
@@ -36,7 +41,7 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
     private aplicacionService: AplicacionService,
     private lanzamientoService: LanzamientoService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
+    private dialogService: DialogService,
     private loadingService: LoadingService,
     private router: Router,
     private externalSystemService: ExternalSystemService,
@@ -44,9 +49,12 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse al estado de loading del servicio
+    this.aplicacionesTableConfig = this.buildAplicacionesTableConfig([]);
     this.loadingSubscription = this.loadingService.loading$.subscribe(
-      loading => this.loading = loading
+      loading => {
+        this.loading = loading;
+        this.aplicacionesTableConfig = { ...this.aplicacionesTableConfig, loading };
+      }
     );
     this.cargarAplicaciones();
   }
@@ -64,7 +72,7 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
     this.aplicacionService.listar().subscribe({
       next: (aplicaciones) => {
         this.aplicaciones = aplicaciones;
-        this.aplicacionesFiltradas = aplicaciones;
+        this.aplicacionesTableConfig = this.buildAplicacionesTableConfig(aplicaciones);
         this.loadingService.hide();
 
         // Intentar cargar lanzamientos de forma opcional (no bloquea si falla)
@@ -73,12 +81,7 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.loadingService.hide();
         const errorMessage = error?.message || error?.error?.message || 'Error al cargar las aplicaciones';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
   }
@@ -94,6 +97,8 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
           const conteoActual = this.conteoLanzamientos.get(idAplicacion) || 0;
           this.conteoLanzamientos.set(idAplicacion, conteoActual + 1);
         });
+        // Actualizar la configuración de la tabla con los nuevos conteos
+        this.aplicacionesTableConfig = this.buildAplicacionesTableConfig(this.aplicaciones);
       },
       error: (error) => {
         // Si es un error 403 (Forbidden), simplemente no cargar los conteos
@@ -102,7 +107,7 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
           this.conteoLanzamientos.clear();
         } else {
           // Para otros errores, solo loguear sin mostrar mensaje al usuario
-          console.warn('No se pudieron cargar los lanzamientos:', error);
+          this.messageService.warn('No se pudieron cargar los lanzamientos', 'Advertencia', 3000);
           this.conteoLanzamientos.clear();
         }
       }
@@ -111,22 +116,23 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
 
   filtrarAplicaciones(): void {
     if (!this.terminoBusqueda || this.terminoBusqueda.trim() === '') {
-      this.aplicacionesFiltradas = this.aplicaciones;
+      this.aplicacionesTableConfig = this.buildAplicacionesTableConfig(this.aplicaciones);
       return;
     }
 
     const termino = this.terminoBusqueda.toLowerCase().trim();
-    this.aplicacionesFiltradas = this.aplicaciones.filter(aplicacion =>
+    const filtradas = this.aplicaciones.filter(aplicacion =>
       aplicacion.nombreAplicacion.toLowerCase().includes(termino) ||
       (aplicacion.descripcion && aplicacion.descripcion.toLowerCase().includes(termino)) ||
       (aplicacion.codigoProducto && aplicacion.codigoProducto.toLowerCase().includes(termino)) ||
       (aplicacion.responsableNombre && aplicacion.responsableNombre.toLowerCase().includes(termino))
     );
+    this.aplicacionesTableConfig = this.buildAplicacionesTableConfig(filtradas);
   }
 
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
-    this.aplicacionesFiltradas = this.aplicaciones;
+    this.aplicacionesTableConfig = this.buildAplicacionesTableConfig(this.aplicaciones);
   }
 
   getSeverity(activo: boolean): string {
@@ -205,14 +211,22 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
   }
 
   confirmarEliminar(aplicacion: Aplicacion): void {
-    this.confirmationService.confirm({
-      message: `¿Está seguro de que desea eliminar la aplicación "${aplicacion.nombreAplicacion}"?`,
+    const ref: DynamicDialogRef = this.dialogService.open(DialogoComponent, {
       header: 'Confirmar Eliminación',
-      icon: 'pi pi-exclamation-triangle',
-      acceptButtonStyleClass: 'p-button-danger',
-      acceptLabel: 'Sí, eliminar',
-      rejectLabel: 'Cancelar',
-      accept: () => {
+      width: '500px',
+      modal: true,
+      closable: true,
+      data: {
+        mensaje: `¿Está seguro de que desea eliminar la aplicación "<strong>${aplicacion.nombreAplicacion}</strong>"?`,
+        severidad: 'warn',
+        mostrarBotones: true,
+        labelAceptar: 'Sí, eliminar',
+        labelCerrar: 'Cancelar'
+      }
+    });
+
+    ref.onClose.subscribe((result: string | undefined) => {
+      if (result === 'aceptar') {
         this.eliminarAplicacion(aplicacion.idAplicacion);
       }
     });
@@ -223,23 +237,13 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
     this.aplicacionService.eliminar(id).subscribe({
       next: () => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Aplicación eliminada correctamente',
-          life: 5000
-        });
+        this.messageService.success('Aplicación eliminada correctamente', 'Éxito', 5000);
         this.cargarAplicaciones();
       },
       error: (error) => {
         this.loadingService.hide();
         const errorMessage = error?.message || error?.error?.message || 'Error al eliminar la aplicación';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
   }
@@ -283,22 +287,12 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
 
   abrirSistema(aplicacion: Aplicacion): void {
     if (!aplicacion.url) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'URL no disponible',
-        detail: 'Esta aplicación no tiene una URL configurada',
-        life: 5000
-      });
+      this.messageService.warn('Esta aplicación no tiene una URL configurada', 'URL no disponible', 5000);
       return;
     }
 
     if (!this.tienePermisosParaSistema(aplicacion)) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Acceso Denegado',
-        detail: 'No tiene permisos para acceder a este sistema',
-        life: 5000
-      });
+      this.messageService.warn('No tiene permisos para acceder a este sistema', 'Acceso Denegado', 5000);
       return;
     }
 
@@ -314,6 +308,191 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
 
     // Abrir en una nueva ventana
     window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  private buildAplicacionesTableConfig(data: Aplicacion[]): TableConfig {
+    return {
+      loading: this.loading,
+      rowsPerPage: 10,
+      rowsPerPageOptions: [10, 25, 50],
+      showCurrentPageReport: true,
+      showGlobalSearch: false,
+      currentPageReportTemplate: 'Mostrando {first} a {last} de {totalRecords} aplicaciones',
+      emptyMessage: 'No se encontraron aplicaciones',
+      columns: [
+        {
+          field: 'idAplicacion',
+          header: 'ID',
+          type: ColumnType.NUMBER,
+          filterType: FilterType.NUMBER,
+          width: '80px',
+          mobileVisible: true,
+        },
+        {
+          field: 'nombreAplicacion',
+          header: 'Nombre',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '180px',
+          mobileVisible: true,
+        },
+        {
+          field: 'codigoProducto',
+          header: 'Código',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '120px',
+          mobileVisible: false,
+          getLabel: (value: any) => value || '-',
+        },
+        {
+          field: 'responsableNombre',
+          header: 'Responsable',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '150px',
+          mobileVisible: false,
+          getLabel: (value: any) => value || '-',
+        },
+        {
+          field: 'estadoText',
+          header: 'Estado',
+          type: ColumnType.DROPDOWN,
+          filterType: FilterType.DROPDOWN,
+          dropdownOptions: [
+            { label: 'Activo', value: 'Activo' },
+            { label: 'Inactivo', value: 'Inactivo' },
+          ],
+          width: '120px',
+          mobileVisible: true,
+        },
+        {
+          field: 'fechaCreacion',
+          header: 'Fecha Creación',
+          type: ColumnType.DATE,
+          filterType: FilterType.DATE,
+          dateFormat: 'dd/MM/yyyy',
+          width: '150px',
+          mobileVisible: false,
+          getLabel: (value: any) => {
+            if (!value) return '-';
+            try {
+              const date = new Date(value);
+              const ahora = new Date();
+              const diffMs = ahora.getTime() - date.getTime();
+              const diffMins = Math.floor(diffMs / 60000);
+              const diffHours = Math.floor(diffMs / 3600000);
+              const diffDays = Math.floor(diffMs / 86400000);
+
+              if (diffMins < 1) {
+                return 'Hace un momento';
+              } else if (diffMins < 60) {
+                return `Hace ${diffMins} min`;
+              } else if (diffHours < 24) {
+                return `Hace ${diffHours} h`;
+              } else if (diffDays < 7) {
+                return `Hace ${diffDays} días`;
+              } else {
+                return date.toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                });
+              }
+            } catch {
+              return value;
+            }
+          },
+        },
+        {
+          field: 'fechaModificacion',
+          header: 'Última Modificación',
+          type: ColumnType.DATE,
+          filterType: FilterType.DATE,
+          dateFormat: 'dd/MM/yyyy',
+          width: '150px',
+          mobileVisible: false,
+          getLabel: (value: any) => {
+            if (!value) return '-';
+            try {
+              const date = new Date(value);
+              const ahora = new Date();
+              const diffMs = ahora.getTime() - date.getTime();
+              const diffMins = Math.floor(diffMs / 60000);
+              const diffHours = Math.floor(diffMs / 3600000);
+              const diffDays = Math.floor(diffMs / 86400000);
+
+              if (diffMins < 1) {
+                return 'Hace un momento';
+              } else if (diffMins < 60) {
+                return `Hace ${diffMins} min`;
+              } else if (diffHours < 24) {
+                return `Hace ${diffHours} h`;
+              } else if (diffDays < 7) {
+                return `Hace ${diffDays} días`;
+              } else {
+                return date.toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                });
+              }
+            } catch {
+              return value;
+            }
+          },
+        },
+        {
+          field: 'conteoLanzamientos',
+          header: 'Lanzamientos',
+          type: ColumnType.NUMBER,
+          filterType: FilterType.NUMBER,
+          align: 'center',
+          width: '130px',
+          mobileVisible: false,
+        },
+        {
+          field: 'acciones',
+          header: 'Acciones',
+          type: ColumnType.TEXT,
+          isAction: true,
+          sortable: false,
+          filterType: FilterType.NONE,
+          width: '140px',
+          mobileVisible: true,
+        },
+      ],
+      rowActions: [
+        {
+          icon: 'pi pi-external-link',
+          severity: 'info',
+          tooltip: 'Abrir sistema',
+          action: (row: Aplicacion) => this.abrirSistema(row),
+          disabled: (row: Aplicacion) => !row.url || !this.tienePermisosParaSistema(row),
+        },
+        {
+          icon: 'pi pi-pencil',
+          severity: 'success',
+          tooltip: 'Editar aplicación',
+          action: (row: Aplicacion) => this.editarAplicacion(row),
+        },
+        {
+          icon: 'pi pi-trash',
+          severity: 'danger',
+          tooltip: 'Eliminar aplicación',
+          action: (row: Aplicacion) => this.confirmarEliminar(row),
+        },
+      ],
+      globalFilterFields: ['nombreAplicacion', 'descripcion', 'codigoProducto', 'responsableNombre', 'estadoText'],
+      data: data.map(a => ({
+        ...a,
+        estadoText: this.getEstadoLabel(a.activo),
+        conteoLanzamientos: this.obtenerConteoLanzamientos(a.idAplicacion),
+      })),
+    };
   }
 }
 
