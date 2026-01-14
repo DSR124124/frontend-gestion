@@ -14,14 +14,21 @@
   </div>
 
   <div class="header-right">
-    <p-select
-      class="user-menu-select"
-      [options]="userMenuItems"
-      [(ngModel)]="selectedUserMenuItem"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Acciones"
-      (onChange)="onUserMenuSelection($event.value)">
-    </p-select>
+    <div class="user-avatar-container">
+      <p-avatar
+        [label]="getUserInitials()"
+        [style]="{'background-color': 'var(--v2-primary)', 'color': 'var(--v2-text-dark)'}"
+        shape="circle"
+        size="large"
+        (click)="userMenu.toggle($event)"
+        styleClass="cursor-pointer">
+      </p-avatar>
+      <p-menu
+        #userMenu
+        [model]="userMenuItems"
+        [popup]="true"
+        [appendTo]="'body'">
+      </p-menu>
+    </div>
   </div>
 </header>

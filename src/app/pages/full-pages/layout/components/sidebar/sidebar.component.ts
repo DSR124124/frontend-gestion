@@ -29,10 +29,8 @@ export class SidebarComponent implements OnInit, OnDestroy, OnChanges {
   private itemsSubscription?: Subscription;
   private routerSubscription?: Subscription;
 
-  // Propiedades requeridas por el HTML
   open: boolean = true;
   sidebarVisible: boolean = true;
-  titulo: string = 'Menú';
   currentExpandedItemIndex: number[] = [];
 
   constructor(
@@ -41,7 +39,6 @@ export class SidebarComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    // Sincronizar propiedades cuando cambian los inputs
     if (changes['visible']) {
       this.sidebarVisible = this.visible;
     }
@@ -51,26 +48,21 @@ export class SidebarComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    // Obtener items iniciales
     this.menuItems = this.sidebarService.getItems();
 
-    // Suscribirse a cambios en los items
     this.itemsSubscription = this.sidebarService.items$.subscribe(items => {
       this.menuItems = items.filter(item => item.visible !== false);
     });
 
-    // Inicializar propiedades basadas en inputs
     this.sidebarVisible = this.visible;
     this.open = !this.collapsed;
 
-    // Expandir automáticamente items con hijos activos cuando cambia la ruta
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.expandActiveItems();
       });
 
-    // Expandir items activos al cargar inicialmente
     this.expandActiveItems();
   }
 

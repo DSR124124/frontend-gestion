@@ -64,6 +64,7 @@ import { MessageModule } from 'primeng/message';
 // import { ChartModule } from 'primeng/chart';
 import { TimelineModule } from 'primeng/timeline';
 import { IftaLabelModule } from 'primeng/iftalabel';
+import { AvatarGroupModule } from 'primeng/avatargroup';
 
 
 export const PrimeNGModules = [
@@ -73,7 +74,7 @@ export const PrimeNGModules = [
   // Angular Forms
   FormsModule,
   ReactiveFormsModule,
-
+  AvatarGroupModule,
   // PrimeNG Components
   AccordionModule,
   AvatarModule,
