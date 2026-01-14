@@ -6,14 +6,16 @@ import { SidebarService } from '../../services/sidebar.service';
 import { SidebarItem } from '../../interfaces/sidebar-item.interface';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [
+    ...PrimeNGModules,
     CommonModule,
     RouterModule,
-    SidebarItemComponent
+    SidebarItemComponent,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'

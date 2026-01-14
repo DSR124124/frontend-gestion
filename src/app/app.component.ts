@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNGModules } from './prime-ng/prime-ng';
+import { ThemeService } from './shared/services/theme.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -12,5 +14,18 @@ import { PrimeNGModules } from './prime-ng/prime-ng';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'frontend-gestion';
+
+  private themeSub!: Subscription;
+  currentTheme = 'light';
+
+  constructor(
+    private themeService: ThemeService
+  ) {
+  }
+
+  ngOnInit(): void {
+    this.themeSub = this.themeService.theme$.subscribe(tema => {
+      this.currentTheme = tema;
+    });
+  }
 }

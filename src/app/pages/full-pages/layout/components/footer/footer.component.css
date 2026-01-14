@@ -1,48 +1,14 @@
-::ng-deep .footer {
-  background: var(--layout-footer-bg) !important;
-  color: var(--texto-footer-color) !important;
-  padding: 0rem 1.5rem !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
+.footer {
+  background-color: transparent;
+  color: #000;
 }
 
-html.app-dark ::ng-deep .footer {
-  background: linear-gradient(90deg, #f7fafc 0%, #edf2f7 100%) !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
-  color: var(--texto-footer-color) !important;
+.logo {
+  height: 20px;
 }
 
-html.app-dark ::ng-deep .footer * {
-  color: var(--texto-footer-color) !important;
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 100%;
-}
-
-.footer-text {
-  font-size: 0.875rem;
-  color: var(--texto-footer-color);
-}
-
-.footer-version {
-  font-size: 0.75rem;
-  color: var(--texto-footer-color);
-  opacity: 0.8;
-  font-weight: 500;
-}
-
-@media (max-width: 767.98px) {
-  .footer {
-    padding: 0.75rem 1rem;
-  }
-
-  .footer-content {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
-  }
+.copy {
+  font-family: arial;
+  font-size: 10px;
+  text-transform: uppercase;
 }
