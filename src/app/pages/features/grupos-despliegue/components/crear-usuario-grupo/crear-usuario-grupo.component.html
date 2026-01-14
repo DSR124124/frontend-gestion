@@ -8,13 +8,17 @@
   (onHide)="hideDialog()"
 >
   <form [formGroup]="usuarioGrupoForm" (ngSubmit)="guardar()">
-    <div class="form-grid">
-      <!-- Usuario -->
-      <div class="field">
-        <label for="idUsuario" class="required">
-          Usuario <span class="required-asterisk">*</span>
+    <div class="form-two-columns">
+      <!-- Columna Izquierda -->
+      <div class="form-column">
+        <p-tag value="Asignación" icon="pi pi-link" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+
+        <!-- Usuario -->
+        <label class="field-label required">
+          <i class="pi pi-user icon-bg-primary icon-bg"></i>
+          Usuario
         </label>
-        <p-dropdown
+        <p-select
           id="idUsuario"
           formControlName="idUsuario"
           [options]="usuarios"
@@ -24,9 +28,10 @@
           [showClear]="false"
           [filter]="true"
           filterBy="nombreCompleto,username,email"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idUsuario')"
+          (onChange)="onFieldChange('idUsuario')"
         >
           <ng-template let-usuario pTemplate="item">
             <div class="flex align-items-center">
@@ -36,21 +41,18 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
-        <small
-          *ngIf="isFieldInvalid('idUsuario')"
-          class="p-error"
-        >
+        </p-select>
+        <div class="field-helper error" *ngIf="isFieldInvalid('idUsuario')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['idUsuario'].errors?.['required']">El usuario es requerido</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Grupo de Despliegue -->
-      <div class="field">
-        <label for="idGrupo" class="required">
-          Grupo de Despliegue <span class="required-asterisk">*</span>
+        <!-- Grupo de Despliegue -->
+        <label class="field-label required">
+          <i class="pi pi-sitemap icon-bg-primary icon-bg"></i>
+          Grupo de Despliegue
         </label>
-        <p-dropdown
+        <p-select
           id="idGrupo"
           formControlName="idGrupo"
           [options]="gruposDespliegue"
@@ -60,9 +62,10 @@
           [showClear]="false"
           [filter]="true"
           filterBy="nombreGrupo,descripcion"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idGrupo')"
+          (onChange)="onFieldChange('idGrupo')"
         >
           <ng-template let-grupo pTemplate="item">
             <div class="flex align-items-center">
@@ -74,21 +77,23 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
-        <small
-          *ngIf="isFieldInvalid('idGrupo')"
-          class="p-error"
-        >
+        </p-select>
+        <div class="field-helper error" *ngIf="isFieldInvalid('idGrupo')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['idGrupo'].errors?.['required']">El grupo es requerido</span>
-        </small>
+        </div>
       </div>
 
-      <!-- Asignado Por -->
-      <div class="field">
-        <label for="asignadoPor">
+      <!-- Columna Derecha -->
+      <div class="form-column">
+        <p-tag value="Configuración" icon="pi pi-cog" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+
+        <!-- Asignado Por -->
+        <label class="field-label">
+          <i class="pi pi-user-edit icon-bg-primary icon-bg"></i>
           Asignado Por
         </label>
-        <p-dropdown
+        <p-select
           id="asignadoPor"
           formControlName="asignadoPor"
           [options]="usuarios"
@@ -98,8 +103,9 @@
           [showClear]="true"
           [filter]="true"
           filterBy="nombreCompleto,username,email"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
+          (onChange)="onFieldChange('asignadoPor')"
         >
           <ng-template let-usuario pTemplate="item">
             <div class="flex align-items-center">
@@ -109,24 +115,21 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
-      </div>
+        </p-select>
 
-      <!-- Activo -->
-      <div class="field">
-        <label for="activo">Estado</label>
-        <p-checkbox
-          id="activo"
-          formControlName="activo"
-          binary="true"
-          inputId="activo-checkbox"
-        ></p-checkbox>
-        <label for="activo-checkbox" class="ml-2">Asignación activa</label>
-      </div>
+        <!-- Estado -->
+        <label class="field-label">
+          <i class="pi pi-power-off icon-bg-primary icon-bg"></i>
+          Estado
+        </label>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <p-inputSwitch formControlName="activo" class="mb-1"></p-inputSwitch>
+          <span class="ml-2 text-secondary">{{ f['activo'].value ? 'Activo' : 'Inactivo' }}</span>
+        </div>
 
-      <!-- Notas -->
-      <div class="field">
-        <label for="notas">
+        <!-- Notas -->
+        <label class="field-label">
+          <i class="pi pi-file-edit icon-bg-primary icon-bg"></i>
           Notas
         </label>
         <textarea
@@ -135,30 +138,29 @@
           formControlName="notas"
           placeholder="Notas adicionales sobre esta asignación..."
           [rows]="3"
+          class="w-100 custom-textarea mb-1"
+          (input)="onFieldChange('notas')"
         ></textarea>
       </div>
     </div>
   </form>
 
   <ng-template pTemplate="footer">
-    <div class="dialog-footer">
-      <button
-        pButton
-        type="button"
-        label="Cancelar"
-        icon="pi pi-times"
-        class="p-button-text"
-        (click)="hideDialog()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
-        icon="pi pi-check"
-        (click)="guardar()"
-        [disabled]="usuarioGrupoForm.invalid"
-      ></button>
-    </div>
+    <p-toolbar>
+      <ng-template #start></ng-template>
+      <ng-template #end>
+        <div class="d-flex gap-2">
+          <p-button label="Cancelar" icon="pi pi-times" (onClick)="hideDialog()" styleClass="btn-danger btn-md" />
+          <p-button
+            [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+            [icon]="modoEdicion ? 'pi pi-check' : 'pi pi-plus'"
+            (onClick)="guardar()"
+            [styleClass]="modoEdicion ? 'btn-info btn-md' : 'btn-success btn-md'"
+            [loading]="loading"
+          />
+        </div>
+      </ng-template>
+    </p-toolbar>
   </ng-template>
 </p-dialog>
 

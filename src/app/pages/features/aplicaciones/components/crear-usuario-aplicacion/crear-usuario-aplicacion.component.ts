@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { UsuarioAplicacionService } from '../../services/usuario-aplicacion.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
 import { AplicacionService } from '../../services/aplicacion.service';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { UsuarioAplicacion, UsuarioAplicacionDTO } from '../../interfaces/usuario-aplicacion.interface';
@@ -19,8 +19,7 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule
   ],
   templateUrl: './crear-usuario-aplicacion.component.html',
-  styleUrl: './crear-usuario-aplicacion.component.css',
-  providers: [MessageService]
+  styleUrl: './crear-usuario-aplicacion.component.css'
 })
 export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
   @Output() usuarioAplicacionCreado = new EventEmitter<void>();
@@ -31,6 +30,7 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
   aplicaciones: Aplicacion[] = [];
   visible: boolean = false;
   submitted: boolean = false;
+  loading: boolean = false;
   modoEdicion: boolean = false;
   usuarioAplicacionId: number | null = null;
   private subscriptions: Subscription[] = [];
@@ -47,6 +47,11 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.loadingService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
     this.cargarUsuarios();
     this.cargarAplicaciones();
   }
@@ -76,12 +81,8 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar los usuarios',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar los usuarios';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -96,12 +97,8 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar las aplicaciones',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar las aplicaciones';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -152,12 +149,8 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     if (this.usuarioAplicacionForm.invalid) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validación',
-        detail: 'Por favor, complete todos los campos requeridos correctamente',
-        life: 5000
-      });
+      this.messageService.warn('Por favor, complete todos los campos requeridos correctamente', 'Validación', 5000);
+      this.usuarioAplicacionForm.markAllAsTouched();
       return;
     }
 
@@ -186,24 +179,14 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
       const sub = this.usuarioAplicacionService.actualizar(this.usuarioAplicacionId, usuarioAplicacionDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Relación usuario-aplicación actualizada correctamente',
-            life: 5000
-          });
+          this.messageService.success('Relación usuario-aplicación actualizada correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.usuarioAplicacionActualizado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al actualizar la relación usuario-aplicación';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -211,24 +194,14 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
       const sub = this.usuarioAplicacionService.crear(usuarioAplicacionDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Relación usuario-aplicación creada correctamente',
-            life: 5000
-          });
+          this.messageService.success('Relación usuario-aplicación creada correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.usuarioAplicacionCreado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al crear la relación usuario-aplicación';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -242,6 +215,14 @@ export class CrearUsuarioAplicacionComponent implements OnInit, OnDestroy {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.usuarioAplicacionForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+  }
+
+  onFieldChange(fieldName: string): void {
+    const field = this.usuarioAplicacionForm.get(fieldName);
+    if (field) {
+      field.markAsDirty();
+      field.updateValueAndValidity();
+    }
   }
 }
 

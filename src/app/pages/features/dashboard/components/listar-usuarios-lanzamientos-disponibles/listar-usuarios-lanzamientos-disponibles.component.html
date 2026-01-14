@@ -33,7 +33,7 @@
     <div class="filtros-container">
       <div class="filtro-item">
         <label for="filtroUsuario">Filtrar por Usuario:</label>
-        <p-dropdown
+        <p-select
           id="filtroUsuario"
           [(ngModel)]="filtroUsuario"
           [options]="usuarios"
@@ -46,11 +46,11 @@
           styleClass="w-full"
           appendTo="body"
           (onChange)="cargarLanzamientosDisponibles()"
-        ></p-dropdown>
+        ></p-select>
       </div>
       <div class="filtro-item">
         <label for="filtroAplicacion">Filtrar por Aplicación:</label>
-        <p-dropdown
+        <p-select
           id="filtroAplicacion"
           [(ngModel)]="filtroAplicacion"
           [options]="aplicaciones"
@@ -63,11 +63,11 @@
           styleClass="w-full"
           appendTo="body"
           (onChange)="cargarLanzamientosDisponibles()"
-        ></p-dropdown>
+        ></p-select>
       </div>
       <div class="filtro-item">
         <label for="filtroGrupo">Filtrar por Grupo:</label>
-        <p-dropdown
+        <p-select
           id="filtroGrupo"
           [(ngModel)]="filtroGrupo"
           [options]="gruposDespliegue"
@@ -80,7 +80,7 @@
           styleClass="w-full"
           appendTo="body"
           (onChange)="cargarLanzamientosDisponibles()"
-        ></p-dropdown>
+        ></p-select>
       </div>
       <div class="filtro-item">
         <p-button icon="pi pi-filter-slash" label="Limpiar Filtros" styleClass="p-button-outlined"

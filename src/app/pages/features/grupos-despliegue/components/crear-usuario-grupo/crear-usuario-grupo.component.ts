@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { UsuarioGrupoService } from '../../services/usuario-grupo.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
 import { GrupoDespliegueService } from '../../services/grupo-despliegue.service';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { UsuarioGrupo, UsuarioGrupoDTO } from '../../interfaces/usuario-grupo.interface';
@@ -19,8 +19,7 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule
   ],
   templateUrl: './crear-usuario-grupo.component.html',
-  styleUrl: './crear-usuario-grupo.component.css',
-  providers: [MessageService]
+  styleUrl: './crear-usuario-grupo.component.css'
 })
 export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
   @Output() usuarioGrupoCreado = new EventEmitter<void>();
@@ -31,6 +30,7 @@ export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
   gruposDespliegue: GrupoDespliegue[] = [];
   visible: boolean = false;
   submitted: boolean = false;
+  loading: boolean = false;
   modoEdicion: boolean = false;
   usuarioGrupoId: number | null = null;
   private subscriptions: Subscription[] = [];
@@ -47,6 +47,11 @@ export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.loadingService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
     this.cargarUsuarios();
     this.cargarGruposDespliegue();
   }
@@ -74,12 +79,8 @@ export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar los usuarios',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar los usuarios';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -94,12 +95,8 @@ export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar los grupos de despliegue',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar los grupos de despliegue';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -140,12 +137,8 @@ export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     if (this.usuarioGrupoForm.invalid) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validación',
-        detail: 'Por favor, complete todos los campos requeridos correctamente',
-        life: 5000
-      });
+      this.messageService.warn('Por favor, complete todos los campos requeridos correctamente', 'Validación', 5000);
+      this.usuarioGrupoForm.markAllAsTouched();
       return;
     }
 
@@ -163,24 +156,14 @@ export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
       const sub = this.usuarioGrupoService.actualizar(this.usuarioGrupoId, usuarioGrupoDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Asignación usuario-grupo actualizada correctamente',
-            life: 5000
-          });
+          this.messageService.success('Asignación usuario-grupo actualizada correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.usuarioGrupoActualizado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al actualizar la asignación usuario-grupo';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -188,24 +171,14 @@ export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
       const sub = this.usuarioGrupoService.crear(usuarioGrupoDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Asignación usuario-grupo creada correctamente',
-            life: 5000
-          });
+          this.messageService.success('Asignación usuario-grupo creada correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.usuarioGrupoCreado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al crear la asignación usuario-grupo';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -219,6 +192,14 @@ export class CrearUsuarioGrupoComponent implements OnInit, OnDestroy {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.usuarioGrupoForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+  }
+
+  onFieldChange(fieldName: string): void {
+    const field = this.usuarioGrupoForm.get(fieldName);
+    if (field) {
+      field.markAsDirty();
+      field.updateValueAndValidity();
+    }
   }
 }
 

@@ -8,13 +8,17 @@
   (onHide)="hideDialog()"
 >
   <form [formGroup]="usuarioAplicacionForm" (ngSubmit)="guardar()">
-    <div class="form-grid">
-      <!-- Usuario -->
-      <div class="field">
-        <label for="idUsuario" class="required">
-          Usuario <span class="required-asterisk">*</span>
+    <div class="form-two-columns">
+      <!-- Columna Izquierda -->
+      <div class="form-column">
+        <p-tag value="Asignación" icon="pi pi-link" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+
+        <!-- Usuario -->
+        <label class="field-label required">
+          <i class="pi pi-user icon-bg-primary icon-bg"></i>
+          Usuario
         </label>
-        <p-dropdown
+        <p-select
           id="idUsuario"
           formControlName="idUsuario"
           [options]="usuarios"
@@ -24,9 +28,10 @@
           [showClear]="false"
           [filter]="true"
           filterBy="nombreCompleto,username,email"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idUsuario')"
+          (onChange)="onFieldChange('idUsuario')"
         >
           <ng-template let-usuario pTemplate="item">
             <div class="flex align-items-center">
@@ -36,21 +41,18 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
-        <small
-          *ngIf="isFieldInvalid('idUsuario')"
-          class="p-error"
-        >
+        </p-select>
+        <div class="field-helper error" *ngIf="isFieldInvalid('idUsuario')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['idUsuario'].errors?.['required']">El usuario es requerido</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Aplicación -->
-      <div class="field">
-        <label for="idAplicacion" class="required">
-          Aplicación <span class="required-asterisk">*</span>
+        <!-- Aplicación -->
+        <label class="field-label required">
+          <i class="pi pi-mobile icon-bg-primary icon-bg"></i>
+          Aplicación
         </label>
-        <p-dropdown
+        <p-select
           id="idAplicacion"
           formControlName="idAplicacion"
           [options]="aplicaciones"
@@ -60,52 +62,22 @@
           [showClear]="false"
           [filter]="true"
           filterBy="nombreAplicacion,codigoProducto"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idAplicacion')"
-        ></p-dropdown>
-        <small
-          *ngIf="isFieldInvalid('idAplicacion')"
-          class="p-error"
-        >
+          (onChange)="onFieldChange('idAplicacion')"
+        ></p-select>
+        <div class="field-helper error" *ngIf="isFieldInvalid('idAplicacion')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['idAplicacion'].errors?.['required']">La aplicación es requerida</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Fecha Último Acceso -->
-      <div class="field">
-        <label for="fechaUltimoAcceso">
-          Fecha Último Acceso
-        </label>
-        <input
-          id="fechaUltimoAcceso"
-          type="datetime-local"
-          pInputText
-          formControlName="fechaUltimoAcceso"
-          styleClass="w-full"
-        />
-      </div>
-
-      <!-- Fecha Expiración Licencia -->
-      <div class="field">
-        <label for="fechaExpiracionLicencia">
-          Fecha Expiración Licencia
-        </label>
-        <input
-          id="fechaExpiracionLicencia"
-          type="datetime-local"
-          pInputText
-          formControlName="fechaExpiracionLicencia"
-          styleClass="w-full"
-        />
-      </div>
-
-      <!-- Registrado Por -->
-      <div class="field">
-        <label for="registradoPor">
+        <!-- Registrado Por -->
+        <label class="field-label">
+          <i class="pi pi-user-edit icon-bg-primary icon-bg"></i>
           Registrado Por
         </label>
-        <p-dropdown
+        <p-select
           id="registradoPor"
           formControlName="registradoPor"
           [options]="usuarios"
@@ -115,8 +87,9 @@
           [showClear]="true"
           [filter]="true"
           filterBy="nombreCompleto,username,email"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
+          (onChange)="onFieldChange('registradoPor')"
         >
           <ng-template let-usuario pTemplate="item">
             <div class="flex align-items-center">
@@ -126,24 +99,54 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
+        </p-select>
       </div>
 
-      <!-- Licencia Activa -->
-      <div class="field">
-        <label for="licenciaActiva">Licencia Activa</label>
-        <p-checkbox
-          id="licenciaActiva"
-          formControlName="licenciaActiva"
-          binary="true"
-          inputId="licenciaActiva-checkbox"
-        ></p-checkbox>
-        <label for="licenciaActiva-checkbox" class="ml-2">Licencia activa</label>
-      </div>
+      <!-- Columna Derecha -->
+      <div class="form-column">
+        <p-tag value="Licencia y Fechas" icon="pi pi-calendar" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
 
-      <!-- Notas -->
-      <div class="field">
-        <label for="notas">
+        <!-- Fecha Último Acceso -->
+        <label class="field-label">
+          <i class="pi pi-clock icon-bg-primary icon-bg"></i>
+          Fecha Último Acceso
+        </label>
+        <input
+          id="fechaUltimoAcceso"
+          type="datetime-local"
+          pInputText
+          formControlName="fechaUltimoAcceso"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('fechaUltimoAcceso')"
+        />
+
+        <!-- Fecha Expiración Licencia -->
+        <label class="field-label">
+          <i class="pi pi-calendar-times icon-bg-primary icon-bg"></i>
+          Fecha Expiración Licencia
+        </label>
+        <input
+          id="fechaExpiracionLicencia"
+          type="datetime-local"
+          pInputText
+          formControlName="fechaExpiracionLicencia"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('fechaExpiracionLicencia')"
+        />
+
+        <!-- Licencia Activa -->
+        <label class="field-label">
+          <i class="pi pi-check-circle icon-bg-primary icon-bg"></i>
+          Licencia Activa
+        </label>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <p-inputSwitch formControlName="licenciaActiva" class="mb-1"></p-inputSwitch>
+          <span class="ml-2 text-secondary">{{ f['licenciaActiva'].value ? 'Activa' : 'Inactiva' }}</span>
+        </div>
+
+        <!-- Notas -->
+        <label class="field-label">
+          <i class="pi pi-file-edit icon-bg-primary icon-bg"></i>
           Notas
         </label>
         <textarea
@@ -152,30 +155,29 @@
           formControlName="notas"
           placeholder="Notas adicionales sobre esta relación..."
           [rows]="3"
+          class="w-100 custom-textarea mb-1"
+          (input)="onFieldChange('notas')"
         ></textarea>
       </div>
     </div>
   </form>
 
   <ng-template pTemplate="footer">
-    <div class="dialog-footer">
-      <button
-        pButton
-        type="button"
-        label="Cancelar"
-        icon="pi pi-times"
-        class="p-button-text"
-        (click)="hideDialog()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
-        icon="pi pi-check"
-        (click)="guardar()"
-        [disabled]="usuarioAplicacionForm.invalid"
-      ></button>
-    </div>
+    <p-toolbar>
+      <ng-template #start></ng-template>
+      <ng-template #end>
+        <div class="d-flex gap-2">
+          <p-button label="Cancelar" icon="pi pi-times" (onClick)="hideDialog()" styleClass="btn-danger btn-md" />
+          <p-button
+            [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+            [icon]="modoEdicion ? 'pi pi-check' : 'pi pi-plus'"
+            (onClick)="guardar()"
+            [styleClass]="modoEdicion ? 'btn-info btn-md' : 'btn-success btn-md'"
+            [loading]="loading"
+          />
+        </div>
+      </ng-template>
+    </p-toolbar>
   </ng-template>
 </p-dialog>
 

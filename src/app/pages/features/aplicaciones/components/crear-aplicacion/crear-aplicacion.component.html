@@ -8,11 +8,15 @@
   (onHide)="hideDialog()"
 >
   <form [formGroup]="aplicacionForm" (ngSubmit)="guardar()">
-    <div class="form-grid">
-      <!-- Nombre de la Aplicación -->
-      <div class="field">
-        <label for="nombreAplicacion" class="required">
-          Nombre de la Aplicación <span class="required-asterisk">*</span>
+    <div class="form-two-columns">
+      <!-- Columna Izquierda -->
+      <div class="form-column">
+        <p-tag value="Información de la Aplicación" icon="pi pi-mobile" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+
+        <!-- Nombre de la Aplicación -->
+        <label class="field-label required">
+          <i class="pi pi-tag icon-bg-primary icon-bg"></i>
+          Nombre de la Aplicación
         </label>
         <input
           id="nombreAplicacion"
@@ -22,19 +26,18 @@
           [class.ng-invalid]="isFieldInvalid('nombreAplicacion')"
           placeholder="Ej: Sistema de Gestión, CRM, etc."
           maxlength="255"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('nombreAplicacion')"
         />
-        <small
-          *ngIf="isFieldInvalid('nombreAplicacion')"
-          class="p-error"
-        >
+        <div class="field-helper error" *ngIf="isFieldInvalid('nombreAplicacion')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['nombreAplicacion'].errors?.['required']">El nombre de la aplicación es requerido</span>
           <span *ngIf="f['nombreAplicacion'].errors?.['maxlength']">El nombre no puede exceder 255 caracteres</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Código de Producto -->
-      <div class="field">
-        <label for="codigoProducto">
+        <!-- Código de Producto -->
+        <label class="field-label">
+          <i class="pi pi-barcode icon-bg-primary icon-bg"></i>
           Código de Producto
         </label>
         <input
@@ -45,18 +48,17 @@
           [class.ng-invalid]="isFieldInvalid('codigoProducto')"
           placeholder="Ej: APP-001, SKU-123"
           maxlength="50"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('codigoProducto')"
         />
-        <small
-          *ngIf="isFieldInvalid('codigoProducto')"
-          class="p-error"
-        >
+        <div class="field-helper error" *ngIf="isFieldInvalid('codigoProducto')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['codigoProducto'].errors?.['maxlength']">El código no puede exceder 50 caracteres</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Descripción -->
-      <div class="field">
-        <label for="descripcion">
+        <!-- Descripción -->
+        <label class="field-label">
+          <i class="pi pi-file-edit icon-bg-primary icon-bg"></i>
           Descripción
         </label>
         <textarea
@@ -67,18 +69,22 @@
           placeholder="Descripción de la aplicación..."
           [rows]="3"
           maxlength="500"
+          class="w-100 custom-textarea mb-1"
+          (input)="onFieldChange('descripcion')"
         ></textarea>
-        <small
-          *ngIf="isFieldInvalid('descripcion')"
-          class="p-error"
-        >
+        <div class="field-helper error" *ngIf="isFieldInvalid('descripcion')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['descripcion'].errors?.['maxlength']">La descripción no puede exceder 500 caracteres</span>
-        </small>
+        </div>
       </div>
 
-      <!-- URL del Repositorio -->
-      <div class="field">
-        <label for="repositorioUrl">
+      <!-- Columna Derecha -->
+      <div class="form-column">
+        <p-tag value="Configuración y Enlaces" icon="pi pi-link" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+
+        <!-- URL del Repositorio -->
+        <label class="field-label">
+          <i class="pi pi-github icon-bg-primary icon-bg"></i>
           URL del Repositorio
         </label>
         <input
@@ -89,18 +95,17 @@
           [class.ng-invalid]="isFieldInvalid('repositorioUrl')"
           placeholder="https://github.com/usuario/repositorio"
           maxlength="500"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('repositorioUrl')"
         />
-        <small
-          *ngIf="isFieldInvalid('repositorioUrl')"
-          class="p-error"
-        >
+        <div class="field-helper error" *ngIf="isFieldInvalid('repositorioUrl')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['repositorioUrl'].errors?.['maxlength']">La URL no puede exceder 500 caracteres</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- URL -->
-      <div class="field">
-        <label for="url">
+        <!-- URL -->
+        <label class="field-label">
+          <i class="pi pi-globe icon-bg-primary icon-bg"></i>
           URL
         </label>
         <input
@@ -111,21 +116,20 @@
           [class.ng-invalid]="isFieldInvalid('url')"
           placeholder="https://edugen.brianuceda.xyz/sistema-seguridad/"
           maxlength="500"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('url')"
         />
-        <small
-          *ngIf="isFieldInvalid('url')"
-          class="p-error"
-        >
+        <div class="field-helper error" *ngIf="isFieldInvalid('url')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['url'].errors?.['maxlength']">La URL no puede exceder 500 caracteres</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Responsable -->
-      <div class="field">
-        <label for="responsableId">
+        <!-- Responsable -->
+        <label class="field-label">
+          <i class="pi pi-user icon-bg-primary icon-bg"></i>
           Responsable
         </label>
-        <p-dropdown
+        <p-select
           id="responsableId"
           formControlName="responsableId"
           [options]="usuarios"
@@ -135,8 +139,9 @@
           [showClear]="true"
           [filter]="true"
           filterBy="nombreCompleto,username,email"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
+          (onChange)="onFieldChange('responsableId')"
         >
           <ng-template let-usuario pTemplate="item">
             <div class="flex align-items-center">
@@ -146,42 +151,37 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
-      </div>
+        </p-select>
 
-      <!-- Activo -->
-      <div class="field">
-        <label for="activo">Estado</label>
-        <p-checkbox
-          id="activo"
-          formControlName="activo"
-          binary="true"
-          inputId="activo-checkbox"
-        ></p-checkbox>
-        <label for="activo-checkbox" class="ml-2">Aplicación activa</label>
+        <!-- Estado -->
+        <label class="field-label">
+          <i class="pi pi-power-off icon-bg-primary icon-bg"></i>
+          Estado
+        </label>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <p-inputSwitch formControlName="activo" class="mb-1"></p-inputSwitch>
+          <span class="ml-2 text-secondary">{{ f['activo'].value ? 'Activo' : 'Inactivo' }}</span>
+        </div>
       </div>
     </div>
   </form>
 
   <ng-template pTemplate="footer">
-    <div class="dialog-footer">
-      <button
-        pButton
-        type="button"
-        label="Cancelar"
-        icon="pi pi-times"
-        class="p-button-text"
-        (click)="hideDialog()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
-        icon="pi pi-check"
-        (click)="guardar()"
-        [disabled]="aplicacionForm.invalid"
-      ></button>
-    </div>
+    <p-toolbar>
+      <ng-template #start></ng-template>
+      <ng-template #end>
+        <div class="d-flex gap-2">
+          <p-button label="Cancelar" icon="pi pi-times" (onClick)="hideDialog()" styleClass="btn-danger btn-md" />
+          <p-button
+            [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+            [icon]="modoEdicion ? 'pi pi-check' : 'pi pi-plus'"
+            (onClick)="guardar()"
+            [styleClass]="modoEdicion ? 'btn-info btn-md' : 'btn-success btn-md'"
+            [loading]="loading"
+          />
+        </div>
+      </ng-template>
+    </p-toolbar>
   </ng-template>
 </p-dialog>
 

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/cor
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AplicacionService } from '../../services/aplicacion.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { Aplicacion, AplicacionDTO } from '../../interfaces/aplicacion.interface';
@@ -17,8 +17,7 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule
   ],
   templateUrl: './crear-aplicacion.component.html',
-  styleUrl: './crear-aplicacion.component.css',
-  providers: [MessageService]
+  styleUrl: './crear-aplicacion.component.css'
 })
 export class CrearAplicacionComponent implements OnInit, OnDestroy {
   @Output() aplicacionCreada = new EventEmitter<void>();
@@ -28,6 +27,7 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
   usuarios: Usuario[] = [];
   visible: boolean = false;
   submitted: boolean = false;
+  loading: boolean = false;
   modoEdicion: boolean = false;
   aplicacionId: number | null = null;
   private subscriptions: Subscription[] = [];
@@ -43,6 +43,11 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.loadingService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
     this.cargarUsuarios();
   }
 
@@ -71,12 +76,8 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar los usuarios',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar los usuarios';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -121,12 +122,8 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     if (this.aplicacionForm.invalid) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validación',
-        detail: 'Por favor, complete todos los campos requeridos correctamente',
-        life: 5000
-      });
+      this.messageService.warn('Por favor, complete todos los campos requeridos correctamente', 'Validación', 5000);
+      this.aplicacionForm.markAllAsTouched();
       return;
     }
 
@@ -143,54 +140,32 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
     this.loadingService.show();
 
     if (this.modoEdicion && this.aplicacionId) {
-      // Actualizar aplicación existente
       const sub = this.aplicacionService.actualizar(this.aplicacionId, aplicacionDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Aplicación actualizada correctamente',
-            life: 5000
-          });
+          this.messageService.success('Aplicación actualizada correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.aplicacionActualizada.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al actualizar la aplicación';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
     } else {
-      // Crear nueva aplicación
       const sub = this.aplicacionService.crear(aplicacionDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Aplicación creada correctamente',
-            life: 5000
-          });
+          this.messageService.success('Aplicación creada correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.aplicacionCreada.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al crear la aplicación';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -204,6 +179,14 @@ export class CrearAplicacionComponent implements OnInit, OnDestroy {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.aplicacionForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+  }
+
+  onFieldChange(fieldName: string): void {
+    const field = this.aplicacionForm.get(fieldName);
+    if (field) {
+      field.markAsDirty();
+      field.updateValueAndValidity();
+    }
   }
 }
 

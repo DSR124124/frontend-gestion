@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { LanzamientoService } from '../../services/lanzamiento.service';
 import { AplicacionService } from '../../../aplicaciones/services/aplicacion.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { Lanzamiento, LanzamientoDTO } from '../../interfaces/lanzamiento.interface';
@@ -19,8 +19,7 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule
   ],
   templateUrl: './crear-lanzamiento.component.html',
-  styleUrl: './crear-lanzamiento.component.css',
-  providers: [MessageService]
+  styleUrl: './crear-lanzamiento.component.css'
 })
 export class CrearLanzamientoComponent implements OnInit, OnDestroy {
   @Output() lanzamientoCreado = new EventEmitter<void>();
@@ -37,6 +36,7 @@ export class CrearLanzamientoComponent implements OnInit, OnDestroy {
   ];
   visible: boolean = false;
   submitted: boolean = false;
+  loading: boolean = false;
   modoEdicion: boolean = false;
   lanzamientoId: number | null = null;
   private subscriptions: Subscription[] = [];
@@ -53,6 +53,11 @@ export class CrearLanzamientoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.loadingService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
     this.cargarAplicaciones();
     this.cargarUsuarios();
   }
@@ -86,12 +91,8 @@ export class CrearLanzamientoComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar las aplicaciones',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar las aplicaciones';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -106,12 +107,8 @@ export class CrearLanzamientoComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar los usuarios',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar los usuarios';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -176,12 +173,8 @@ export class CrearLanzamientoComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     if (this.lanzamientoForm.invalid) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validación',
-        detail: 'Por favor, complete todos los campos requeridos correctamente',
-        life: 5000
-      });
+      this.messageService.warn('Por favor, complete todos los campos requeridos correctamente', 'Validación', 5000);
+      this.lanzamientoForm.markAllAsTouched();
       return;
     }
 
@@ -211,55 +204,35 @@ export class CrearLanzamientoComponent implements OnInit, OnDestroy {
 
     this.loadingService.show();
 
+    this.loadingService.show();
+
     if (this.modoEdicion && this.lanzamientoId) {
-      // Actualizar lanzamiento existente
       const sub = this.lanzamientoService.actualizar(this.lanzamientoId, lanzamientoDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Lanzamiento actualizado correctamente',
-            life: 5000
-          });
+          this.messageService.success('Lanzamiento actualizado correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.lanzamientoActualizado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al actualizar el lanzamiento';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
     } else {
-      // Crear nuevo lanzamiento
       const sub = this.lanzamientoService.crear(lanzamientoDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Lanzamiento creado correctamente',
-            life: 5000
-          });
+          this.messageService.success('Lanzamiento creado correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.lanzamientoCreado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al crear el lanzamiento';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -273,6 +246,14 @@ export class CrearLanzamientoComponent implements OnInit, OnDestroy {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.lanzamientoForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+  }
+
+  onFieldChange(fieldName: string): void {
+    const field = this.lanzamientoForm.get(fieldName);
+    if (field) {
+      field.markAsDirty();
+      field.updateValueAndValidity();
+    }
   }
 }
 

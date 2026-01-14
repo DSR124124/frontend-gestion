@@ -19,7 +19,7 @@
   font-size: var(--font-size-small);
 }
 
-.filtro-item ::ng-deep .p-dropdown {
+.filtro-item ::ng-deep .p-select {
   width: 100%;
 }
 

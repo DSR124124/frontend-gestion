@@ -8,11 +8,15 @@
   (onHide)="hideDialog()"
 >
   <form [formGroup]="grupoDespliegueForm" (ngSubmit)="guardar()">
-    <div class="form-grid">
-      <!-- Nombre del Grupo -->
-      <div class="field">
-        <label for="nombreGrupo" class="required">
-          Nombre del Grupo <span class="required-asterisk">*</span>
+    <div class="form-two-columns">
+      <!-- Columna Izquierda -->
+      <div class="form-column">
+        <p-tag value="Información del Grupo" icon="pi pi-sitemap" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+        
+        <!-- Nombre del Grupo -->
+        <label class="field-label required">
+          <i class="pi pi-tag icon-bg-primary icon-bg"></i>
+          Nombre del Grupo
         </label>
         <input
           id="nombreGrupo"
@@ -22,36 +26,18 @@
           [class.ng-invalid]="isFieldInvalid('nombreGrupo')"
           placeholder="Ej: Beta, Producción, Canary"
           maxlength="100"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('nombreGrupo')"
         />
-        <small
-          *ngIf="isFieldInvalid('nombreGrupo')"
-          class="p-error"
-        >
+        <div class="field-helper error" *ngIf="isFieldInvalid('nombreGrupo')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['nombreGrupo'].errors?.['required']">El nombre del grupo es requerido</span>
           <span *ngIf="f['nombreGrupo'].errors?.['maxlength']">El nombre no puede exceder 100 caracteres</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Orden de Prioridad -->
-      <div class="field">
-        <label for="ordenPrioridad">
-          Orden de Prioridad
-        </label>
-        <p-inputNumber
-          id="ordenPrioridad"
-          formControlName="ordenPrioridad"
-          [showButtons]="true"
-          [min]="1"
-          [useGrouping]="false"
-          placeholder="Ej: 1, 2, 3..."
-          styleClass="w-full"
-        ></p-inputNumber>
-        <small class="text-secondary">Menor número = mayor prioridad (se despliega primero)</small>
-      </div>
-
-      <!-- Descripción -->
-      <div class="field">
-        <label for="descripcion">
+        <!-- Descripción -->
+        <label class="field-label">
+          <i class="pi pi-file-edit icon-bg-primary icon-bg"></i>
           Descripción
         </label>
         <textarea
@@ -62,18 +48,42 @@
           placeholder="Descripción del grupo de despliegue..."
           [rows]="3"
           maxlength="500"
+          class="w-100 custom-textarea mb-1"
+          (input)="onFieldChange('descripcion')"
         ></textarea>
-        <small
-          *ngIf="isFieldInvalid('descripcion')"
-          class="p-error"
-        >
+        <div class="field-helper error" *ngIf="isFieldInvalid('descripcion')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['descripcion'].errors?.['maxlength']">La descripción no puede exceder 500 caracteres</span>
-        </small>
+        </div>
       </div>
 
-      <!-- Porcentaje de Usuarios -->
-      <div class="field">
-        <label for="porcentajeUsuarios">
+      <!-- Columna Derecha -->
+      <div class="form-column">
+        <p-tag value="Configuración de Despliegue" icon="pi pi-cog" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+        
+        <!-- Orden de Prioridad -->
+        <label class="field-label">
+          <i class="pi pi-sort-numeric-down icon-bg-primary icon-bg"></i>
+          Orden de Prioridad
+        </label>
+        <p-inputNumber
+          id="ordenPrioridad"
+          formControlName="ordenPrioridad"
+          [showButtons]="true"
+          [min]="1"
+          [useGrouping]="false"
+          placeholder="Ej: 1, 2, 3..."
+          styleClass="w-full custom-input-number mb-1"
+          (onInput)="onFieldChange('ordenPrioridad')"
+        ></p-inputNumber>
+        <div class="field-helper info">
+          <i class="pi pi-info-circle"></i>
+          <span>Menor número = mayor prioridad (se despliega primero)</span>
+        </div>
+
+        <!-- Porcentaje de Usuarios -->
+        <label class="field-label">
+          <i class="pi pi-percentage icon-bg-primary icon-bg"></i>
           Porcentaje de Usuarios (%)
         </label>
         <p-inputNumber
@@ -84,51 +94,45 @@
           [max]="100"
           [useGrouping]="false"
           placeholder="0-100"
-          styleClass="w-full"
+          styleClass="w-full custom-input-number mb-1"
           [class.ng-invalid]="isFieldInvalid('porcentajeUsuarios')"
+          (onInput)="onFieldChange('porcentajeUsuarios')"
         ></p-inputNumber>
-        <small
-          *ngIf="isFieldInvalid('porcentajeUsuarios')"
-          class="p-error"
-        >
+        <div class="field-helper error" *ngIf="isFieldInvalid('porcentajeUsuarios')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['porcentajeUsuarios'].errors?.['min']">El porcentaje debe ser mayor o igual a 0</span>
           <span *ngIf="f['porcentajeUsuarios'].errors?.['max']">El porcentaje debe ser menor o igual a 100</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Activo -->
-      <div class="field">
-        <label for="activo">Estado</label>
-        <p-checkbox
-          id="activo"
-          formControlName="activo"
-          binary="true"
-          inputId="activo-checkbox"
-        ></p-checkbox>
-        <label for="activo-checkbox" class="ml-2">Grupo activo</label>
+        <!-- Estado -->
+        <label class="field-label">
+          <i class="pi pi-power-off icon-bg-primary icon-bg"></i>
+          Estado
+        </label>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <p-inputSwitch formControlName="activo" class="mb-1"></p-inputSwitch>
+          <span class="ml-2 text-secondary">{{ f['activo'].value ? 'Activo' : 'Inactivo' }}</span>
+        </div>
       </div>
     </div>
   </form>
 
   <ng-template pTemplate="footer">
-    <div class="dialog-footer">
-      <button
-        pButton
-        type="button"
-        label="Cancelar"
-        icon="pi pi-times"
-        class="p-button-text"
-        (click)="hideDialog()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
-        icon="pi pi-check"
-        (click)="guardar()"
-        [disabled]="grupoDespliegueForm.invalid"
-      ></button>
-    </div>
+    <p-toolbar>
+      <ng-template #start></ng-template>
+      <ng-template #end>
+        <div class="d-flex gap-2">
+          <p-button label="Cancelar" icon="pi pi-times" (onClick)="hideDialog()" styleClass="btn-danger btn-md" />
+          <p-button
+            [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+            [icon]="modoEdicion ? 'pi pi-check' : 'pi pi-plus'"
+            (onClick)="guardar()"
+            [styleClass]="modoEdicion ? 'btn-info btn-md' : 'btn-success btn-md'"
+            [loading]="loading"
+          />
+        </div>
+      </ng-template>
+    </p-toolbar>
   </ng-template>
 </p-dialog>
 

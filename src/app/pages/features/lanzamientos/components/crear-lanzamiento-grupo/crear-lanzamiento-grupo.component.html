@@ -8,13 +8,17 @@
   (onHide)="hideDialog()"
 >
   <form [formGroup]="lanzamientoGrupoForm" (ngSubmit)="guardar()">
-    <div class="form-grid">
-      <!-- Lanzamiento -->
-      <div class="field">
-        <label for="idLanzamiento" class="required">
-          Lanzamiento <span class="required-asterisk">*</span>
+    <div class="form-two-columns">
+      <!-- Columna Izquierda -->
+      <div class="form-column">
+        <p-tag value="Asignación" icon="pi pi-link" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+        
+        <!-- Lanzamiento -->
+        <label class="field-label required">
+          <i class="pi pi-rocket icon-bg-primary icon-bg"></i>
+          Lanzamiento
         </label>
-        <p-dropdown
+        <p-select
           id="idLanzamiento"
           formControlName="idLanzamiento"
           [options]="lanzamientos"
@@ -24,9 +28,10 @@
           [showClear]="false"
           [filter]="true"
           filterBy="version,nombreAplicacion"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idLanzamiento')"
+          (onChange)="onFieldChange('idLanzamiento')"
         >
           <ng-template let-lanzamiento pTemplate="item">
             <div class="flex align-items-center">
@@ -36,21 +41,18 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
-        <small
-          *ngIf="isFieldInvalid('idLanzamiento')"
-          class="p-error"
-        >
+        </p-select>
+        <div class="field-helper error" *ngIf="isFieldInvalid('idLanzamiento')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['idLanzamiento'].errors?.['required']">El lanzamiento es requerido</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Grupo de Despliegue -->
-      <div class="field">
-        <label for="idGrupo" class="required">
-          Grupo de Despliegue <span class="required-asterisk">*</span>
+        <!-- Grupo de Despliegue -->
+        <label class="field-label required">
+          <i class="pi pi-sitemap icon-bg-primary icon-bg"></i>
+          Grupo de Despliegue
         </label>
-        <p-dropdown
+        <p-select
           id="idGrupo"
           formControlName="idGrupo"
           [options]="gruposDespliegue"
@@ -60,9 +62,10 @@
           [showClear]="false"
           [filter]="true"
           filterBy="nombreGrupo,descripcion"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
           [class.ng-invalid]="isFieldInvalid('idGrupo')"
+          (onChange)="onFieldChange('idGrupo')"
         >
           <ng-template let-grupo pTemplate="item">
             <div class="flex align-items-center">
@@ -74,53 +77,18 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
-        <small
-          *ngIf="isFieldInvalid('idGrupo')"
-          class="p-error"
-        >
+        </p-select>
+        <div class="field-helper error" *ngIf="isFieldInvalid('idGrupo')">
+          <i class="pi pi-exclamation-circle"></i>
           <span *ngIf="f['idGrupo'].errors?.['required']">El grupo es requerido</span>
-        </small>
-      </div>
+        </div>
 
-      <!-- Fecha Disponibilidad -->
-      <div class="field">
-        <label for="fechaDisponibilidad">
-          Fecha Disponibilidad
-        </label>
-        <input
-          id="fechaDisponibilidad"
-          type="datetime-local"
-          pInputText
-          formControlName="fechaDisponibilidad"
-          styleClass="w-full"
-          placeholder="Cuándo estará disponible para el grupo"
-        />
-        <small class="text-secondary">Cuándo estará disponible el lanzamiento para este grupo</small>
-      </div>
-
-      <!-- Fecha Fin Disponibilidad -->
-      <div class="field">
-        <label for="fechaFinDisponibilidad">
-          Fecha Fin Disponibilidad
-        </label>
-        <input
-          id="fechaFinDisponibilidad"
-          type="datetime-local"
-          pInputText
-          formControlName="fechaFinDisponibilidad"
-          styleClass="w-full"
-          placeholder="Cuándo dejará de estar disponible (opcional)"
-        />
-        <small class="text-secondary">Cuándo dejará de estar disponible (opcional)</small>
-      </div>
-
-      <!-- Asignado Por -->
-      <div class="field">
-        <label for="asignadoPor">
+        <!-- Asignado Por -->
+        <label class="field-label">
+          <i class="pi pi-user-edit icon-bg-primary icon-bg"></i>
           Asignado Por
         </label>
-        <p-dropdown
+        <p-select
           id="asignadoPor"
           formControlName="asignadoPor"
           [options]="usuarios"
@@ -130,8 +98,9 @@
           [showClear]="true"
           [filter]="true"
           filterBy="nombreCompleto,username,email"
-          styleClass="w-full"
+          styleClass="w-full custom-select mb-1"
           appendTo="body"
+          (onChange)="onFieldChange('asignadoPor')"
         >
           <ng-template let-usuario pTemplate="item">
             <div class="flex align-items-center">
@@ -141,36 +110,74 @@
               </div>
             </div>
           </ng-template>
-        </p-dropdown>
+        </p-select>
       </div>
 
-      <!-- Notificación Enviada -->
-      <div class="field">
-        <label for="notificacionEnviada">Notificación Enviada</label>
-        <p-checkbox
-          id="notificacionEnviada"
-          formControlName="notificacionEnviada"
-          binary="true"
-          inputId="notificacionEnviada-checkbox"
-        ></p-checkbox>
-        <label for="notificacionEnviada-checkbox" class="ml-2">Notificación enviada a los usuarios del grupo</label>
-      </div>
+      <!-- Columna Derecha -->
+      <div class="form-column">
+        <p-tag value="Disponibilidad y Configuración" icon="pi pi-calendar" styleClass="tag-primary-light tag-lg" class="mb-1 w-100" />
+        
+        <!-- Fecha Disponibilidad -->
+        <label class="field-label">
+          <i class="pi pi-calendar-plus icon-bg-primary icon-bg"></i>
+          Fecha Disponibilidad
+        </label>
+        <input
+          id="fechaDisponibilidad"
+          type="datetime-local"
+          pInputText
+          formControlName="fechaDisponibilidad"
+          placeholder="Cuándo estará disponible para el grupo"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('fechaDisponibilidad')"
+        />
+        <div class="field-helper info">
+          <i class="pi pi-info-circle"></i>
+          <span>Cuándo estará disponible el lanzamiento para este grupo</span>
+        </div>
 
-      <!-- Activo -->
-      <div class="field">
-        <label for="activo">Estado</label>
-        <p-checkbox
-          id="activo"
-          formControlName="activo"
-          binary="true"
-          inputId="activo-checkbox"
-        ></p-checkbox>
-        <label for="activo-checkbox" class="ml-2">Asignación activa</label>
-      </div>
+        <!-- Fecha Fin Disponibilidad -->
+        <label class="field-label">
+          <i class="pi pi-calendar-times icon-bg-primary icon-bg"></i>
+          Fecha Fin Disponibilidad
+        </label>
+        <input
+          id="fechaFinDisponibilidad"
+          type="datetime-local"
+          pInputText
+          formControlName="fechaFinDisponibilidad"
+          placeholder="Cuándo dejará de estar disponible (opcional)"
+          class="w-100 custom-input-text mb-1"
+          (input)="onFieldChange('fechaFinDisponibilidad')"
+        />
+        <div class="field-helper info">
+          <i class="pi pi-info-circle"></i>
+          <span>Cuándo dejará de estar disponible (opcional)</span>
+        </div>
 
-      <!-- Notas -->
-      <div class="field">
-        <label for="notas">
+        <!-- Notificación Enviada -->
+        <label class="field-label">
+          <i class="pi pi-bell icon-bg-primary icon-bg"></i>
+          Notificación Enviada
+        </label>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <p-inputSwitch formControlName="notificacionEnviada" class="mb-1"></p-inputSwitch>
+          <span class="ml-2 text-secondary">{{ f['notificacionEnviada'].value ? 'Enviada' : 'No enviada' }}</span>
+        </div>
+
+        <!-- Estado -->
+        <label class="field-label">
+          <i class="pi pi-power-off icon-bg-primary icon-bg"></i>
+          Estado
+        </label>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <p-inputSwitch formControlName="activo" class="mb-1"></p-inputSwitch>
+          <span class="ml-2 text-secondary">{{ f['activo'].value ? 'Activo' : 'Inactivo' }}</span>
+        </div>
+
+        <!-- Notas -->
+        <label class="field-label">
+          <i class="pi pi-file-edit icon-bg-primary icon-bg"></i>
           Notas
         </label>
         <textarea
@@ -179,30 +186,28 @@
           formControlName="notas"
           placeholder="Notas adicionales sobre esta asignación..."
           [rows]="3"
+          class="w-100 custom-textarea mb-1"
+          (input)="onFieldChange('notas')"
         ></textarea>
       </div>
     </div>
   </form>
 
   <ng-template pTemplate="footer">
-    <div class="dialog-footer">
-      <button
-        pButton
-        type="button"
-        label="Cancelar"
-        icon="pi pi-times"
-        class="p-button-text"
-        (click)="hideDialog()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
-        icon="pi pi-check"
-        (click)="guardar()"
-        [disabled]="lanzamientoGrupoForm.invalid"
-      ></button>
-    </div>
+    <p-toolbar>
+      <ng-template #start></ng-template>
+      <ng-template #end>
+        <div class="d-flex gap-2">
+          <p-button label="Cancelar" icon="pi pi-times" (onClick)="hideDialog()" styleClass="btn-danger btn-md" />
+          <p-button
+            [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+            [icon]="modoEdicion ? 'pi pi-check' : 'pi pi-plus'"
+            (onClick)="guardar()"
+            [styleClass]="modoEdicion ? 'btn-info btn-md' : 'btn-success btn-md'"
+            [loading]="loading"
+          />
+        </div>
+      </ng-template>
+    </p-toolbar>
   </ng-template>
 </p-dialog>
-

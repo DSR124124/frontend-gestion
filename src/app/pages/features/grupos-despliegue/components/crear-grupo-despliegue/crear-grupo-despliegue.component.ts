@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { GrupoDespliegueService } from '../../services/grupo-despliegue.service';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { GrupoDespliegue, GrupoDespliegueDTO } from '../../interfaces/grupo-despliegue.interface';
@@ -15,8 +15,7 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule
   ],
   templateUrl: './crear-grupo-despliegue.component.html',
-  styleUrl: './crear-grupo-despliegue.component.css',
-  providers: [MessageService]
+  styleUrl: './crear-grupo-despliegue.component.css'
 })
 export class CrearGrupoDespliegueComponent implements OnInit, OnDestroy {
   @Output() grupoDespliegueCreado = new EventEmitter<void>();
@@ -25,6 +24,7 @@ export class CrearGrupoDespliegueComponent implements OnInit, OnDestroy {
   grupoDespliegueForm!: FormGroup;
   visible: boolean = false;
   submitted: boolean = false;
+  loading: boolean = false;
   modoEdicion: boolean = false;
   grupoDespliegueId: number | null = null;
   private subscriptions: Subscription[] = [];
@@ -39,6 +39,11 @@ export class CrearGrupoDespliegueComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.loadingService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -90,12 +95,8 @@ export class CrearGrupoDespliegueComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     if (this.grupoDespliegueForm.invalid) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validación',
-        detail: 'Por favor, complete todos los campos requeridos correctamente',
-        life: 5000
-      });
+      this.messageService.warn('Por favor, complete todos los campos requeridos correctamente', 'Validación', 5000);
+      this.grupoDespliegueForm.markAllAsTouched();
       return;
     }
 
@@ -109,28 +110,20 @@ export class CrearGrupoDespliegueComponent implements OnInit, OnDestroy {
 
     this.loadingService.show();
 
+    this.loadingService.show();
+
     if (this.modoEdicion && this.grupoDespliegueId) {
       const sub = this.grupoDespliegueService.actualizar(this.grupoDespliegueId, grupoDespliegueDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Grupo de despliegue actualizado correctamente',
-            life: 5000
-          });
+          this.messageService.success('Grupo de despliegue actualizado correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.grupoDespliegueActualizado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al actualizar el grupo de despliegue';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -138,24 +131,14 @@ export class CrearGrupoDespliegueComponent implements OnInit, OnDestroy {
       const sub = this.grupoDespliegueService.crear(grupoDespliegueDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Grupo de despliegue creado correctamente',
-            life: 5000
-          });
+          this.messageService.success('Grupo de despliegue creado correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.grupoDespliegueCreado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al crear el grupo de despliegue';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -169,6 +152,14 @@ export class CrearGrupoDespliegueComponent implements OnInit, OnDestroy {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.grupoDespliegueForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+  }
+
+  onFieldChange(fieldName: string): void {
+    const field = this.grupoDespliegueForm.get(fieldName);
+    if (field) {
+      field.markAsDirty();
+      field.updateValueAndValidity();
+    }
   }
 }
 

@@ -4,7 +4,7 @@ import { LanzamientoGrupoService } from '../../services/lanzamiento-grupo.servic
 import { LanzamientoService } from '../../../lanzamientos/services/lanzamiento.service';
 import { GrupoDespliegueService } from '../../../grupos-despliegue/services/grupo-despliegue.service';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { LanzamientoGrupo, LanzamientoGrupoDTO } from '../../interfaces/lanzamiento-grupo.interface';
@@ -21,8 +21,7 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule
   ],
   templateUrl: './crear-lanzamiento-grupo.component.html',
-  styleUrl: './crear-lanzamiento-grupo.component.css',
-  providers: [MessageService]
+  styleUrl: './crear-lanzamiento-grupo.component.css'
 })
 export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
   @Output() lanzamientoGrupoCreado = new EventEmitter<void>();
@@ -34,6 +33,7 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
   usuarios: Usuario[] = [];
   visible: boolean = false;
   submitted: boolean = false;
+  loading: boolean = false;
   modoEdicion: boolean = false;
   lanzamientoGrupoId: number | null = null;
   private subscriptions: Subscription[] = [];
@@ -51,6 +51,11 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.loadingService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
     this.cargarLanzamientos();
     this.cargarGruposDespliegue();
     this.cargarUsuarios();
@@ -82,12 +87,8 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar los lanzamientos',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar los lanzamientos';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -102,12 +103,8 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar los grupos de despliegue',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar los grupos de despliegue';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -122,12 +119,8 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.message || 'Error al cargar los usuarios',
-          life: 5000
-        });
+        const errorMessage = error?.message || 'Error al cargar los usuarios';
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
     this.subscriptions.push(sub);
@@ -140,14 +133,14 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
     this.submitted = false;
 
     if (lanzamientoGrupo) {
-      const fechaDisponibilidad = lanzamientoGrupo.fechaDisponibilidad 
+      const fechaDisponibilidad = lanzamientoGrupo.fechaDisponibilidad
         ? new Date(lanzamientoGrupo.fechaDisponibilidad).toISOString().slice(0, 16)
         : null;
-      
-      const fechaFinDisponibilidad = lanzamientoGrupo.fechaFinDisponibilidad 
+
+      const fechaFinDisponibilidad = lanzamientoGrupo.fechaFinDisponibilidad
         ? new Date(lanzamientoGrupo.fechaFinDisponibilidad).toISOString().slice(0, 16)
         : null;
-      
+
       this.lanzamientoGrupoForm.patchValue({
         idLanzamiento: lanzamientoGrupo.idLanzamiento,
         idGrupo: lanzamientoGrupo.idGrupo,
@@ -181,22 +174,18 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     if (this.lanzamientoGrupoForm.invalid) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validación',
-        detail: 'Por favor, complete todos los campos requeridos correctamente',
-        life: 5000
-      });
+      this.messageService.warn('Por favor, complete todos los campos requeridos correctamente', 'Validación', 5000);
+      this.lanzamientoGrupoForm.markAllAsTouched();
       return;
     }
 
     const formValue = this.lanzamientoGrupoForm.value;
-    const fechaDisponibilidad = formValue.fechaDisponibilidad 
-      ? new Date(formValue.fechaDisponibilidad).toISOString() 
+    const fechaDisponibilidad = formValue.fechaDisponibilidad
+      ? new Date(formValue.fechaDisponibilidad).toISOString()
       : undefined;
-    
-    const fechaFinDisponibilidad = formValue.fechaFinDisponibilidad 
-      ? new Date(formValue.fechaFinDisponibilidad).toISOString() 
+
+    const fechaFinDisponibilidad = formValue.fechaFinDisponibilidad
+      ? new Date(formValue.fechaFinDisponibilidad).toISOString()
       : undefined;
 
     const lanzamientoGrupoDTO: LanzamientoGrupoDTO = {
@@ -212,28 +201,20 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
 
     this.loadingService.show();
 
+    this.loadingService.show();
+
     if (this.modoEdicion && this.lanzamientoGrupoId) {
       const sub = this.lanzamientoGrupoService.actualizar(this.lanzamientoGrupoId, lanzamientoGrupoDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Asignación lanzamiento-grupo actualizada correctamente',
-            life: 5000
-          });
+          this.messageService.success('Asignación lanzamiento-grupo actualizada correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.lanzamientoGrupoActualizado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al actualizar la asignación lanzamiento-grupo';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -241,24 +222,14 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
       const sub = this.lanzamientoGrupoService.crear(lanzamientoGrupoDTO).subscribe({
         next: () => {
           this.loadingService.hide();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Asignación lanzamiento-grupo creada correctamente',
-            life: 5000
-          });
+          this.messageService.success('Asignación lanzamiento-grupo creada correctamente', 'Éxito', 5000);
           this.hideDialog();
           this.lanzamientoGrupoCreado.emit();
         },
         error: (error) => {
           this.loadingService.hide();
           const errorMessage = error?.message || error?.error?.message || 'Error al crear la asignación lanzamiento-grupo';
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 5000
-          });
+          this.messageService.error(errorMessage, 'Error', 5000);
         }
       });
       this.subscriptions.push(sub);
@@ -272,6 +243,14 @@ export class CrearLanzamientoGrupoComponent implements OnInit, OnDestroy {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.lanzamientoGrupoForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+  }
+
+  onFieldChange(fieldName: string): void {
+    const field = this.lanzamientoGrupoForm.get(fieldName);
+    if (field) {
+      field.markAsDirty();
+      field.updateValueAndValidity();
+    }
   }
 
   getLanzamientoDisplay(lanzamiento: Lanzamiento): string {
