@@ -1,43 +1,26 @@
 <div class="notificaciones-container">
   <p-toolbar class="custom-toolbar">
     <ng-template #start>
-      <div class="d-flex gap-2 flex-wrap">
+      <div class="d-flex gap-2">
         <p-iconfield iconPosition="left">
           <p-inputicon>
             <i class="pi pi-search"></i>
           </p-inputicon>
           <input type="text" pInputText placeholder="Buscar por título, mensaje o aplicación..."
-            [(ngModel)]="terminoBusqueda" (input)="aplicarFiltros()" />
+            [(ngModel)]="terminoBusqueda" (input)="filtrarNotificaciones()" />
         </p-iconfield>
-
-        <p-select
-          [options]="tiposNotificacion"
-          [(ngModel)]="filtroTipo"
-          placeholder="Tipo"
-          (onChange)="aplicarFiltros()"
-          styleClass="w-12rem">
-        </p-select>
-
-        <p-select
-          [options]="prioridades"
-          [(ngModel)]="filtroPrioridad"
-          placeholder="Prioridad"
-          (onChange)="aplicarFiltros()"
-          styleClass="w-12rem">
-        </p-select>
-
-        <p-select
-          [options]="aplicaciones"
-          [(ngModel)]="filtroAplicacion"
-          placeholder="Aplicación"
-          (onChange)="aplicarFiltros()"
-          [showClear]="true"
-          styleClass="w-12rem">
-        </p-select>
-
-        <p-button *ngIf="terminoBusqueda || filtroTipo || filtroPrioridad || filtroAplicacion" 
-          icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
-          (onClick)="limpiarFiltros()"></p-button>
+        <p-button
+          class="button-fiter"
+          [icon]="filtrosVisibles ? 'pi pi-filter-slash' : 'pi pi-filter'"
+          label="Filtrar"
+          styleClass="btn-info btn-v2 btn-md"
+          tooltipPosition="bottom"
+          (onClick)="aplicarFiltros()"
+          [loading]="loading"
+        >
+        </p-button>
+        <p-button icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
+          (onClick)="limpiarBusqueda()"></p-button>
       </div>
     </ng-template>
 
@@ -47,6 +30,6 @@
 
   <p-divider></p-divider>
 
-  <shared-data-table [config]="notificacionesTableConfig"></shared-data-table>
+  <shared-data-table #dataTable [config]="notificacionesTableConfig"></shared-data-table>
 </div>
 

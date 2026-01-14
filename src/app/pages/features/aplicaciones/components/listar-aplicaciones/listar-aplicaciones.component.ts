@@ -33,9 +33,11 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
   terminoBusqueda: string = '';
   conteoLanzamientos: Map<number, number> = new Map();
   aplicacionesTableConfig!: TableConfig;
+  filtrosVisibles: boolean = false;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearAplicacionComponent) crearAplicacionComponent?: CrearAplicacionComponent;
+  @ViewChild(DataTableComponent) dataTableComponent?: DataTableComponent;
 
   constructor(
     private aplicacionService: AplicacionService,
@@ -133,6 +135,14 @@ export class ListarAplicacionesComponent implements OnInit, OnDestroy {
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
     this.aplicacionesTableConfig = this.buildAplicacionesTableConfig(this.aplicaciones);
+  }
+
+  aplicarFiltros(): void {
+    if (this.dataTableComponent) {
+      this.dataTableComponent.toggleFiltros();
+      // Sincronizar el estado de visibilidad
+      this.filtrosVisibles = !this.filtrosVisibles;
+    }
   }
 
   getSeverity(activo: boolean): string {

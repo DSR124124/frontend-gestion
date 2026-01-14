@@ -28,9 +28,11 @@ export class ListarLanzamientosComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   terminoBusqueda: string = '';
   lanzamientosTableConfig!: TableConfig;
+  filtrosVisibles: boolean = false;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearLanzamientoComponent) crearLanzamientoComponent?: CrearLanzamientoComponent;
+  @ViewChild(DataTableComponent) dataTableComponent?: DataTableComponent;
 
   constructor(
     private lanzamientoService: LanzamientoService,
@@ -92,6 +94,14 @@ export class ListarLanzamientosComponent implements OnInit, OnDestroy {
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
     this.lanzamientosTableConfig = this.buildLanzamientosTableConfig(this.lanzamientos);
+  }
+
+  aplicarFiltros(): void {
+    if (this.dataTableComponent) {
+      this.dataTableComponent.toggleFiltros();
+      // Sincronizar el estado de visibilidad
+      this.filtrosVisibles = !this.filtrosVisibles;
+    }
   }
 
   getSeverityEstado(estado: string): string {

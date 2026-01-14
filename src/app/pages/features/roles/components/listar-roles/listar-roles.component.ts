@@ -28,9 +28,11 @@ export class ListarRolesComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   rolesTableConfig!: TableConfig;
   terminoBusqueda: string = '';
+  filtrosVisibles: boolean = false;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearRolComponent) crearRolComponent?: CrearRolComponent;
+  @ViewChild(DataTableComponent) dataTableComponent?: DataTableComponent;
 
   constructor(
     private rolService: RolService,
@@ -92,6 +94,14 @@ export class ListarRolesComponent implements OnInit, OnDestroy {
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
     this.rolesTableConfig = this.buildRolesTableConfig(this.roles);
+  }
+
+  aplicarFiltros(): void {
+    if (this.dataTableComponent) {
+      this.dataTableComponent.toggleFiltros();
+      // Sincronizar el estado de visibilidad
+      this.filtrosVisibles = !this.filtrosVisibles;
+    }
   }
 
   getSeverity(activo: boolean): string {

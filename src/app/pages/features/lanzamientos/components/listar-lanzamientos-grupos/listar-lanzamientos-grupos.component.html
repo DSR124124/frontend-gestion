@@ -9,8 +9,17 @@
           <input type="text" pInputText placeholder="Buscar por versión, aplicación, grupo o notas..."
             [(ngModel)]="terminoBusqueda" (input)="filtrarLanzamientosGrupos()" />
         </p-iconfield>
-
-        <p-button *ngIf="terminoBusqueda" icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
+        <p-button
+          class="button-fiter"
+          [icon]="filtrosVisibles ? 'pi pi-filter-slash' : 'pi pi-filter'"
+          label="Filtrar"
+          styleClass="btn-info btn-v2 btn-md"
+          tooltipPosition="bottom"
+          (onClick)="aplicarFiltros()"
+          [loading]="loading"
+        >
+        </p-button>
+        <p-button icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
           (onClick)="limpiarBusqueda()"></p-button>
       </div>
 
@@ -26,7 +35,7 @@
 
   <p-divider></p-divider>
 
-  <shared-data-table [config]="lanzamientosGruposTableConfig"></shared-data-table>
+  <shared-data-table #dataTable [config]="lanzamientosGruposTableConfig"></shared-data-table>
 </div>
 
 <!-- Componente de crear/editar asignación -->

@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Notificacion } from '../../interfaces/notificacion.interface';
 import { NotificacionService } from '../../services/notificacion.service';
-import { AplicacionService } from '../../../aplicaciones/services/aplicacion.service';
 import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
@@ -23,33 +22,14 @@ export class ListarNotificacionesComponent implements OnInit, OnDestroy {
   notificaciones: Notificacion[] = [];
   loading: boolean = false;
   terminoBusqueda: string = '';
-  filtroTipo: string = '';
-  filtroPrioridad: string = '';
-  filtroAplicacion: number | null = null;
-  aplicaciones: any[] = [];
   notificacionesTableConfig!: TableConfig;
+  filtrosVisibles: boolean = false;
   private loadingSubscription?: Subscription;
 
-  tiposNotificacion = [
-    { label: 'Todas', value: '' },
-    { label: 'Info', value: 'info' },
-    { label: 'Warning', value: 'warning' },
-    { label: 'Error', value: 'error' },
-    { label: 'Success', value: 'success' },
-    { label: 'Critical', value: 'critical' }
-  ];
-
-  prioridades = [
-    { label: 'Todas', value: '' },
-    { label: 'Baja', value: 'baja' },
-    { label: 'Normal', value: 'normal' },
-    { label: 'Alta', value: 'alta' },
-    { label: 'Urgente', value: 'urgente' }
-  ];
+  @ViewChild(DataTableComponent) dataTableComponent?: DataTableComponent;
 
   constructor(
     private notificacionService: NotificacionService,
-    private aplicacionService: AplicacionService,
     private messageService: MessageService,
     private loadingService: LoadingService
   ) {}
@@ -62,7 +42,6 @@ export class ListarNotificacionesComponent implements OnInit, OnDestroy {
         this.notificacionesTableConfig = { ...this.notificacionesTableConfig, loading };
       }
     );
-    this.cargarAplicaciones();
     this.cargarNotificaciones();
   }
 
@@ -72,26 +51,12 @@ export class ListarNotificacionesComponent implements OnInit, OnDestroy {
     }
   }
 
-  cargarAplicaciones(): void {
-    this.aplicacionService.listar().subscribe({
-      next: (aplicaciones) => {
-        this.aplicaciones = aplicaciones.map(app => ({
-          label: app.nombreAplicacion,
-          value: app.idAplicacion
-        }));
-      },
-      error: (error) => {
-        this.messageService.error('Error al cargar aplicaciones', 'Error', 5000);
-      }
-    });
-  }
-
   cargarNotificaciones(): void {
     this.loadingService.show();
     this.notificacionService.listar().subscribe({
       next: (notificaciones) => {
         this.notificaciones = notificaciones;
-        this.aplicarFiltros();
+        this.notificacionesTableConfig = this.buildNotificacionesTableConfig(notificaciones);
         this.loadingService.hide();
       },
       error: (error) => {
@@ -102,43 +67,32 @@ export class ListarNotificacionesComponent implements OnInit, OnDestroy {
     });
   }
 
-  aplicarFiltros(): void {
-    let filtradas = [...this.notificaciones];
-
-    // Filtro por búsqueda
-    if (this.terminoBusqueda && this.terminoBusqueda.trim() !== '') {
-      const termino = this.terminoBusqueda.toLowerCase().trim();
-      filtradas = filtradas.filter(notif =>
-        notif.titulo.toLowerCase().includes(termino) ||
-        notif.mensaje.toLowerCase().includes(termino) ||
-        (notif.nombreAplicacion && notif.nombreAplicacion.toLowerCase().includes(termino))
-      );
+  filtrarNotificaciones(): void {
+    if (!this.terminoBusqueda || this.terminoBusqueda.trim() === '') {
+      this.notificacionesTableConfig = this.buildNotificacionesTableConfig(this.notificaciones);
+      return;
     }
 
-    // Filtro por tipo
-    if (this.filtroTipo) {
-      filtradas = filtradas.filter(notif => notif.tipoNotificacion === this.filtroTipo);
-    }
-
-    // Filtro por prioridad
-    if (this.filtroPrioridad) {
-      filtradas = filtradas.filter(notif => notif.prioridad === this.filtroPrioridad);
-    }
-
-    // Filtro por aplicación
-    if (this.filtroAplicacion) {
-      filtradas = filtradas.filter(notif => notif.idAplicacion === this.filtroAplicacion);
-    }
-
+    const termino = this.terminoBusqueda.toLowerCase().trim();
+    const filtradas = this.notificaciones.filter(notif =>
+      notif.titulo.toLowerCase().includes(termino) ||
+      notif.mensaje.toLowerCase().includes(termino) ||
+      (notif.nombreAplicacion && notif.nombreAplicacion.toLowerCase().includes(termino))
+    );
     this.notificacionesTableConfig = this.buildNotificacionesTableConfig(filtradas);
   }
 
-  limpiarFiltros(): void {
+  limpiarBusqueda(): void {
     this.terminoBusqueda = '';
-    this.filtroTipo = '';
-    this.filtroPrioridad = '';
-    this.filtroAplicacion = null;
-    this.aplicarFiltros();
+    this.notificacionesTableConfig = this.buildNotificacionesTableConfig(this.notificaciones);
+  }
+
+  aplicarFiltros(): void {
+    if (this.dataTableComponent) {
+      this.dataTableComponent.toggleFiltros();
+      // Sincronizar el estado de visibilidad
+      this.filtrosVisibles = !this.filtrosVisibles;
+    }
   }
 
   getSeverityTipo(tipo: string): string {

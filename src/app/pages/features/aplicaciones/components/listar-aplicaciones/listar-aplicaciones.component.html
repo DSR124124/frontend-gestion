@@ -9,8 +9,16 @@
           <input type="text" pInputText placeholder="Buscar por nombre, descripción, código o responsable..."
             [(ngModel)]="terminoBusqueda" (input)="filtrarAplicaciones()" />
         </p-iconfield>
-
-        <p-button *ngIf="terminoBusqueda" icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
+        <p-button
+          [icon]="filtrosVisibles ? 'pi pi-filter-slash' : 'pi pi-filter'"
+          label= "Filtrar"
+          styleClass="btn-info btn-v2 btn-md"
+          tooltipPosition="bottom"
+          (onClick)="aplicarFiltros()"
+          [loading]="loading"
+        >
+        </p-button>
+        <p-button icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
           (onClick)="limpiarBusqueda()"></p-button>
       </div>
 
@@ -26,7 +34,7 @@
 
   <p-divider></p-divider>
 
-  <shared-data-table [config]="aplicacionesTableConfig"></shared-data-table>
+  <shared-data-table #dataTable [config]="aplicacionesTableConfig"></shared-data-table>
 </div>
 
 <!-- Componente de crear/editar aplicación -->

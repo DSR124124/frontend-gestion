@@ -28,9 +28,11 @@ export class ListarUsuariosGruposComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   terminoBusqueda: string = '';
   usuariosGruposTableConfig!: TableConfig;
+  filtrosVisibles: boolean = false;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearUsuarioGrupoComponent) crearUsuarioGrupoComponent?: CrearUsuarioGrupoComponent;
+  @ViewChild(DataTableComponent) dataTableComponent?: DataTableComponent;
 
   constructor(
     private usuarioGrupoService: UsuarioGrupoService,
@@ -91,6 +93,14 @@ export class ListarUsuariosGruposComponent implements OnInit, OnDestroy {
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
     this.usuariosGruposTableConfig = this.buildUsuariosGruposTableConfig(this.usuariosGrupos);
+  }
+
+  aplicarFiltros(): void {
+    if (this.dataTableComponent) {
+      this.dataTableComponent.toggleFiltros();
+      // Sincronizar el estado de visibilidad
+      this.filtrosVisibles = !this.filtrosVisibles;
+    }
   }
 
   getSeverity(activo: boolean): string {

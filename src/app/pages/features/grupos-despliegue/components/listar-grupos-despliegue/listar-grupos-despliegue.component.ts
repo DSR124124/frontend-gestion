@@ -28,9 +28,11 @@ export class ListarGruposDespliegueComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   terminoBusqueda: string = '';
   gruposDespliegueTableConfig!: TableConfig;
+  filtrosVisibles: boolean = false;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearGrupoDespliegueComponent) crearGrupoDespliegueComponent?: CrearGrupoDespliegueComponent;
+  @ViewChild(DataTableComponent) dataTableComponent?: DataTableComponent;
 
   constructor(
     private grupoDespliegueService: GrupoDespliegueService,
@@ -90,6 +92,14 @@ export class ListarGruposDespliegueComponent implements OnInit, OnDestroy {
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
     this.gruposDespliegueTableConfig = this.buildGruposDespliegueTableConfig(this.gruposDespliegue);
+  }
+
+  aplicarFiltros(): void {
+    if (this.dataTableComponent) {
+      this.dataTableComponent.toggleFiltros();
+      // Sincronizar el estado de visibilidad
+      this.filtrosVisibles = !this.filtrosVisibles;
+    }
   }
 
   getSeverity(activo: boolean): string {

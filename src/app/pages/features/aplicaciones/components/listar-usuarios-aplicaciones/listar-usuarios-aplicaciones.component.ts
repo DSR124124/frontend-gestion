@@ -28,9 +28,11 @@ export class ListarUsuariosAplicacionesComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   terminoBusqueda: string = '';
   usuariosAplicacionesTableConfig!: TableConfig;
+  filtrosVisibles: boolean = false;
   private loadingSubscription?: Subscription;
 
   @ViewChild(CrearUsuarioAplicacionComponent) crearUsuarioAplicacionComponent?: CrearUsuarioAplicacionComponent;
+  @ViewChild(DataTableComponent) dataTableComponent?: DataTableComponent;
 
   constructor(
     private usuarioAplicacionService: UsuarioAplicacionService,
@@ -91,6 +93,14 @@ export class ListarUsuariosAplicacionesComponent implements OnInit, OnDestroy {
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
     this.usuariosAplicacionesTableConfig = this.buildUsuariosAplicacionesTableConfig(this.usuariosAplicaciones);
+  }
+
+  aplicarFiltros(): void {
+    if (this.dataTableComponent) {
+      this.dataTableComponent.toggleFiltros();
+      // Sincronizar el estado de visibilidad
+      this.filtrosVisibles = !this.filtrosVisibles;
+    }
   }
 
   getSeverity(licenciaActiva: boolean): string {
