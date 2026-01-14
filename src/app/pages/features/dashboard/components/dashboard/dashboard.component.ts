@@ -5,12 +5,14 @@ import { AplicacionService } from '../../../aplicaciones/services/aplicacion.ser
 import { LanzamientoService } from '../../../lanzamientos/services/lanzamiento.service';
 import { Lanzamiento } from '../../../lanzamientos/interfaces/lanzamiento.interface';
 import { UsuarioService } from '../../../usuarios/services/usuario.service';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { Aplicacion } from '../../../aplicaciones/interfaces/aplicacion.interface';
 import { Subscription } from 'rxjs';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { DataTableComponent } from '../../../../../shared/components/data-table/data-table.component';
+import { ColumnType, FilterType, TableConfig } from '../../../../../shared/components/data-table/interfaces/table-column.interface';
 
 // Registrar todos los componentes de Chart.js
 Chart.register(...registerables);
@@ -20,14 +22,15 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    ...PrimeNGModules
+    ...PrimeNGModules,
+    DataTableComponent
   ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
-  providers: [MessageService]
+  styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   estadisticas: EstadisticaLanzamiento[] = [];
+  estadisticasTableConfig!: TableConfig;
   aplicaciones: Aplicacion[] = [];
   totalAplicaciones: number = 0;
   totalLanzamientos: number = 0;
@@ -54,8 +57,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.estadisticasTableConfig = this.buildEstadisticasTableConfig([]);
     this.loadingSubscription = this.loadingService.loading$.subscribe(
-      loading => this.loading = loading
+      loading => {
+        this.loading = loading;
+        this.estadisticasTableConfig = { ...this.estadisticasTableConfig, loading };
+      }
     );
     this.cargarDatos();
   }
@@ -101,6 +108,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
         return estadistica;
       });
 
+      // Preparar data para la tabla compartida (evitar booleanos crudos en UI)
+      const estadisticasTableData = this.estadisticas.map(est => ({
+        ...est,
+        critico: est.esCritico ? 'Sí' : '-',
+        usuariosConAcceso: est.usuariosConAcceso ?? 0,
+        gruposAsignados: est.gruposAsignados ?? 0,
+      }));
+      this.estadisticasTableConfig = this.buildEstadisticasTableConfig(estadisticasTableData);
+
       this.totalLanzamientos = lanzamientos.length;
       this.calcularPromedioGrupos();
       this.crearGraficos();
@@ -114,16 +130,100 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const usuarios = await firstValueFrom(this.usuarioService.listar());
       this.totalUsuarios = usuarios.filter(u => u.activo).length;
     } catch (error) {
-      console.error('Error al cargar datos:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Error al cargar los datos del dashboard',
-        life: 5000
-      });
+      this.messageService.error('Error al cargar los datos del dashboard');
     } finally {
       this.loadingService.hide();
     }
+  }
+
+  private buildEstadisticasTableConfig(data: any[]): TableConfig {
+    return {
+      data,
+      loading: this.loading,
+      rowsPerPage: 10,
+      rowsPerPageOptions: [10, 25, 50],
+      showCurrentPageReport: true,
+      currentPageReportTemplate: 'Mostrando {first} a {last} de {totalRecords} lanzamientos',
+      emptyMessage: 'No se encontraron estadísticas',
+      globalSearchPlaceholder: 'Buscar en estadísticas...',
+      columns: [
+        {
+          field: 'nombreAplicacion',
+          header: 'Aplicación',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '260px',
+          mobileVisible: true,
+        },
+        {
+          field: 'version',
+          header: 'Versión',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          width: '120px',
+          mobileVisible: true,
+        },
+        {
+          field: 'estado',
+          header: 'Estado',
+          type: ColumnType.DROPDOWN,
+          filterType: FilterType.DROPDOWN,
+          width: '150px',
+          dropdownOptions: [
+            { label: 'Activo', value: 'activo' },
+            { label: 'Borrador', value: 'borrador' },
+            { label: 'Deprecado', value: 'deprecado' },
+            { label: 'Retirado', value: 'retirado' },
+          ],
+          getLabel: (value: any) => {
+            if (!value) return '-';
+            const v = String(value).toLowerCase();
+            return v.charAt(0).toUpperCase() + v.slice(1);
+          },
+          mobileVisible: true,
+        },
+        {
+          field: 'fechaLanzamiento',
+          header: 'Fecha Lanzamiento',
+          type: ColumnType.DATE,
+          filterType: FilterType.DATE,
+          dateFormat: 'dd/MM/yyyy',
+          width: '170px',
+          mobileVisible: false,
+        },
+        {
+          field: 'usuariosConAcceso',
+          header: 'Usuarios',
+          type: ColumnType.NUMBER,
+          filterType: FilterType.NUMBER,
+          align: 'right',
+          width: '120px',
+          mobileVisible: false,
+        },
+        {
+          field: 'gruposAsignados',
+          header: 'Grupos',
+          type: ColumnType.NUMBER,
+          filterType: FilterType.NUMBER,
+          align: 'right',
+          width: '110px',
+          mobileVisible: false,
+        },
+        {
+          field: 'critico',
+          header: 'Crítico',
+          type: ColumnType.TEXT,
+          filterType: FilterType.DROPDOWN,
+          dropdownOptions: [
+            { label: 'Sí', value: 'Sí' },
+            { label: 'No', value: '-' },
+          ],
+          width: '90px',
+          mobileVisible: true,
+        },
+      ],
+    };
   }
 
   calcularPromedioGrupos(): void {
@@ -144,7 +244,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   crearGraficoUsuariosPorAplicacion(): void {
     const canvas = document.getElementById('chartUsuariosPorAplicacion') as HTMLCanvasElement;
     if (!canvas) {
-      console.error('Canvas chartUsuariosPorAplicacion no encontrado');
       return;
     }
 
@@ -165,7 +264,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const data = Array.from(datosPorAplicacion.values());
 
     if (labels.length === 0 || data.length === 0) {
-      console.warn('No hay datos para el gráfico de usuarios por aplicación');
       return;
     }
 
@@ -204,14 +302,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     try {
       this.chartUsuariosPorAplicacion = new Chart(canvas, config);
     } catch (error) {
-      console.error('Error al crear gráfico de usuarios por aplicación:', error);
+      // Silenciar errores de render de chart en UI
     }
   }
 
   crearGraficoLanzamientosPorEstado(): void {
     const canvas = document.getElementById('chartLanzamientosPorEstado') as HTMLCanvasElement;
     if (!canvas) {
-      console.error('Canvas chartLanzamientosPorEstado no encontrado');
       return;
     }
 
@@ -232,7 +329,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const data = Array.from(datosPorEstado.values());
 
     if (labels.length === 0 || data.length === 0) {
-      console.warn('No hay datos para el gráfico de lanzamientos por estado');
       return;
     }
 
@@ -277,14 +373,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     try {
       this.chartLanzamientosPorEstado = new Chart(canvas, config);
     } catch (error) {
-      console.error('Error al crear gráfico de lanzamientos por estado:', error);
+      // Silenciar errores de render de chart en UI
     }
   }
 
   crearGraficoLanzamientosPorAplicacion(): void {
     const canvas = document.getElementById('chartLanzamientosPorAplicacion') as HTMLCanvasElement;
     if (!canvas) {
-      console.error('Canvas chartLanzamientosPorAplicacion no encontrado');
       return;
     }
 
@@ -305,7 +400,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const data = Array.from(datosPorAplicacion.values());
 
     if (labels.length === 0 || data.length === 0) {
-      console.warn('No hay datos para el gráfico de lanzamientos por aplicación');
       return;
     }
 
@@ -354,7 +448,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     try {
       this.chartLanzamientosPorAplicacion = new Chart(canvas, config);
     } catch (error) {
-      console.error('Error al crear gráfico de lanzamientos por aplicación:', error);
+      // Silenciar errores de render de chart en UI
     }
   }
 
@@ -389,7 +483,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
       }
     } catch (error) {
-      console.error('Error al formatear fecha:', fecha, error);
       return fecha || '-';
     }
   }

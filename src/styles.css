@@ -372,53 +372,6 @@ body {
     border-bottom-color: rgba(28, 34, 77, 0.95) !important;
   }
 
-/* ============================================
-   PRIMENG OVERRIDES - DIALOGS
-   ============================================ */
-   .p-dialog .p-dialog-title {
-    font-size: var(--font-size-h4) !important;
-    font-weight: var(--font-weight-semibold) !important;
-    color: var(--color-navy-dark) !important;
-  }
-
-  .custom-modal-mask {
-    background-color: rgba(0, 0, 0, 0.6) !important;
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
-    z-index: 9999 !important;
-  }
-
-  .custom-modal-mask ~ * {
-    pointer-events: none !important;
-  }
-
-  .custom-error-dialog {
-    pointer-events: all !important;
-  }
-
-  .custom-error-dialog .p-dialog {
-    border-radius: 8px !important;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
-    border: 2px solid #e74c3c !important;
-    animation: modalFadeIn 0.3s ease-out !important;
-  }
-
-  .custom-error-dialog .p-dialog-header {
-    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
-    color: white !important;
-    border-bottom: 1px solid #c0392b !important;
-    border-radius: 6px 6px 0 0 !important;
-  }
-
-  .custom-error-dialog .p-dialog-header .p-dialog-title {
-    font-weight: 600 !important;
-    font-size: 1.1rem !important;
-  }
-
-  .custom-error-dialog .p-dialog-content {
-    padding: 0 !important;
-    border-radius: 0 0 6px 6px !important;
-  }
 
 /* ============================================
    PRIMENG OVERRIDES - PANELS

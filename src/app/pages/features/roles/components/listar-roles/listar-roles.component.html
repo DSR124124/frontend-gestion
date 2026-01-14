@@ -6,14 +6,16 @@
           <p-inputicon>
             <i class="pi pi-search"></i>
           </p-inputicon>
-          <input type="text" pInputText placeholder="Buscar por nombre o descripción..."
-            [(ngModel)]="terminoBusqueda" (input)="filtrarRoles()" />
+          <input
+            type="text"
+            pInputText
+            placeholder="Buscar por nombre o descripción..."
+            [(ngModel)]="terminoBusqueda"
+            (input)="filtrarRoles()"
+          />
         </p-iconfield>
-
         <p-button *ngIf="terminoBusqueda" icon="pi pi-times" label="Limpiar" styleClass="p-button-danger"
           (onClick)="limpiarBusqueda()"></p-button>
-
-        <p-button icon="pi pi-filter" label="filtros" styleClass="p-button-info" [disabled]="loading"></p-button>
       </div>
 
     </ng-template>
@@ -30,70 +32,11 @@
 
   <p-divider></p-divider>
 
-  <p-table [value]="rolesFiltrados" [loading]="loading" [paginator]="true" [rows]="10"
-    [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
-    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} roles"
-    [globalFilterFields]="['nombreRol', 'descripcion']"
-    styleClass="tabla-datos">
-      <ng-template pTemplate="header">
-        <tr>
-          <th style="width: 5%">ID</th>
-          <th style="width: 15%">Nombre</th>
-          <th style="width: 20%">Descripción</th>
-          <th style="width: 18%">Permisos</th>
-          <th style="width: 8%">Estado</th>
-          <th style="width: 12%">Fecha Creación</th>
-          <th style="width: 12%">Última Modificación</th>
-          <th style="width: 10%">Acciones</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-rol>
-        <tr>
-          <td>{{ rol.idRol }}</td>
-          <td>
-            <strong>{{ rol.nombreRol }}</strong>
-          </td>
-          <td>{{ rol.descripcion || '-' }}</td>
-          <td>
-            <p-tag [value]="formatearPermisos(rol.permisos)" class="tag-secondary" [title]="formatearPermisos(rol.permisos)"></p-tag>
-          </td>
-          <td>
-            <p-tag [value]="getEstadoLabel(rol.activo)" class="tag-success"></p-tag>
-          </td>
-          <td>{{ formatearFecha(rol.fechaCreacion) }}</td>
-          <td>
-            <span class="fecha-modificacion" [title]="formatearFechaCompleta(rol.fechaModificacion)">
-              <i class="pi pi-clock"></i>
-              {{ formatearFecha(rol.fechaModificacion) }}
-            </span>
-          </td>
-          <td>
-            <div class="acciones-cell">
-              <p-button icon="pi pi-pencil" styleClass="btn-success btn-v2" pTooltip="Editar rol" tooltipPosition="top"
-                (click)="editarRol(rol)"></p-button>
-              <p-button icon="pi pi-trash" styleClass="btn-danger btn-v2" pTooltip="Eliminar rol"
-                tooltipPosition="top" (click)="confirmarEliminar(rol)"></p-button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="8" class="text-center p-4">
-          <div class="empty-message">
-            <i class="pi pi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-            <p>No se encontraron roles</p>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <shared-data-table [config]="rolesTableConfig"></shared-data-table>
 </div>
 
 <!-- Componente de crear/editar rol -->
 <app-crear-rol #crearRolComponent (rolCreado)="onRolCreado()"
   (rolActualizado)="onRolActualizado()"></app-crear-rol>
 
-<!-- Confirmación de eliminación -->
-<p-confirmDialog></p-confirmDialog>
 

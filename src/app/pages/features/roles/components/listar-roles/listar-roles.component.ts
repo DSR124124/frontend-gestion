@@ -1,27 +1,32 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Rol } from '../../interfaces/rol.interface';
 import { RolService } from '../../services/rol.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { MessageService } from '../../../../../core/services/message.service';
 import { LoadingService } from '../../../../../shared/services/loading.service';
 import { PrimeNGModules } from '../../../../../prime-ng/prime-ng';
 import { CrearRolComponent } from '../crear-rol/crear-rol.component';
 import { Subscription } from 'rxjs';
+import { DataTableComponent } from '../../../../../shared/components/data-table/data-table.component';
+import { ColumnType, FilterType, TableConfig } from '../../../../../shared/components/data-table/interfaces/table-column.interface';
+import { DialogoComponent } from '../../../../../shared/components/dialogo/dialogo.component';
 
 @Component({
   selector: 'app-listar-roles',
   standalone: true,
   imports: [
     ...PrimeNGModules,
+    DataTableComponent,
     CrearRolComponent
   ],
   templateUrl: './listar-roles.component.html',
   styleUrl: './listar-roles.component.css',
-  providers: [MessageService, ConfirmationService]
+  providers: [DialogService]
 })
 export class ListarRolesComponent implements OnInit, OnDestroy {
   roles: Rol[] = [];
-  rolesFiltrados: Rol[] = [];
   loading: boolean = false;
+  rolesTableConfig!: TableConfig;
   terminoBusqueda: string = '';
   private loadingSubscription?: Subscription;
 
@@ -30,14 +35,18 @@ export class ListarRolesComponent implements OnInit, OnDestroy {
   constructor(
     private rolService: RolService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
+    private dialogService: DialogService,
     private loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
+    this.rolesTableConfig = this.buildRolesTableConfig([]);
     // Suscribirse al estado de loading del servicio
     this.loadingSubscription = this.loadingService.loading$.subscribe(
-      loading => this.loading = loading
+      loading => {
+        this.loading = loading;
+        this.rolesTableConfig = { ...this.rolesTableConfig, loading };
+      }
     );
     this.cargarRoles();
   }
@@ -53,38 +62,36 @@ export class ListarRolesComponent implements OnInit, OnDestroy {
     this.rolService.listar().subscribe({
       next: (roles) => {
         this.roles = roles;
-        this.rolesFiltrados = roles;
+        this.rolesTableConfig = this.buildRolesTableConfig(roles);
         this.loadingService.hide();
       },
       error: (error) => {
         this.loadingService.hide();
         const errorMessage = error?.message || error?.error?.message || 'Error al cargar los roles';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
+        this.messageService.error(errorMessage, 'Error');
       }
     });
   }
 
   filtrarRoles(): void {
-    if (!this.terminoBusqueda || this.terminoBusqueda.trim() === '') {
-      this.rolesFiltrados = this.roles;
+    const termino = (this.terminoBusqueda || '').toLowerCase().trim();
+    if (!termino) {
+      this.rolesTableConfig = this.buildRolesTableConfig(this.roles);
       return;
     }
 
-    const termino = this.terminoBusqueda.toLowerCase().trim();
-    this.rolesFiltrados = this.roles.filter(rol =>
-      rol.nombreRol.toLowerCase().includes(termino) ||
-      (rol.descripcion && rol.descripcion.toLowerCase().includes(termino))
-    );
+    const filtrados = this.roles.filter(r => {
+      const nombre = (r.nombreRol || '').toLowerCase();
+      const descripcion = (r.descripcion || '').toLowerCase();
+      return nombre.includes(termino) || descripcion.includes(termino);
+    });
+
+    this.rolesTableConfig = this.buildRolesTableConfig(filtrados);
   }
 
   limpiarBusqueda(): void {
     this.terminoBusqueda = '';
-    this.rolesFiltrados = this.roles;
+    this.rolesTableConfig = this.buildRolesTableConfig(this.roles);
   }
 
   getSeverity(activo: boolean): string {
@@ -173,14 +180,22 @@ export class ListarRolesComponent implements OnInit, OnDestroy {
   }
 
   confirmarEliminar(rol: Rol): void {
-    this.confirmationService.confirm({
-      message: `¿Está seguro de que desea eliminar el rol "${rol.nombreRol}"?`,
+    const ref: DynamicDialogRef = this.dialogService.open(DialogoComponent, {
       header: 'Confirmar Eliminación',
-      icon: 'pi pi-exclamation-triangle',
-      acceptButtonStyleClass: 'p-button-danger',
-      acceptLabel: 'Sí, eliminar',
-      rejectLabel: 'Cancelar',
-      accept: () => {
+      width: '500px',
+      modal: true,
+      closable: true,
+      data: {
+        mensaje: `¿Está seguro de que desea eliminar el rol "<strong>${rol.nombreRol}</strong>"?`,
+        severidad: 'warn',
+        mostrarBotones: true,
+        labelAceptar: 'Sí, eliminar',
+        labelCerrar: 'Cancelar'
+      }
+    });
+
+    ref.onClose.subscribe((result: string | undefined) => {
+      if (result === 'aceptar') {
         this.eliminarRol(rol.idRol);
       }
     });
@@ -191,25 +206,128 @@ export class ListarRolesComponent implements OnInit, OnDestroy {
     this.rolService.eliminar(id).subscribe({
       next: () => {
         this.loadingService.hide();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Rol eliminado correctamente',
-          life: 5000
-        });
+        this.messageService.success('Rol eliminado correctamente', 'Éxito', 5000);
         this.cargarRoles();
       },
       error: (error) => {
         this.loadingService.hide();
         const errorMessage = error?.message || error?.error?.message || 'Error al eliminar el rol';
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          life: 5000
-        });
+        this.messageService.error(errorMessage, 'Error', 5000);
       }
     });
+  }
+
+  private buildRolesTableConfig(data: Rol[]): TableConfig {
+    return {
+      loading: this.loading,
+      rowsPerPage: 10,
+      rowsPerPageOptions: [10, 25, 50],
+      showCurrentPageReport: true,
+      showGlobalSearch: false,
+      currentPageReportTemplate: 'Mostrando {first} a {last} de {totalRecords} roles',
+      emptyMessage: 'No se encontraron roles',
+      globalSearchPlaceholder: 'Buscar por nombre o descripción...',
+      columns: [
+        {
+          field: 'idRol',
+          header: 'ID',
+          type: ColumnType.NUMBER,
+          filterType: FilterType.NUMBER,
+          width: '80px',
+          mobileVisible: true,
+        },
+        {
+          field: 'nombreRol',
+          header: 'Nombre',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '180px',
+          mobileVisible: true,
+        },
+        {
+          field: 'descripcion',
+          header: 'Descripción',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '280px',
+          mobileVisible: false,
+        },
+        {
+          field: 'permisosText',
+          header: 'Permisos',
+          type: ColumnType.TEXT,
+          filterType: FilterType.TEXT,
+          align: 'left',
+          width: '260px',
+          mobileVisible: false,
+        },
+        {
+          field: 'estadoText',
+          header: 'Estado',
+          type: ColumnType.DROPDOWN,
+          filterType: FilterType.DROPDOWN,
+          dropdownOptions: [
+            { label: 'Activo', value: 'Activo' },
+            { label: 'Inactivo', value: 'Inactivo' },
+          ],
+          width: '140px',
+          mobileVisible: true,
+        },
+        {
+          field: 'fechaCreacion',
+          header: 'Fecha Creación',
+          type: ColumnType.DATE,
+          filterType: FilterType.DATE,
+          dateFormat: 'dd/MM/yyyy',
+          width: '160px',
+          mobileVisible: false,
+        },
+        {
+          field: 'fechaModificacion',
+          header: 'Última Modificación',
+          type: ColumnType.DATE,
+          filterType: FilterType.DATE,
+          dateFormat: 'dd/MM/yyyy',
+          width: '180px',
+          mobileVisible: false,
+        },
+        {
+          field: 'acciones',
+          header: 'Acciones',
+          type: ColumnType.TEXT,
+          isAction: true,
+          sortable: false,
+          filterType: FilterType.NONE,
+          width: '140px',
+          mobileVisible: true,
+        },
+      ],
+      rowActions: [
+        {
+          icon: 'pi pi-pencil',
+          severity: 'success',
+          tooltip: 'Editar rol',
+          action: (row: Rol) => this.editarRol(row),
+        },
+        {
+          icon: 'pi pi-trash',
+          severity: 'danger',
+          tooltip: 'Eliminar rol',
+          action: (row: Rol) => this.confirmarEliminar(row),
+        },
+      ],
+      // Preparar campos para búsqueda global dentro del componente
+      globalFilterFields: ['nombreRol', 'descripcion', 'permisosText', 'estadoText'],
+      // Adaptar data para UI (sin tocar el modelo original)
+      // Nota: el DataTable toma `config.data` tal cual; aquí lo preprocesamos.
+      data: data.map(r => ({
+        ...r,
+        permisosText: this.formatearPermisos(r.permisos),
+        estadoText: this.getEstadoLabel(r.activo),
+      })),
+    };
   }
 }
 

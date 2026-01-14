@@ -72,13 +72,12 @@
 
 /* Estilos para el diálogo */
 ::ng-deep .p-dialog .p-dialog-header {
-  background: linear-gradient(135deg, var(--color-navy-dark), var(--color-blue-light));
-  color: white;
+  color: var(--color-navy-dark);
   border-radius: 6px 6px 0 0;
 }
 
 ::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
-  color: white;
+  color: var(--color-navy-dark);
   font-weight: var(--font-weight-semibold);
 }
 
