@@ -67,4 +67,8 @@
   .header-center {
     display: none;
   }
+
+  app-breadcrumb {
+    display: none !important;
+  }
 }
