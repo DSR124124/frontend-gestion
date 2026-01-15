@@ -16,6 +16,7 @@ export const NettalcoPreset = definePreset(Aura, {
       800: '#141934',
       900: '#10152c',
       950: '#0d1123'
+
     },
     secondary: {
       500: '#4A7AFF'
